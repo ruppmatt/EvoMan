@@ -28,8 +28,10 @@ public class EvoPool extends EMConfigurable {
 	
 	
 	public void addVM(VariationManager vm){
+		if (_vm != null)
+			removeChild(_vm);
 		_vm = vm;
-		addChild(vm);
+		addChild(_vm);
 	}
 	
 	public VariationManager getVM(VariationManager vm){

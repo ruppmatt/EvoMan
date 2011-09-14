@@ -3,7 +3,7 @@ package evoman.tools;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-public class Hierarchical extends Identifiable{
+public class Hierarchical extends Identifiable implements Printable {
 	
 	protected Hierarchical _parent = null;
 	protected final String       _full_name; 
@@ -77,6 +77,8 @@ public class Hierarchical extends Identifiable{
 		}
 	}
 	
+
+	
 	protected static String namePrefix(String name){
 		int ndx = name.indexOf('.');
 		return (ndx < 0) ? null : name.substring(ndx+1);
@@ -85,6 +87,22 @@ public class Hierarchical extends Identifiable{
 	protected static String extractPrefix(String name){
 		int ndx = name.indexOf('.');
 		return (ndx < 0) ? name : name.substring(0,ndx);
+	}
+	
+	
+	public String toString(){
+		return toString(0);
+
+	}
+	
+	protected String toString(int level){
+		StringBuffer sb = new StringBuffer();
+		for (int k=0; k<level; k++)
+			sb.append("   ");
+		sb.append(this.getClass().getSimpleName() + " " + getName() + ENDL);
+		for (Hierarchical h : _children.values())
+			h.toString(level+1);
+		return sb.toString();
 	}
 	
 }
