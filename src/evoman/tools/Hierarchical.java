@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 public class Hierarchical extends Identifiable implements Printable {
 	
 	protected Hierarchical _parent = null;
-	protected final String       _full_name; 
+	protected String       _full_name; 
 	protected LinkedHashMap<String, Hierarchical> _children = new LinkedHashMap<String,Hierarchical>();
 
 	public Hierarchical(String name){
@@ -41,6 +41,14 @@ public class Hierarchical extends Identifiable implements Printable {
 		String name = child.getName();
 		if (_children.containsKey(name))
 			_children.remove(name);
+		child._full_name = child.getName();
+	}
+	
+	public void moveTo(Hierarchical parent){
+		if (_parent != null)
+			_parent.removeChild(this);
+		_parent = parent;
+		_full_name = parent.getFullName() + getName();
 	}
 	
 	public Hierarchical child(String name){
@@ -49,6 +57,10 @@ public class Hierarchical extends Identifiable implements Printable {
 		} else {
 			return null;
 		}
+	}
+	
+	public boolean contains(String name){
+		return _children.containsKey(name);
 	}
 	
 	public Collection<Hierarchical> getChildren(){
@@ -67,12 +79,12 @@ public class Hierarchical extends Identifiable implements Printable {
 	}
 	
 	public Hierarchical resolveName(String name){
-		String prefix = namePrefix(name);
-		if (prefix == null && name == _name){
-			return this;
-		} else if (_children.containsKey(prefix)){
+		String prefix = namePrefix(name);	
+		if (prefix == null && _children.containsKey(name)){
+			return _children.get(name);
+		} else if (prefix != null && _children.containsKey(prefix)){
 			return _children.get(prefix).resolveName(extractPrefix(name));
-		} else {
+		} else{
 			return null;
 		}
 	}
@@ -81,12 +93,12 @@ public class Hierarchical extends Identifiable implements Printable {
 	
 	protected static String namePrefix(String name){
 		int ndx = name.indexOf('.');
-		return (ndx < 0) ? null : name.substring(ndx+1);
+		return (ndx < 0) ? null : name.substring(0,ndx);
 	}
 	
 	protected static String extractPrefix(String name){
 		int ndx = name.indexOf('.');
-		return (ndx < 0) ? name : name.substring(0,ndx);
+		return (ndx < 0) ? name : name.substring(ndx+1);
 	}
 	
 	
@@ -97,11 +109,12 @@ public class Hierarchical extends Identifiable implements Printable {
 	
 	protected String toString(int level){
 		StringBuffer sb = new StringBuffer();
-		for (int k=0; k<level; k++)
+		for (int k=0; k<level; k++){
 			sb.append("   ");
-		sb.append(this.getClass().getSimpleName() + " " + getName() + ENDL);
+		}
+		sb.append(this.getClass().getSimpleName() + " " + getName() + " " + _children.size() + ENDL);
 		for (Hierarchical h : _children.values())
-			h.toString(level+1);
+			sb.append(h.toString(level+1));
 		return sb.toString();
 	}
 	

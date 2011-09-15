@@ -4,62 +4,128 @@ import java.util.LinkedHashMap;
 
 public class Configurable extends Hierarchical {
 
-	protected LinkedHashMap<String, Object> _params = new LinkedHashMap<String,Object>();
-	protected LinkedHashMap<String, PType> _types  = new LinkedHashMap<String,PType>();
+	protected LinkedHashMap<String, Parameter> _params = new LinkedHashMap<String,Parameter>();
+	
 	
 	public Configurable(String name){
 		this(name, null);
 	}
 	
+	
 	public Configurable(String name, Hierarchical parent){
 		super(name, parent);
 	}
 	
+	
+	public void addDefault(String name, Object value, String descr){
+		if (isSet(name)){
+			_params.remove(name);
+		}
+		_params.put(name, new DefaultParameter(name,value,descr));
+	}
+	
+	
 	public Object get(String name){
-		if (_params.containsKey(name)){
+		if (isSet(name)){
 			return _params.get(name);
 		} else
 			return null;
 	}
 	
+	
+	public void set(String name, Object value){
+		if (isSet(name))
+			_params.get(name).set(value);
+		else{
+			Parameter p = new Parameter(name, value);
+			_params.put(name,p);
+		}
+	}
+	
+	
+	public void unset(String name){
+		if (isSet(name)){
+			_params.remove(name);
+		}
+	}
+	
+	
 	public PType getType(String name){
-		return (_types.containsKey(name)) ? _types.get(name) : PType.NONE;
+		PType retval = PType.NONE;
+		Object val = _params.get(name).value();
+		if (isSet(name)){
+			if (val instanceof Integer)
+				retval = PType.INTEGER;
+			else if (val instanceof Double)
+				retval = PType.DOUBLE;
+			else if (val instanceof String)
+				retval = PType.STRING;
+		}
+		return retval;
+	}
+	
+	public Boolean isSet(String name){
+		return (_params.containsKey(name));
 	}
 	
 	public Integer I(String name){
-		return (_params.containsKey(name)) ? (Integer) _params.get(name) : null;
+		return (_params.containsKey(name)) ? (Integer) _params.get(name).value() : null;
 	}
 	
 	public Double D(String name){
-		return (_params.containsKey(name)) ? (Double) _params.get(name) : null;
+		return (_params.containsKey(name)) ? (Double) _params.get(name).value() : null;
 	}
 	
 	public String S(String name){
-		return (_params.containsKey(name)) ? (String) _params.get(name) : null;
+		return (_params.containsKey(name)) ? (String) _params.get(name).value() : null;
 	}
 	
-	public String toString(){
-		return toString(1);
+
+	
+	protected int getMaxName(){
+		int max = 0;
+		for (String s : _params.keySet())
+			max = (s.length() > max) ? s.length() : max;
+		return max;
+	}
+	
+
+	
+	protected Boolean isDefault(String name){
+		Boolean retval = false;
+		if ( isSet(name) && _params.get(name) instanceof DefaultParameter)
+			retval = true;
+		return retval;
 	}
 	
 	
 	public String toString(int level){
 		StringBuffer sb = new StringBuffer();
+		int comment_pad = 3;
+		int max_name = getMaxName();
+		
+		//Print the type and name of the configurable
 		for (int k=0; k<level; k++)
 			sb.append("   ");
 		sb.append(this.getClass().getSimpleName() + " " + getName() + ENDL);
+		
+		//Indent and print each paramter
 		for (String s : _params.keySet()){
+			StringBuffer pstring = new StringBuffer();
 			for (int k=0; k<level+1; k++)
-				sb.append("   ");
-			sb.append(s + " ");
-			switch (_types.get(s)){
-				case INTEGER: sb.append( (Integer) _params.get(s) + ENDL); break;
-				case DOUBLE:  sb.append( (Double)  _params.get(s) + ENDL); break;
-				case STRING:  sb.append( (String)  _params.get(s) + ENDL); break;
+				pstring.append("   ");
+			pstring.append(s + " ");
+			switch (getType(s)){
+				case INTEGER: sb.append( (Integer) _params.get(s).value()); break;
+				case DOUBLE:  sb.append( (Double)  _params.get(s).value()); break;
+				case STRING:  sb.append( (String)  _params.get(s).value()); break;
+				default: pstring.append( "null" );
 			}
+			pstring.append(ENDL);
+			sb.append(pstring);
 		}
 		for (Hierarchical h : _children.values())
-			h.toString(level+1);
+			sb.append(h.toString(level+1));
 		return sb.toString();
 	}
 	

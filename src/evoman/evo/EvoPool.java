@@ -21,9 +21,18 @@ public class EvoPool extends EMConfigurable {
 		super(name,parent);
 	}
 	
-	public void addEvoPool(String name, EvoPool ep){
+	public EvoPool(String name, EvoPool parent){
+		super(name,parent);
+	}
+	
+	public void addEvoPool(EvoPool ep){
 		_ep.put(ep.getName(), ep);
 		addChild(ep);
+	}
+	
+	public void moveTo(EvoPool ep){
+		super.moveTo(ep);
+		ep.addEvoPool(this);
 	}
 	
 	

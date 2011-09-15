@@ -15,6 +15,7 @@ public class EMConfigurable extends Configurable implements EvoState {
 	
 	public EMConfigurable(String name, Hierarchical parent){
 		super(name, parent);
+		addDefault("seed", (Integer) null, "The random number seed.");
 		if (parent instanceof EvoState)
 			_esparent = (EvoState) parent;
 	}
@@ -26,7 +27,7 @@ public class EMConfigurable extends Configurable implements EvoState {
 				_esparent.getRandom();
 			else{
 				if (_params.containsKey("seed"))
-					_rand = new MersenneTwisterFast((Integer) _params.get("seed"));
+					_rand = new MersenneTwisterFast((Integer) _params.get("seed").value());
 				else
 					_rand = new MersenneTwisterFast();
 			}
