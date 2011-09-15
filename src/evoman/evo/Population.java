@@ -2,12 +2,10 @@ package evoman.evo;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
-
-import evoman.tools.Configurable;
 import evoman.tools.Printable;
 
 
-public class Population extends Configurable implements Cloneable, Printable {
+public class Population extends EMHierarchical implements Cloneable, Printable {
 
 	protected LinkedHashMap<String,Genotype> _genotypes =
 			new LinkedHashMap<String,Genotype>();

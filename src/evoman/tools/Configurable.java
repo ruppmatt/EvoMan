@@ -101,8 +101,6 @@ public class Configurable extends Hierarchical {
 	
 	public String toString(int level){
 		StringBuffer sb = new StringBuffer();
-		int comment_pad = 3;
-		int max_name = getMaxName();
 		
 		//Print the type and name of the configurable
 		for (int k=0; k<level; k++)
@@ -116,9 +114,9 @@ public class Configurable extends Hierarchical {
 				pstring.append("   ");
 			pstring.append(s + " ");
 			switch (getType(s)){
-				case INTEGER: sb.append( (Integer) _params.get(s).value()); break;
-				case DOUBLE:  sb.append( (Double)  _params.get(s).value()); break;
-				case STRING:  sb.append( (String)  _params.get(s).value()); break;
+				case INTEGER: pstring.append( (Integer) _params.get(s).value()); break;
+				case DOUBLE:  pstring.append( (Double)  _params.get(s).value()); break;
+				case STRING:  pstring.append( (String)  _params.get(s).value()); break;
 				default: pstring.append( "null" );
 			}
 			pstring.append(ENDL);

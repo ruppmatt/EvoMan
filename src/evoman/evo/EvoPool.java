@@ -11,6 +11,7 @@ public class EvoPool extends EMConfigurable {
 	protected VariationManager _vm = null;
 	protected Population _pop = null;
 	LinkedHashMap<String,EvoPool> _ep = new LinkedHashMap<String,EvoPool>();
+	LinkedHashMap<String,SimulationManager> _sm = new LinkedHashMap<String,SimulationManager>();
 	EvoTypePrinter _printer = null;
 	
 	public EvoPool(String name){
@@ -25,14 +26,21 @@ public class EvoPool extends EMConfigurable {
 		super(name,parent);
 	}
 	
+	public void moveTo(EvoPool ep){
+		super.moveTo(ep);
+		ep.addEvoPool(this);
+	}
+	
+	
 	public void addEvoPool(EvoPool ep){
 		_ep.put(ep.getName(), ep);
 		addChild(ep);
 	}
 	
-	public void moveTo(EvoPool ep){
-		super.moveTo(ep);
-		ep.addEvoPool(this);
+	public void addSM(SimulationManager sm){
+		String name = sm.getName();
+		_sm.put(name,sm);
+		addChild(sm);
 	}
 	
 	

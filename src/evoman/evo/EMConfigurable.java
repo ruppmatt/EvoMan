@@ -15,7 +15,7 @@ public class EMConfigurable extends Configurable implements EvoState {
 	
 	public EMConfigurable(String name, Hierarchical parent){
 		super(name, parent);
-		addDefault("seed", (Integer) null, "The random number seed.");
+		addDefault("rand_seed", (Integer) null, "The random number seed.");
 		if (parent instanceof EvoState)
 			_esparent = (EvoState) parent;
 	}
@@ -38,5 +38,20 @@ public class EMConfigurable extends Configurable implements EvoState {
 	@Override
 	public EvoState getESParent() {
 		return _esparent;
+	}
+
+	@Override
+	public void notify(String msg) {
+		System.out.println(msg);
+	}
+
+	@Override
+	public void warn(String msg) {
+		System.out.println("Warning: " + msg);
+	}
+
+	@Override
+	public void fatal(String msg) {
+		System.out.println("Fatal error: " + msg);
 	}
 }

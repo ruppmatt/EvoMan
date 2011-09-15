@@ -33,4 +33,21 @@ public class EMHierarchical extends Hierarchical implements EvoState {
 	public EvoState getESParent() {
 		return _esparent;
 	}
+
+	@Override
+	public void notify(String msg) {
+		System.out.println(msg);
+	}
+
+	@Override
+	public void warn(String msg) {
+		System.out.println("Warning: " + msg);
+	}
+
+	@Override
+	public void fatal(String msg) {
+		System.out.println("Fatal error: " + msg);
+	}
+	
+	
 }
