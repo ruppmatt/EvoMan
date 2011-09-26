@@ -1,12 +1,12 @@
 package evoman.evo;
 
-import evoman.tools.Hierarchical;
-import evoman.tools.MersenneTwisterFast;
+import evoman.tools.*;
 
 public class EMHierarchical extends Hierarchical implements EvoState {
 
 	EvoState _esparent = null;
 	MersenneTwisterFast _rand = null;
+	Notifier _notifier = null;
 	
 	public EMHierarchical(String name){
 		this(name, null);
@@ -36,7 +36,14 @@ public class EMHierarchical extends Hierarchical implements EvoState {
 
 	@Override
 	public void notify(String msg) {
-		System.out.println(msg);
+		if (_notifier == null)
+			if (_esparent != null){
+				_esparent.notify(msg);
+				return;
+			} else{
+				_notifier = new Notifier();
+			}
+		_notifier.notify(msg);
 	}
 
 	@Override
