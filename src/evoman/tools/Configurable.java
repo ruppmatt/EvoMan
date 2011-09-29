@@ -2,21 +2,42 @@ package evoman.tools;
 
 import java.util.LinkedHashMap;
 
+/**
+ * 
+ * @author ruppmatt
+ *
+ *		A Configurable is an extension of the Hierarchical class.  It has configuration parameters associated with it.
+ */
+
 public class Configurable extends Hierarchical {
 
 	protected LinkedHashMap<String, Parameter> _params = new LinkedHashMap<String,Parameter>();
 	
-	
+
+	/**
+	 * Constuct a parentless Configurable
+	 * @param name
+	 */
 	public Configurable(String name){
 		this(name, null);
 	}
 	
 	
+	/**
+	 * Construct a Configurable with a particular parent
+	 * @param name
+	 * @param parent
+	 */
 	public Configurable(String name, Hierarchical parent){
 		super(name, parent);
 	}
 	
-	
+	/**
+	 * Add a default parameter to this Configurable
+	 * @param name
+	 * @param value
+	 * @param descr
+	 */
 	public void addDefault(String name, Object value, String descr){
 		if (isSet(name)){
 			_params.remove(name);
@@ -25,6 +46,11 @@ public class Configurable extends Hierarchical {
 	}
 	
 	
+	/**
+	 * Get a Parameter with a particular name (null if not set)
+	 * @param name
+	 * @return
+	 */
 	public Object get(String name){
 		if (isSet(name)){
 			return _params.get(name);
@@ -33,6 +59,11 @@ public class Configurable extends Hierarchical {
 	}
 	
 	
+	/**
+	 * Set a key/value Parameter
+	 * @param name
+	 * @param value
+	 */
 	public void set(String name, Object value){
 		if (isSet(name))
 			_params.get(name).set(value);
@@ -43,13 +74,21 @@ public class Configurable extends Hierarchical {
 	}
 	
 	
+	/**
+	 * Unset (remove) a parameter if it is present
+	 * @param name
+	 */
 	public void unset(String name){
 		if (isSet(name)){
 			_params.remove(name);
 		}
 	}
 	
-	
+	/**
+	 * Returns the type of the Parameter value
+	 * @param name
+	 * @return
+	 */
 	public PType getType(String name){
 		PType retval = PType.NONE;
 		Object val = _params.get(name).value();
@@ -64,24 +103,47 @@ public class Configurable extends Hierarchical {
 		return retval;
 	}
 	
+	/**
+	 * Returns true if a parameter with a particular name is set
+	 * @param name
+	 * @return
+	 */
 	public Boolean isSet(String name){
 		return (_params.containsKey(name));
 	}
 	
+	/**
+	 * Helper function to return a Parameter with a particular name to an Integer (or null if not present)
+	 * @param name
+	 * @return
+	 */
 	public Integer I(String name){
 		return (_params.containsKey(name)) ? (Integer) _params.get(name).value() : null;
 	}
 	
+	/**
+	 * Helper function to return a Parameter with a particular name to an Double (or null if not present)
+	 * @param name
+	 * @return
+	 */
 	public Double D(String name){
 		return (_params.containsKey(name)) ? (Double) _params.get(name).value() : null;
 	}
 	
+	/**
+	 * Helper function to return a Parameter with a particular name to an String (or null if not present)
+	 * @param name
+	 * @return
+	 */
 	public String S(String name){
 		return (_params.containsKey(name)) ? (String) _params.get(name).value() : null;
 	}
 	
 
-	
+	/**
+	 * Returns the length of the largest key
+	 * @return
+	 */
 	protected int getMaxName(){
 		int max = 0;
 		for (String s : _params.keySet())
@@ -90,7 +152,11 @@ public class Configurable extends Hierarchical {
 	}
 	
 
-	
+	/**
+	 * Returns true if the Paramter (if present) has a default value.
+	 * @param name
+	 * @return
+	 */
 	protected Boolean isDefault(String name){
 		Boolean retval = false;
 		if ( isSet(name) && _params.get(name) instanceof DefaultParameter)
@@ -99,6 +165,9 @@ public class Configurable extends Hierarchical {
 	}
 	
 	
+	/**
+	 * Converts this object to a string.
+	 */
 	public String toString(int level){
 		StringBuffer sb = new StringBuffer();
 		

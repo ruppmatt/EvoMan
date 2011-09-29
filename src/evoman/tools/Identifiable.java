@@ -1,5 +1,12 @@
 package evoman.tools;
 
+/**
+ * 
+ * @author ruppmatt
+ *	
+ *		Identifiables have a name.
+ */
+
 public class Identifiable {
 	protected final String _name;
 	

@@ -2,6 +2,13 @@ package evoman.evo;
 
 import evoman.tools.MersenneTwisterFast;
 
+
+/**
+ * 
+ * @author ruppmatt
+ *
+ *		EvoState objects share a particular state.
+ */
 public interface EvoState {
 	
 	public MersenneTwisterFast getRandom();

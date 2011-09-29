@@ -4,15 +4,30 @@ import evoman.tools.Configurable;
 import evoman.tools.Hierarchical;
 import evoman.tools.MersenneTwisterFast;
 
+/**
+ * 
+ * @author ruppmatt
+ *
+ *		EMConfigurables are Configurable/Hierarchical objects that share state information.
+ */
 public class EMConfigurable extends Configurable implements EvoState {
 
 	EvoState _esparent = null;
 	MersenneTwisterFast _rand = null;
 	
+	/**
+	 * Construct a parentless EMConfigurable
+	 * @param name
+	 */
 	public EMConfigurable(String name){
 		this(name, null);
 	}
 	
+	/**
+	 * Construct an EMConfigurable with a particular parent
+	 * @param name
+	 * @param parent
+	 */
 	public EMConfigurable(String name, Hierarchical parent){
 		super(name, parent);
 		addDefault("rand_seed", (Integer) null, "The random number seed.");

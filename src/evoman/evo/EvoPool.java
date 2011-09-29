@@ -6,7 +6,12 @@ import java.util.LinkedHashMap;
 import evoman.tools.Hierarchical;
 
 
-
+/**
+ * 
+ * @author ruppmatt
+ *
+ *		An EvoPool contains the tools to operate on both simulations and genetic representations.
+ */
 public class EvoPool extends EMConfigurable {
 
 	protected VariationManager _vm = null;
@@ -15,29 +20,55 @@ public class EvoPool extends EMConfigurable {
 	LinkedHashMap<String,SimulationManager> _sm = new LinkedHashMap<String,SimulationManager>();
 	EvoTypePrinter _printer = null;
 	
+	/**
+	 * Construct an EvoPool without a parent.
+	 * @param name
+	 */
 	public EvoPool(String name){
 		this(name, null);
 	}
 	
+	/**
+	 * Construct an EvoPool with a particular parent
+	 * @param name
+	 * @param parent
+	 */
 	public EvoPool(String name, Hierarchical parent){
 		super(name,parent);
 	}
 	
+	/**
+	 * Construct an EvoPool with a particular aprent
+	 * @param name
+	 * @param parent
+	 */
 	public EvoPool(String name, EvoPool parent){
 		super(name,parent);
 	}
 	
+	/**
+	 * Move this EvoPool to another parent
+	 * @param ep
+	 */
 	public void moveTo(EvoPool ep){
 		super.moveTo(ep);
 		ep.addEvoPool(this);
 	}
 	
 	
+	/**
+	 * Add a child EvoPool to this object
+	 * @param ep
+	 */
 	public void addEvoPool(EvoPool ep){
 		_ep.put(ep.getName(), ep);
 		addChild(ep);
 	}
 	
+	/**
+	 * Add a simulation manager to this object
+	 * @param sm
+	 */
 	public void addSM(SimulationManager sm){
 		String name = sm.getName();
 		_sm.put(name,sm);
@@ -45,6 +76,10 @@ public class EvoPool extends EMConfigurable {
 	}
 	
 	
+	/**
+	 * Add a variation manager to this object
+	 * @param vm
+	 */
 	public void addVM(VariationManager vm){
 		if (_vm != null)
 			removeChild(_vm);
@@ -52,22 +87,39 @@ public class EvoPool extends EMConfigurable {
 		addChild(_vm);
 	}
 	
+	/**
+	 * Get the variation manager associated with this EvoPool
+	 * @param vm
+	 * @return
+	 */
 	public VariationManager getVM(VariationManager vm){
 		return _vm;
 	}
 	
+	/**
+	 * Add a population to this EvoPool
+	 * @param p
+	 */
 	public void addPopulation(Population p){
 		if (_pop != null)
 			removeChild(_pop);
 		_pop = p;
 	}
 	
+	/**
+	 * Remove the population from this EvoPool (if present).
+	 * @param p
+	 */
 	public void removePopulation(Population p){
 		if (p == _pop)
 			_pop = null;
 		removeChild(_pop);
 	}
 	
+	/**
+	 * Get the EvoType printer for this EvoPool
+	 * @return
+	 */
 	public EvoTypePrinter getETPrinter(){
 		return _printer;
 	}
