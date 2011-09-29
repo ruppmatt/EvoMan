@@ -8,11 +8,13 @@ import evoman.tools.*;
  *
  *		An EMHierarchical object contains shared-state information.
  */
-public class EMHierarchical extends Hierarchical implements EvoState {
+public class EMHierarchical extends Hierarchical implements EMState {
 
-	EvoState _esparent = null;
+	EMState _emparent = null;
 	MersenneTwisterFast _rand = null;
 	Notifier _notifier = null;
+	int _running_threads = 0;
+	
 	
 	/**
 	 * Construct a parentless EMHierarchical
@@ -29,15 +31,15 @@ public class EMHierarchical extends Hierarchical implements EvoState {
 	 */
 	public EMHierarchical(String name, Hierarchical parent){
 		super(name, parent);
-		if (parent instanceof EvoState)
-			_esparent = (EvoState) parent;
+		if (parent instanceof EMState)
+			_emparent = (EMState) parent;
 	}
 
 	@Override
 	public MersenneTwisterFast getRandom() {
 		if ( _rand == null ){
-			if (_esparent != null)
-				_esparent.getRandom();
+			if (_emparent != null)
+				_emparent.getRandom();
 			else
 				_rand = new MersenneTwisterFast();
 		}
@@ -45,15 +47,15 @@ public class EMHierarchical extends Hierarchical implements EvoState {
 	}
 
 	@Override
-	public EvoState getESParent() {
-		return _esparent;
+	public EMState getESParent() {
+		return _emparent;
 	}
 
 	@Override
 	public void notify(String msg) {
 		if (_notifier == null)
-			if (_esparent != null){
-				_esparent.notify(msg);
+			if (_emparent != null){
+				_emparent.notify(msg);
 				return;
 			} else{
 				_notifier = new Notifier();
@@ -69,6 +71,45 @@ public class EMHierarchical extends Hierarchical implements EvoState {
 	@Override
 	public void fatal(String msg) {
 		System.out.println("Fatal error: " + msg);
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int getMaxThreads() {
+		return (_emparent != null) ?  _emparent.getMaxThreads() : EM_MAX_THREADS;
+	}
+
+	@Override
+	public synchronized int getRunningThreads() {
+		return _running_threads;
+	}
+
+	@Override
+	public synchronized int getAvailableThreads() {
+		return getMaxThreads() - _running_threads;
+	}
+
+	@Override
+	public synchronized void incThreadCount() {
+		_running_threads++;
+		if (_emparent != null) _emparent.incThreadCount();
+	}
+
+	@Override
+	public synchronized void decThreadCount() {
+		_running_threads--;
+		if (_emparent != null) _emparent.decThreadCount();
 	}
 	
 	
