@@ -11,6 +11,7 @@ public abstract class EvolutionOperator extends ConfigurableDANode implements EM
 	protected int _inputs = UNCONSTRAINED;
 	protected int _outputs = UNCONSTRAINED;
 	LinkedHashMap<EvolutionOperator,Population> _received = new LinkedHashMap<EvolutionOperator,Population>();
+
 	
 	
 	public EvolutionOperator(String name, EvolutionPipeline pipeline) {

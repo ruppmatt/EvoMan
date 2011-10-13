@@ -96,6 +96,11 @@ public class EvoPool extends EMConfigurableHNode {
 		return _vm;
 	}
 	
+	
+	public Population getPopulation(){
+		return _pop;
+	}
+	
 	/**
 	 * Add a population to this EvoPool
 	 * @param p

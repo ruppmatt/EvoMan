@@ -1,4 +1,4 @@
-package evoman.ecj;
+package evoman.bindings.ecj;
 
 import java.lang.reflect.*;
 

@@ -9,7 +9,8 @@ package evoman.evo;
  */
 public class VariationManager extends EMConfigurableHNode {
 
-	protected final EvoPool _ep;
+	protected EvoPool _ep = null;
+	protected EvolutionPipeline _evopipe = null;
 	
 	public VariationManager(String name, EvoPool parent){
 		super(name,parent);
@@ -20,4 +21,16 @@ public class VariationManager extends EMConfigurableHNode {
 	public void populate(){
 	}
 	
+	public void evolve(){
+		Population new_pop = _evopipe.process(_ep.getPopulation());
+		_ep.addPopulation(new_pop);
+	}
+	
+	public void addEP(EvolutionPipeline evopipe){
+		_evopipe = evopipe;
+	}
+	
+	public void removeEP(){
+		_evopipe = null;
+	}
 }

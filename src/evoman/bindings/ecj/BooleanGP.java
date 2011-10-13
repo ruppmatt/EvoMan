@@ -1,4 +1,4 @@
-package evoman.ecj;
+package evoman.bindings.ecj;
 
 import ec.gp.GPData;
 
