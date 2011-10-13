@@ -171,8 +171,4 @@ public class Pipeline extends DAGraph {
 	}
 }
 
-class DictionaryValueCompare implements Comparator<DANode>{
 
-	
-	
-}

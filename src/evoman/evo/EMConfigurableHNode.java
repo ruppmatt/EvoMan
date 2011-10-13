@@ -1,8 +1,6 @@
 package evoman.evo;
 
-import evoman.tools.ConfigurableHNode;
-import evoman.tools.HNode;
-import evoman.tools.MersenneTwisterFast;
+import evoman.tools.*;
 
 /**
  * 
@@ -46,8 +44,8 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 			if (_emparent != null)
 				_emparent.getRandom();
 			else{
-				if (_params.containsKey("seed"))
-					_rand = new MersenneTwisterFast((Integer) _params.get("seed").value());
+				if (_kv.isSet("seed"))
+					_rand = new MersenneTwisterFast(_kv.I("seed"));
 				else
 					_rand = new MersenneTwisterFast();
 			}
@@ -87,7 +85,7 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 	
 	@Override
 	public int getMaxThreads() {
-		if (_params.containsKey("max_threads")){
+		if (_kv.isSet("max_threads")){
 			return I("max_threads");
 		} else {
 			if (_emparent != null)

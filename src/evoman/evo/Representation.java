@@ -1,6 +1,6 @@
 package evoman.evo;
 
 public interface Representation {
-	public void inspect(EvoTypeInspector i);
+	public Object evaluate(Object o);
 	public String stringify(RepresentationPrinter p);
 }

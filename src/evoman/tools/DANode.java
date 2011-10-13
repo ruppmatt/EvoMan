@@ -22,9 +22,9 @@ public class DANode extends Identifiable {
 	
 	public Collection<DANode> connectedFrom(){
 		if (_graph != null){
-			return _graph.getConnectedFrom();
+			return _graph.getConnectedFrom(this);
 		} else {
-			return false;
+			return null;
 		}
 	}
 	

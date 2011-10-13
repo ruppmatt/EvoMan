@@ -25,7 +25,7 @@ public class DAGraph extends Identifiable{
 	public boolean add(DANode n){
 		if (!_nodes.contains(n)){
 			_nodes.add(n);
-			_visited.put(n,false);
+			_visited.put(n,UNVISITED);
 			_egress.put(n, new HashSet<DANode>());
 			return true;
 		} else{
