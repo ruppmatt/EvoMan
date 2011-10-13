@@ -8,7 +8,7 @@ package evoman.evo;
  *		A simulation manager controls the mapping of genetic representations to agents; executs simulations; and notifies EvoPools of
  * 		the results of the simulations (e.g. fitnesses).
  */
-public class SimulationManager extends EMConfigurable {
+public class SimulationManager extends EMConfigurableHNode {
 	
 	EvoPool _epool;
 	

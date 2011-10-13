@@ -8,12 +8,12 @@ import evoman.tools.Printable;
  *
  *	A genotype contains information about its EvoType
  */
-public class Genotype extends EMHierarchical implements Cloneable, Printable{
+public class Genotype extends EMHNode implements Cloneable, Printable{
 	
 	protected Population _pop;
 	protected final double _fitness = 0.0;
 	protected Boolean _evaluated = false;
-	protected final EvoType _rep;
+	protected final Representation _rep;
 	
 	/**
 	 * Construct a genotype belonging to a particular population and having a particular EvoType representation
@@ -21,7 +21,7 @@ public class Genotype extends EMHierarchical implements Cloneable, Printable{
 	 * @param p
 	 * @param rep
 	 */
-	public Genotype(String name, Population p, EvoType rep){
+	public Genotype(String name, Population p, Representation rep){
 		super(name, p);
 		_pop = p;
 		_rep = rep;
@@ -57,7 +57,7 @@ public class Genotype extends EMHierarchical implements Cloneable, Printable{
 	 * Return the EvoType representation
 	 * @return
 	 */
-	EvoType rep(){
+	Representation rep(){
 		return _rep;
 	}
 	

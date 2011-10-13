@@ -3,7 +3,7 @@ package evoman.evo;
 
 import java.util.LinkedHashMap;
 
-import evoman.tools.Hierarchical;
+import evoman.tools.HNode;
 
 
 /**
@@ -12,13 +12,13 @@ import evoman.tools.Hierarchical;
  *
  *		An EvoPool contains the tools to operate on both simulations and genetic representations.
  */
-public class EvoPool extends EMConfigurable {
+public class EvoPool extends EMConfigurableHNode {
 
 	protected VariationManager _vm = null;
 	protected Population _pop = null;
 	LinkedHashMap<String,EvoPool> _ep = new LinkedHashMap<String,EvoPool>();
 	LinkedHashMap<String,SimulationManager> _sm = new LinkedHashMap<String,SimulationManager>();
-	EvoTypePrinter _printer = null;
+	RepresentationPrinter _printer = null;
 	
 	/**
 	 * Construct an EvoPool without a parent.
@@ -33,7 +33,7 @@ public class EvoPool extends EMConfigurable {
 	 * @param name
 	 * @param parent
 	 */
-	public EvoPool(String name, Hierarchical parent){
+	public EvoPool(String name, HNode parent){
 		super(name,parent);
 	}
 	
@@ -120,7 +120,7 @@ public class EvoPool extends EMConfigurable {
 	 * Get the EvoType printer for this EvoPool
 	 * @return
 	 */
-	public EvoTypePrinter getETPrinter(){
+	public RepresentationPrinter getETPrinter(){
 		return _printer;
 	}
 }

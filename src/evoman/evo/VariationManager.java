@@ -7,7 +7,7 @@ package evoman.evo;
  *
  *	A variation manager provides mutations and fitness filters to create new populations.
  */
-public class VariationManager extends EMConfigurable {
+public class VariationManager extends EMConfigurableHNode {
 
 	protected final EvoPool _ep;
 	

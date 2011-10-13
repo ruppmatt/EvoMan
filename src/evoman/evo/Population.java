@@ -10,7 +10,7 @@ import evoman.tools.Printable;
  *
  *		A population is a collection of Genotypes
  */
-public class Population extends EMHierarchical implements Cloneable, Printable {
+public class Population extends EMHNode implements Cloneable, Printable {
 
 	protected LinkedHashMap<String,Genotype> _genotypes =
 			new LinkedHashMap<String,Genotype>();
@@ -77,7 +77,7 @@ public class Population extends EMHierarchical implements Cloneable, Printable {
 	 * Return the EvoType printer.
 	 * @return
 	 */
-	public EvoTypePrinter getETPrinter(){
+	public RepresentationPrinter getETPrinter(){
 		return (_ep != null) ? _ep.getETPrinter() : null;
 	}
 	

@@ -7,30 +7,30 @@ import java.util.LinkedHashMap;
  * 
  * @author ruppmatt
  *
- *		Hierarchical objects may have a single parent and may have multiple children. 
+ *		HNode objects may have a single parent and may have multiple children. 
  * 		They also have a local name and a full name (to place them in their hierarchy.
  */
 
-public class Hierarchical extends Identifiable implements Printable {
+public class HNode extends Identifiable implements Printable {
 	
-	protected Hierarchical _parent = null;
+	protected HNode _parent = null;
 	protected String       _full_name; 
-	protected LinkedHashMap<String, Hierarchical> _children = new LinkedHashMap<String,Hierarchical>();
+	protected LinkedHashMap<String, HNode> _children = new LinkedHashMap<String,HNode>();
 
 	/**
-	 * Construct a Hierarchical with no parent.
+	 * Construct a HNode with no parent.
 	 * @param name
 	 */
-	public Hierarchical(String name){
+	public HNode(String name){
 		this(name, null);
 	}
 	
 	/**
-	 * Construct a Hierarchical with a particular parent
+	 * Construct a HNode with a particular parent
 	 * @param name
 	 * @param parent
 	 */
-	public Hierarchical(String name, Hierarchical parent){
+	public HNode(String name, HNode parent){
 		super(name);
 		_parent = parent;
 		if (parent != null)
@@ -38,6 +38,7 @@ public class Hierarchical extends Identifiable implements Printable {
 		else
 			_full_name = name;
 	}
+	
 	
 	/**
 	 * Returns the full name (path) of the Hierarhcical
@@ -56,9 +57,9 @@ public class Hierarchical extends Identifiable implements Printable {
 	
 	/**
 	 * Add a child
-	 * @param child : Hierarchical
+	 * @param child : HNode
 	 */
-	public void addChild(Hierarchical child){
+	public void addChild(HNode child){
 		_children.put(child.getName(), child);
 	}
 	
@@ -66,7 +67,7 @@ public class Hierarchical extends Identifiable implements Printable {
 	 * Remove a child if present
 	 * @param child
 	 */
-	public void removeChild(Hierarchical child){
+	public void removeChild(HNode child){
 		String name = child.getName();
 		if (_children.containsKey(name))
 			_children.remove(name);
@@ -74,10 +75,10 @@ public class Hierarchical extends Identifiable implements Printable {
 	}
 	
 	/**
-	 * Move this object to another Hierarchical as a parent
+	 * Move this object to another HNode as a parent
 	 * @param parent
 	 */
-	public void moveTo(Hierarchical parent){
+	public void moveTo(HNode parent){
 		if (_parent != null)
 			_parent.removeChild(this);
 		_parent = parent;
@@ -89,7 +90,7 @@ public class Hierarchical extends Identifiable implements Printable {
 	 * @param name
 	 * @return
 	 */
-	public Hierarchical child(String name){
+	public HNode child(String name){
 		if ( _children.containsKey(name) ){
 			return _children.get(name);
 		} else {
@@ -110,7 +111,7 @@ public class Hierarchical extends Identifiable implements Printable {
 	 * Returns a this object's children
 	 * @return
 	 */
-	public Collection<Hierarchical> getChildren(){
+	public Collection<HNode> getChildren(){
 		return _children.values();
 	}
 	
@@ -118,7 +119,7 @@ public class Hierarchical extends Identifiable implements Printable {
 	 * Returns this object's parent
 	 * @return
 	 */
-	public Hierarchical parent(){
+	public HNode parent(){
 		return _parent;
 	}
 	
@@ -126,7 +127,7 @@ public class Hierarchical extends Identifiable implements Printable {
 	 * Returns the root of this Hierarchy
 	 * @return
 	 */
-	public Hierarchical root(){
+	public HNode root(){
 		if (_parent == null)
 			return this;
 		else
@@ -134,11 +135,11 @@ public class Hierarchical extends Identifiable implements Printable {
 	}
 	
 	/**
-	 * Resolve a name (beginning with the current node) to a Hierarchical object; null returned if not found
+	 * Resolve a name (beginning with the current node) to a HNode object; null returned if not found
 	 * @param name
 	 * @return
 	 */
-	public Hierarchical resolveName(String name){
+	public HNode resolveName(String name){
 		String prefix = namePrefix(name);	
 		if (prefix == null && _children.containsKey(name)){
 			return _children.get(name);
@@ -189,7 +190,7 @@ public class Hierarchical extends Identifiable implements Printable {
 			sb.append("   ");
 		}
 		sb.append(this.getClass().getSimpleName() + " " + getName() + " " + _children.size() + ENDL);
-		for (Hierarchical h : _children.values())
+		for (HNode h : _children.values())
 			sb.append(h.toString(level+1));
 		return sb.toString();
 	}

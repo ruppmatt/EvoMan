@@ -8,7 +8,7 @@ import evoman.tools.*;
  *
  *		An EMHierarchical object contains shared-state information.
  */
-public class EMHierarchical extends Hierarchical implements EMState {
+public class EMHNode extends HNode implements EMState {
 
 	EMState _emparent = null;
 	MersenneTwisterFast _rand = null;
@@ -20,7 +20,7 @@ public class EMHierarchical extends Hierarchical implements EMState {
 	 * Construct a parentless EMHierarchical
 	 * @param name
 	 */
-	public EMHierarchical(String name){
+	public EMHNode(String name){
 		this(name, null);
 	}
 	
@@ -29,7 +29,7 @@ public class EMHierarchical extends Hierarchical implements EMState {
 	 * @param name
 	 * @param parent
 	 */
-	public EMHierarchical(String name, Hierarchical parent){
+	public EMHNode(String name, HNode parent){
 		super(name, parent);
 		if (parent instanceof EMState)
 			_emparent = (EMState) parent;

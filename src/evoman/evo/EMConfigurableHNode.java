@@ -1,7 +1,7 @@
 package evoman.evo;
 
-import evoman.tools.Configurable;
-import evoman.tools.Hierarchical;
+import evoman.tools.ConfigurableHNode;
+import evoman.tools.HNode;
 import evoman.tools.MersenneTwisterFast;
 
 /**
@@ -10,7 +10,7 @@ import evoman.tools.MersenneTwisterFast;
  *
  *		EMConfigurables are Configurable/Hierarchical objects that share state information.
  */
-public class EMConfigurable extends Configurable implements EMState  {
+public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 
 	EMState _emparent = null;
 	MersenneTwisterFast _rand = null;
@@ -20,7 +20,7 @@ public class EMConfigurable extends Configurable implements EMState  {
 	 * Construct a parentless EMConfigurable
 	 * @param name
 	 */
-	public EMConfigurable(String name){
+	public EMConfigurableHNode(String name){
 		this(name, null);
 	}
 	
@@ -31,7 +31,7 @@ public class EMConfigurable extends Configurable implements EMState  {
 	 * @param name
 	 * @param parent
 	 */
-	public EMConfigurable(String name, Hierarchical parent){
+	public EMConfigurableHNode(String name, HNode parent){
 		super(name, parent);
 		addDefault("rand_seed", (Integer) null, "The random number seed.");
 		if (parent instanceof EMState)
