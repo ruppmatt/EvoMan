@@ -4,13 +4,14 @@ import java.util.*;
 
 public class KeyValueStore implements Configurable {
 
-	protected LinkedHashMap<String, Parameter> _params = new LinkedHashMap<String,Parameter>();
+	protected LinkedHashMap<String, Parameter> _lhm_params = new LinkedHashMap<String,Parameter>();
+	protected Map<String,Parameter> _params = Collections.synchronizedMap(_lhm_params);
 	
 	public KeyValueStore(){
 	}
 	
 	public LinkedHashMap<String,Parameter> getParams(){
-		return _params;
+		return _lhm_params;
 	}
 	
 	

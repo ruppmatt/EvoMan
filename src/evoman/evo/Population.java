@@ -16,6 +16,9 @@ public class Population extends EMHNode implements Cloneable, Printable {
 			new LinkedHashMap<String,Genotype>();
 	protected EvoPool _ep;
 	
+	public Population(){
+		this("Population");
+	}
 	
 	/**
 	 * Construct a Population without a parent
@@ -63,6 +66,10 @@ public class Population extends EMHNode implements Cloneable, Printable {
 	 */
 	public Genotype getGenotype(String name){
 		return (_genotypes.containsKey(name)) ? _genotypes.get(name) : null;
+	}
+	
+	public Collection<Genotype> getGenotypes(){
+		return _genotypes.values();
 	}
 	
 	/**

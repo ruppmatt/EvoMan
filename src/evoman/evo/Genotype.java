@@ -41,7 +41,7 @@ public class Genotype extends EMHNode implements Cloneable, Printable{
 	 * Return the fitness of this genotype
 	 * @return
 	 */
-	double getFitness(){
+	public double getFitness(){
 		return _fitness;
 	}
 	
@@ -49,7 +49,7 @@ public class Genotype extends EMHNode implements Cloneable, Printable{
 	 * Returns true if the genotype has been recently evaluated
 	 * @return
 	 */
-	Boolean evaluated(){
+	public Boolean evaluated(){
 		return _evaluated;
 	}
 	
@@ -57,7 +57,7 @@ public class Genotype extends EMHNode implements Cloneable, Printable{
 	 * Return the EvoType representation
 	 * @return
 	 */
-	Representation rep(){
+	public Representation rep(){
 		return _rep;
 	}
 	

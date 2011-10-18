@@ -10,7 +10,8 @@ public abstract class EvolutionOperator extends ConfigurableDANode implements EM
 	public static final int UNCONSTRAINED = -1;
 	protected int _inputs = UNCONSTRAINED;
 	protected int _outputs = UNCONSTRAINED;
-	LinkedHashMap<EvolutionOperator,Population> _received = new LinkedHashMap<EvolutionOperator,Population>();
+	
+	protected LinkedHashMap<EvolutionOperator,Population> _received = new LinkedHashMap<EvolutionOperator,Population>();
 
 	
 	
@@ -30,7 +31,7 @@ public abstract class EvolutionOperator extends ConfigurableDANode implements EM
 	
 	
 	public void receive(EvolutionOperator from, Population p){
-		_received.put(from,p);
+		_received.put(from,(Population) p.clone());
 	}
 	
 	public abstract void produce();

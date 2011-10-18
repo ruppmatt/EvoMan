@@ -49,10 +49,15 @@ public class EvolutionPipeline extends EMConfigurableHNode {
 	}
 	
 	public boolean isValid(){
+		int num_terminals = 0;
 		for (DANode n : _pipeline.getNodes()){
 			if ( ((EvolutionOperator) n).satisfied() == false )
 				return false;
+			if ( n instanceof EvolutionOperatorTerminus )
+				num_terminals++;
 		}
+		if (num_terminals != 1)
+			return false;
 		if (_pipeline.getTerm().size() != 1)
 			return false;
 		if ( !(_pipeline.getTerm().toArray()[0] instanceof EvolutionOperatorTerminus) )
@@ -71,8 +76,7 @@ public class EvolutionPipeline extends EMConfigurableHNode {
 			operator.produce();
 		}
 		return term.getPopulation();
-		
-		
 	}
+	
 	
 }

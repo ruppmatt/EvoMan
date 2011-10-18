@@ -1,7 +1,6 @@
 package evoman.tools;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * 
@@ -15,7 +14,8 @@ public class HNode extends Identifiable implements Printable {
 	
 	protected HNode _parent = null;
 	protected String       _full_name; 
-	protected LinkedHashMap<String, HNode> _children = new LinkedHashMap<String,HNode>();
+	protected LinkedHashMap<String, HNode> _lhm_children  = new LinkedHashMap<String,HNode>();
+	protected Map<String,HNode> _children = Collections.synchronizedMap(_lhm_children);
 
 	/**
 	 * Construct a HNode with no parent.

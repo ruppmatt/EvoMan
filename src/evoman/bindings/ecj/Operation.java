@@ -1,8 +1,8 @@
 package evoman.bindings.ecj;
 
-import ec.gp.*;
+import evoman.tools.dtype.*;
 
 public interface Operation {
-	public Object calculate(GPNode[] children);
+	public DType calculate(DType[] operands);
 	public String toString();
 }
