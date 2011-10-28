@@ -1,24 +1,25 @@
-package evoman.bindings.ecj.operators;
+package evoman.bindings.ecj.operations;
 
 import evoman.bindings.ecj.*;
 import evoman.tools.dtype.*;
 
-public class DoubleOpMultiply implements Operation {
+public class DoubleOpAdd implements Operation {
 
 	@Override
 	public DType calculate(DType[] operands) {
 		if (operands.length > 0){
-			double product = 1.0;
+			double sum = 0.0;
 			for (DType k : operands){
-				product *= k.asDouble();
+				sum += k.asDouble();
 			}
-			return new DoubleType(product);
-		} else
+			return new DoubleType(sum);
+		} else {
 			return new DoubleType(Double.NaN);
+		}
 	}
 	
 	public String toString(){
-		return "*";
+		return "+";
 	}
 
 }

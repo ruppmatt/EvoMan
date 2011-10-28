@@ -2,44 +2,19 @@ package evoman.evo;
 
 import evoman.tools.*;
 
-/**
- * 
- * @author ruppmatt
- *
- *		EMConfigurables are Configurable/Hierarchical objects that share state information.
- */
-public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
+public class EMConfigurableDANode extends ConfigurableDANode implements EMState {
 
 	protected EMState _emparent = null;
 	protected MersenneTwisterFast _rand = null;
 	protected Notifier _notifier = null;
 	protected EMThreader _threader = null;
+	protected boolean _initialized = false;
+	protected boolean _finished = false;
 	
-	
-	/**
-	 * Construct a parentless EMConfigurable
-	 * @param name
-	 */
-	public EMConfigurableHNode(String name){
-		this(name, null);
-	}
-	
-	
-	
-	/**
-	 * Construct an EMConfigurable with a particular parent
-	 * @param name
-	 * @param parent
-	 */
-	public EMConfigurableHNode(String name, HNode parent){
-		super(name, parent);
-		addDefault("rand_seed", (Integer) null, "The random number seed.");
-		if (parent instanceof EMState)
-			_emparent = (EMState) parent;
+	public EMConfigurableDANode(String name, DAGraph graph) {
+		super(name, graph);
 	}
 
-	
-	
 	@Override
 	public EMState getESParent() {
 		return _emparent;
@@ -48,18 +23,22 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 
 	@Override
 	public void init() {
-		for (HNode child : getChildren()){
-			if (child instanceof EMState){
-				((EMState) child).init();
+		if (_initialized == true)
+			return;
+		for (DANode next : connectedTo()){
+			if (next instanceof EMState){
+				((EMState) next).init();
 			}
 		}
 	}
 
 	@Override
 	public void finish() {
-		for (HNode child : getChildren()){
-			if (child instanceof EMState){
-				((EMState) child).finish();
+		if (_finished == true)
+			return;
+		for (DANode next : connectedTo()){
+			if (next instanceof EMState){
+				((EMState) next).finish();
 			}
 		}
 	}
@@ -108,4 +87,6 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 		}
 		return _notifier;
 	}
+	
+
 }

@@ -96,7 +96,7 @@ public class Population extends EMHNode implements Cloneable, Printable {
 		if (_ep != null)
 			_ep.removePopulation(this);
 		_ep = ep;
-		_ep.addPopulation(this);
+		_ep.setPopulation(this);
 	}
 	
 	/**

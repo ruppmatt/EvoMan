@@ -2,7 +2,7 @@ package evoman.evo;
 
 import java.util.concurrent.locks.*;
 
-import evoman.tools.MersenneTwisterFast;
+import evoman.tools.*;
 
 
 /**
@@ -19,26 +19,14 @@ public interface EMState {
 	 */
 	public EMState getESParent();
 	
-	public final int EM_MAX_THREADS = 1000;
-	
 	//Startup/Shutdown
 	public void init();
 	public void finish();
 	
-	//Stochasticity
+	//Utilities
 	public MersenneTwisterFast getRandom();
-	
-	//Output
-	public void notify(String msg);
-	public void warn(String msg);
-	public void fatal(String msg);
-	
-	//Threadding support
-	public int getMaxThreads();
-	public int getRunningThreads();
-	public int getAvailableThreads();
-	public void incThreadCount();
-	public void decThreadCount();
+	public EMThreader getThreader();
+	public Notifier getNotifier();
 
 	
 }

@@ -13,6 +13,8 @@ public class MethodHNode extends EMHNode {
 	LinkedHashMap<String,Method> _lhm_methods = new LinkedHashMap<String,Method>();
 	Map<String,Method> _methods = Collections.synchronizedMap(_lhm_methods);
 	MethodCache _cache = new MethodCache();
+	protected int _total_weight = 0;
+	protected int _node_weight = 0;
 	
 	public MethodHNode(String name){
 		this(name, null);
@@ -26,13 +28,21 @@ public class MethodHNode extends EMHNode {
 		String prefix = namePrefix(path);
 		String name = extractPrefix(path);
 		if (prefix == null){
+			if (_methods.containsKey(name)){
+				_total_weight++;
+				_node_weight++;
+			}
 			_methods.put(name, m);
 			return true;
 		} else {
 			if (!_children.containsKey(prefix)){
 				_children.put(prefix, new MethodHNode(prefix));
 			} 				
-			return ((MethodHNode) _children.get(prefix)).addMethod(name, m);
+			boolean added =  ((MethodHNode) _children.get(prefix)).addMethod(name, m);
+			if (added == true){
+				_total_weight++;
+			}
+			return added;
 		}
 	}
 	
@@ -43,14 +53,14 @@ public class MethodHNode extends EMHNode {
 			if (_methods.containsKey(name)){
 				return doMethod(_methods.get(name),o,args);
 			} else {
-				warn("Missing method: " + path);
+				getNotifier().warn("Missing method: " + path);
 				return null;
 			}
 		} else {
 			if (_children.containsKey(prefix)){
 				return ((MethodHNode) _children.get(prefix)).evaluate(name, o, args);
 			} else {
-				warn("Missing method: " + path);
+				getNotifier().warn("Missing method: " + path);
 				return null;
 			}
 		}
@@ -75,6 +85,25 @@ public class MethodHNode extends EMHNode {
 			}
 			return retval;
 		}	
+	}
+	
+	public String getRandomPath(){
+		String path = null;
+		int selection = getRandom().nextInt(_total_weight);
+		if (selection < _node_weight){
+			path = (String) _methods.keySet().toArray()[selection];
+		} else {
+			selection -= _node_weight;
+			for (HNode child : _children.values()){
+				MethodHNode node = (MethodHNode) child;
+				if (selection < node._node_weight){
+					path = node.getRandomPath();
+					break;
+				} 
+				selection -= node._node_weight;
+			}
+		}
+		return path;
 	}
 	
 	protected void resetCache(){

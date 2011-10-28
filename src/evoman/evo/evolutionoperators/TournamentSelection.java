@@ -5,7 +5,7 @@ import java.util.*;
 import evoman.evo.*;
 import evoman.tools.*;
 
-public class TournamentSelection extends EvolutionOperator {
+public class TournamentSelection extends GenericEvolutionOperator {
 	
 	public TournamentSelection(EvolutionPipeline ep){
 		this("TournamentSelection", ep);

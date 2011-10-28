@@ -1,25 +1,25 @@
-package evoman.bindings.ecj.operators;
+package evoman.bindings.ecj.operations;
 
 import evoman.bindings.ecj.*;
 import evoman.tools.dtype.*;
 
-public class BooleanOpOR implements Operation {
+public class BooleanOpAnd implements Operation{
 
 	@Override
 	public DType calculate(DType[] operands) {
 		if (operands.length == 0){
 			return new BooleanType(false);
 		} else {
-			Boolean retval = true;
+			Boolean result = true;
 			for (DType k : operands){
-				retval = retval || k.asBoolean();
+				result = result && k.asBoolean();
 			}
-			return new BooleanType(retval);
+			return new BooleanType(result);
 		}
 	}
 	
 	public String toString(){
-		return "||";
+		return "&&";
 	}
 
 }

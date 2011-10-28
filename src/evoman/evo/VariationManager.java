@@ -11,6 +11,7 @@ public class VariationManager extends EMConfigurableHNode {
 
 	protected EvoPool _ep = null;
 	protected EvolutionPipeline _evopipe = null;
+	protected int _total_genotypes = 0;
 	
 	public VariationManager(String name, EvoPool parent){
 		super(name,parent);
@@ -18,12 +19,10 @@ public class VariationManager extends EMConfigurableHNode {
 		addDefault("size", 0, "Default size of the population");
 	}
 	
-	public void populate(){
-	}
-	
+
 	public void evolve(){
 		Population new_pop = _evopipe.process(_ep.getPopulation());
-		_ep.addPopulation(new_pop);
+		_ep.setPopulation(new_pop);
 	}
 	
 	public void addEP(EvolutionPipeline evopipe){
@@ -32,5 +31,15 @@ public class VariationManager extends EMConfigurableHNode {
 	
 	public void removeEP(){
 		_evopipe = null;
+	}
+	
+	public Genotype makeGenotype(Representation r, Population p){
+		String id = String.format("%s-%d", getName(), _total_genotypes++);
+		Genotype g = new Genotype(id,p,r);
+		return g;
+	}
+	
+	public Population getPoolPopulation(){
+		return _ep.getPopulation();
 	}
 }

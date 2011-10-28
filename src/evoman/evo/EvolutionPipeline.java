@@ -32,19 +32,19 @@ public class EvolutionPipeline extends EMConfigurableHNode {
 		_vm.addEP(this);
 	}
 	
-	public boolean addOperator(EvolutionOperator o){
+	public boolean addOperator(DANode o){
 		return _pipeline.add(o);
 	}
 	
-	public boolean createFlow(EvolutionOperator from, EvolutionOperator to){
+	public boolean createFlow(DANode from, DANode to){
 		return _pipeline.connect(from, to);
 	}
 	
-	public boolean removeOperator(EvolutionOperator o){
+	public boolean removeOperator(DANode o){
 		return _pipeline.remove(o);
 	}
 	
-	public boolean destroyFlow(EvolutionOperator from, EvolutionOperator to){
+	public boolean destroyFlow(DANode from, DANode to){
 		return _pipeline.disconnect(from, to);
 	}
 	

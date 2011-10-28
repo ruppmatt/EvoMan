@@ -1,6 +1,6 @@
 package evoman.evo;
 
-public abstract class EvolutionOperatorTerminus extends EvolutionOperator {
+public abstract class EvolutionOperatorTerminus extends GenericEvolutionOperator {
 
 	Population _final_pop = null;
 	
@@ -9,7 +9,8 @@ public abstract class EvolutionOperatorTerminus extends EvolutionOperator {
 	}
 	
 	@Override
-	public abstract void produce();
+	public void produce(){
+	}
 
 	public Population getPopulation(){
 		return _final_pop;

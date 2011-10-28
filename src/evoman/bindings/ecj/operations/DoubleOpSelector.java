@@ -1,4 +1,4 @@
-package evoman.bindings.ecj.operators;
+package evoman.bindings.ecj.operations;
 
 import evoman.bindings.ecj.*;
 import evoman.tools.dtype.*;

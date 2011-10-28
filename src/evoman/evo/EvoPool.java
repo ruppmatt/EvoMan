@@ -69,7 +69,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * Add a simulation manager to this object
 	 * @param sm
 	 */
-	public void addSM(SimulationManager sm){
+	public void setSM(SimulationManager sm){
 		String name = sm.getName();
 		_sm.put(name,sm);
 		addChild(sm);
@@ -80,7 +80,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * Add a variation manager to this object
 	 * @param vm
 	 */
-	public void addVM(VariationManager vm){
+	public void setVM(VariationManager vm){
 		if (_vm != null)
 			removeChild(_vm);
 		_vm = vm;
@@ -105,7 +105,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * Add a population to this EvoPool
 	 * @param p
 	 */
-	public void addPopulation(Population p){
+	public void setPopulation(Population p){
 		if (_pop != null)
 			removeChild(_pop);
 		_pop = p;

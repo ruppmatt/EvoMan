@@ -29,16 +29,18 @@ public class TestSimternet {
 
 		
 		//Add VariationManagers
-		nsp_pricing.addVM(new VariationManager("VM-Pricing",nsp));
-		nsp_investment.addVM(new VariationManager("VM-Investment",nsp));
-		nsp_interconnect.addVM(new VariationManager("VM-Interconnect",nsp));
-		nsp_edgebackbone.addVM(new VariationManager("VM-EdgeBackbone",nsp));
-		((EvoPool) root.resolveName("asp.tree1")).addVM(new VariationManager("GP-Default",asp));
-		((EvoPool) root.resolveName("asp.tree2")).addVM(new VariationManager("GP-Default",asp));
+		nsp_pricing.setVM(new VariationManager("VM-Pricing",nsp));
+		nsp_investment.setVM(new VariationManager("VM-Investment",nsp));
+		nsp_interconnect.setVM(new VariationManager("VM-Interconnect",nsp));
+		nsp_edgebackbone.setVM(new VariationManager("VM-EdgeBackbone",nsp));
+		((EvoPool) root.resolveName("asp.tree1")).setVM(new VariationManager("GP-Default",asp));
+		((EvoPool) root.resolveName("asp.tree2")).setVM(new VariationManager("GP-Default",asp));
 		
 		//Add SimulationManager
-		root.addSM(new SimulationManager("SimternetManager", root));
-				
+		root.setSM(new SimulationManager("SimternetManager", root));
+		
+		root.init();
 		System.out.println(root.toString());
+		root.finish();
 	}
 }
