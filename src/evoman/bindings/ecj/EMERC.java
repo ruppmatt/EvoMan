@@ -1,5 +1,7 @@
 package evoman.bindings.ecj;
 
+import java.io.*;
+
 import ec.*;
 import ec.gp.*;
 import evoman.evo.*;
@@ -7,13 +9,9 @@ import evoman.evo.*;
 public class EMERC extends ERC {
 
 	private static final long serialVersionUID = 1L;
-	protected MethodHNode _method_dict = null;
 	protected String _method_path = null;
 	
-	public EMERC(MethodHNode dict){
-		_method_dict = dict;
-	}
-	
+
 	public String name(){
 		return _method_path;
 	}
@@ -24,19 +22,30 @@ public class EMERC extends ERC {
 	}
 	
 	public void mutateERC(EvolutionState state, int thread){
-		_method_path = _method_dict.getRandomPath();
+		MethodHNode method_dict = ((EMEvolutionState) state).getMethodDictionary();
+		_method_path = method_dict.getRandomPath();
 	}
 
 	@Override
 	public boolean nodeEquals(GPNode node) {
-		return (((EMERC) node)._method_path == _method_path) ? true : false;
+		return (node.getClass() == this.getClass() && 
+				( (EMERC) node)._method_path == _method_path);
+	}
+	
+	public void readNode(EvolutionState state, DataInput input) throws IOException {
+		_method_path = input.toString();
+	}
+	
+	public void writeNode(EvolutionState state, DataOutput output) throws IOException {
+		output.writeChars(_method_path);
 	}
 
 	@Override
 	public String encode() {
-		// TODO Auto-generated method stub
-		return null;
+		return _method_path;
 	}
+	
+	
 
 	@Override
 	public void eval(EvolutionState state, int thread, GPData input,

@@ -1,6 +1,7 @@
 package evoman.bindings.ecj;
 
 import ec.*;
+import evoman.evo.*;
 
 
 public class EMEvolutionState extends EvolutionState {
@@ -9,6 +10,8 @@ public class EMEvolutionState extends EvolutionState {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	MethodHNode _method_dictionary = null;
 	
 	public void startFresh(){
 		setup(this, null);
@@ -20,6 +23,14 @@ public class EMEvolutionState extends EvolutionState {
 	}
 	
 	public void finish(int result){
+	}
+
+	public void setMethodDictionary(MethodHNode dict) {
+		_method_dictionary = dict;
+	}
+	
+	public MethodHNode getMethodDictionary(){
+		return _method_dictionary;
 	}
 	
 

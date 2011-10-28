@@ -8,9 +8,14 @@ import evoman.evo.Population;
 public class GPVariationManager extends VariationManager{
 	
 	EMEvolutionState _ecj_state = null;
+	MethodHNode _method_dictionary = null;
 
 	public GPVariationManager(String name, EvoPool parent) {
 		super(name, parent);
+	}
+	
+	public void setDictionary(MethodHNode dict){
+		_method_dictionary = dict;
 	}
 	
 	
@@ -27,6 +32,7 @@ public class GPVariationManager extends VariationManager{
 		//Initalize EMEvolutionState
 		_ecj_state = (EMEvolutionState) Evolve.initialize(db,0);
 		_ecj_state.startFresh();
+		_ecj_state.setMethodDictionary(_method_dictionary);
 		
 		_ep.setPopulation(new Population());
 		//Retrieve population from ecj and copy to EM Population
