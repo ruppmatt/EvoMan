@@ -1,5 +1,7 @@
 package evoman.bindings.ecj;
 
+import java.util.*;
+
 import ec.*;
 import ec.util.*;
 import evoman.evo.*;
@@ -9,6 +11,7 @@ public class GPVariationManager extends VariationManager{
 	
 	EMEvolutionState _ecj_state = null;
 	MethodHNode _method_dictionary = null;
+	Set<String> _operator_paths = new HashSet<String>();
 
 	public GPVariationManager(String name, EvoPool parent) {
 		super(name, parent);
@@ -16,8 +19,12 @@ public class GPVariationManager extends VariationManager{
 	
 	public void setDictionary(MethodHNode dict){
 		_method_dictionary = dict;
+		_ecj_state.setMethodDictionary(dict);
 	}
 	
+	public void addOperator(String path){
+		_operator_paths.add(path);
+	}
 	
 	@Override
 	public void init(){
@@ -57,12 +64,22 @@ public class GPVariationManager extends VariationManager{
 		db.put("pop.subpop.0.size", S("size"));
 		db.put("pop.subpop.0.species.ind.numtrees", "1");
 		db.put("pop.subpop.0.species.ind.tree.0.tc", "TreeConstraints");
+		db.put("gp.type.a.size", 1);
+		db.put("gp.type.a.0.name", "DType");
 	}
 	
 	protected void setupTreeConstraints(ParameterDatabase db){
+		db.put("gp.tc.size", "1");
+		db.put("gp.tc.0.init", "ec.gp.koza.HalfBuilder");
+		db.put("gp.tc.0.name", "EvoManTC");
+		db.put("gp.tc.0.fset", "EvoManFS");
+		db.put("gp.tc.0.returns", "DType");
 	}
 	
 	protected void setupFunctionSet(ParameterDatabase db){
+		db.put("gp.fs.0", "ec.gp.GPFunctionSet");
+		db.put("gp.fs.0.size", "9");
+		db.put("gp.fs.0.name", "EvoManFS");
 	}
 
 }
