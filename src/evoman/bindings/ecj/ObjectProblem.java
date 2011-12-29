@@ -2,6 +2,7 @@ package evoman.bindings.ecj;
 
 import ec.*;
 import evoman.evo.*;
+import evoman.evo.structs.*;
 import evoman.tools.dtype.*;
 
 public class ObjectProblem extends Problem {
@@ -33,7 +34,7 @@ public class ObjectProblem extends Problem {
 		} else if (retval instanceof Double){
 			return new DoubleType((Double) retval);
 		} else if (retval instanceof String){
-			return new StringType((Double) retval);
+			return new StringType((String) retval);
 		} else{
 			return null;
 		}

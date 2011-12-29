@@ -1,11 +1,13 @@
 package evoman.bindings.ecj;
 
 import ec.*;
-import evoman.evo.*;
+import ec.util.*;
+import evoman.evo.structs.*;
 
 
 public class EMEvolutionState extends EvolutionState {
 
+	
 	/**
 	 * 
 	 */
@@ -13,8 +15,19 @@ public class EMEvolutionState extends EvolutionState {
 	
 	MethodHNode _method_dictionary = null;
 	
+	public void setup(){
+        Parameter p;
+
+        output = new Output(true);
+
+        /* Set up the singletons */
+        p=new Parameter(P_INITIALIZER);
+        initializer = (Initializer)
+            (parameters.getInstanceForParameter(p,null,Initializer.class));
+        initializer.setup(this,p);
+	}
+	
 	public void startFresh(){
-		setup(this, null);
 		population = initializer.initialPopulation(this, 0);
 	}
 	

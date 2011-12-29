@@ -4,7 +4,7 @@ import java.io.*;
 
 import ec.*;
 import ec.gp.*;
-import evoman.evo.*;
+import evoman.evo.structs.*;
 
 public class EMERC extends ERC {
 
@@ -13,7 +13,7 @@ public class EMERC extends ERC {
 	
 
 	public String name(){
-		return _method_path;
+		return _method_path == null ? "Unknown" : _method_path;
 	}
 	
 	@Override
@@ -45,6 +45,9 @@ public class EMERC extends ERC {
 		return _method_path;
 	}
 	
+	public String toString(){
+		return _method_path == null ? "Unknown" : _method_path;
+	}
 	
 
 	@Override

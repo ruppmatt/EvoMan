@@ -2,6 +2,8 @@ package evoman.bindings.ecj;
 
 import ec.gp.*;
 import evoman.evo.*;
+import evoman.evo.pop.*;
+import evoman.evo.structs.*;
 
 public class EMIndividual extends GPIndividual implements Representation{
 

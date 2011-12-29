@@ -31,13 +31,6 @@ public interface Configurable {
 	public void unset(String name);
 	
 	/**
-	 * Returns the type of the Parameter value
-	 * @param name
-	 * @return
-	 */
-	public PType getType(String name);
-	
-	/**
 	 * Returns true if a parameter with a particular name is set
 	 * @param name
 	 * @return

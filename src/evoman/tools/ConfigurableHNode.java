@@ -1,6 +1,5 @@
 package evoman.tools;
 
-import java.util.LinkedHashMap;
 
 /**
  * 
@@ -53,22 +52,19 @@ public class ConfigurableHNode extends HNode implements Configurable {
 		StringBuffer sb = new StringBuffer();
 		
 		//Print the type and name of the configurable
-		for (int k=0; k<level; k++)
-			sb.append("   ");
-		sb.append(this.getClass().getSimpleName() + " " + getName() + ENDL);
+		StringUtil.repeat(sb, "   ", level);
+		sb.append("[" + this.getClass().getSimpleName() + " " + getName() + "]"  + ENDL);
 		
-		//Indent and print each paramter
+		int max_name = getMaxName();
+		
+		//Indent and print each parameter
 		for (String s : _kv.getParams().keySet()){
 			StringBuffer pstring = new StringBuffer();
-			for (int k=0; k<level+1; k++)
-				pstring.append("   ");
-			pstring.append(s + " ");
-			switch (getType(s)){
-				case INTEGER: pstring.append( (Integer) _kv.getParams().get(s).value()); break;
-				case DOUBLE:  pstring.append( (Double)  _kv.getParams().get(s).value()); break;
-				case STRING:  pstring.append( (String)  _kv.getParams().get(s).value()); break;
-				default: pstring.append( "null" );
-			}
+			StringUtil.repeat(pstring, "   ", level+1);
+			pstring.append(s);
+			int delta = max_name - s.length();
+			StringUtil.repeat(pstring, " ", delta+1);
+			pstring.append("= " + get(s).toString());
 			pstring.append(ENDL);
 			sb.append(pstring);
 		}
@@ -102,10 +98,6 @@ public class ConfigurableHNode extends HNode implements Configurable {
 	}
 
 
-	@Override
-	public PType getType(String name) {
-		return _kv.getType(name);
-	}
 
 
 	@Override

@@ -48,20 +48,6 @@ public class KeyValueStore implements Configurable {
 		}
 	}
 
-	@Override
-	public PType getType(String name) {
-		PType retval = PType.NONE;
-		Object val = _params.get(name).value();
-		if (isSet(name)){
-			if (val instanceof Integer)
-				retval = PType.INTEGER;
-			else if (val instanceof Double)
-				retval = PType.DOUBLE;
-			else if (val instanceof String)
-				retval = PType.STRING;
-		}
-		return retval;
-	}
 
 	@Override
 	public Boolean isSet(String name) {
@@ -80,7 +66,7 @@ public class KeyValueStore implements Configurable {
 
 	@Override
 	public String S(String name) {
-		return (_params.containsKey(name)) ? (String) _params.get(name).value() : null;
+		return (_params.containsKey(name)) ? _params.get(name).value().toString() : null;
 	}
 
 	@Override

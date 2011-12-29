@@ -3,6 +3,8 @@ package evoman.evo.evolutionoperators;
 import java.util.*;
 
 import evoman.evo.*;
+import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 import evoman.tools.*;
 
 public class TournamentSelection extends GenericEvolutionOperator {

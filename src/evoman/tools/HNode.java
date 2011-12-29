@@ -189,7 +189,7 @@ public class HNode extends Identifiable implements Printable {
 		for (int k=0; k<level; k++){
 			sb.append("   ");
 		}
-		sb.append(this.getClass().getSimpleName() + " " + getName() + " " + _children.size() + ENDL);
+		sb.append("[" + this.getClass().getSimpleName() + " " + getName() + "]" + ENDL);
 		for (HNode h : _children.values())
 			sb.append(h.toString(level+1));
 		return sb.toString();
