@@ -1,12 +1,13 @@
 //Test
 package evoman.evo.structs;
 
-import java.util.LinkedHashMap;
+import java.util.*;
 
+import evoict.graphs.*;
 import evoman.evo.pop.*;
 import evoman.evo.sm.*;
 import evoman.evo.vm.*;
-import evoman.tools.HNode;
+
 
 
 /**

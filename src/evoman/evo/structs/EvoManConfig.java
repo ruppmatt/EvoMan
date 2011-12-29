@@ -1,6 +1,6 @@
 package evoman.evo.structs;
 
-import evoman.tools.*;
+import evoict.*;
 
 public class EvoManConfig implements Configurable{
 

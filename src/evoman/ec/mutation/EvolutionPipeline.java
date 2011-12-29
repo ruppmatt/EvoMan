@@ -2,10 +2,10 @@ package evoman.ec.mutation;
 
 import java.util.*;
 
+import evoict.graphs.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
-import evoman.tools.*;
 
 public class EvolutionPipeline extends EMConfigurableHNode {
 

@@ -1,6 +1,8 @@
 package evoman.evo.sm;
 
-import evoman.tools.*;
+import evoict.graphs.*;
+
+
 
 public class EntityPipeline extends Pipeline {
 

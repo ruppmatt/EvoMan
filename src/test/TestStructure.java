@@ -2,13 +2,12 @@ package test;
 
 import org.junit.*;
 
-import evoman.evo.*;
 import evoman.evo.structs.*;
 
 public class TestStructure {
 	
 	@Test
-	public void test(String[] args){
+	public void test(){
 		EvoPool root = new EvoPool("root");
 		
 		EvoPool asp = new EvoPool("asp",root);
@@ -27,17 +26,17 @@ public class TestStructure {
 		
 		//Add EvoPool by moving it from a parent-less state
 		EvoPool nsp_tree3 = new EvoPool("tree3",null);
-		nsp_tree3.moveTo( (EvoPool) root.resolveName("asp") );
+		nsp_tree3.moveTo( (EvoPool) root.resolve("asp") );
 		
 		//Add an EvoPool by moving it from another parent
 		asp.addEvoPool(new EvoPool("tree4",asp));
-		EvoPool tree = (EvoPool) root.resolveName("asp.tree4");
+		EvoPool tree = (EvoPool) root.resolve("asp.tree4");
 		tree.moveTo(nsp);
 		
 		//Add another EvoPool so there's not an empty asp subpool
 		asp.addEvoPool(new EvoPool("tree5",asp));
 		
-		asp.moveTo((EvoPool) root.resolveName("nsp"));
+		asp.moveTo((EvoPool) root.resolve("nsp"));
 		System.out.println(root.toString());
 		
 		asp.moveTo(root);

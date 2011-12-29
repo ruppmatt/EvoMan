@@ -1,5 +1,7 @@
 package evoman.evo.structs;
 
+import evoict.graphs.*;
+import evoict.io.*;
 import evoman.tools.*;
 
 public class EMConfigurableDANode extends ConfigurableDANode implements EMState {

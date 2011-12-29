@@ -3,9 +3,9 @@ package evoman.evo.pop;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
+import evoict.*;
 import evoman.evo.*;
 import evoman.evo.structs.*;
-import evoman.tools.Printable;
 
 /**
  * 

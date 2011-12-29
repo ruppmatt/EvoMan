@@ -4,9 +4,8 @@ package evoman.evo.structs;
 import java.lang.reflect.*;
 import java.util.*;
 
-import sun.reflect.generics.scope.*;
-
-import evoman.tools.*;
+import evoict.*;
+import evoict.graphs.*;
 
 public class MethodHNode extends EMHNode {
 
@@ -25,8 +24,8 @@ public class MethodHNode extends EMHNode {
 	}
 	
 	public boolean addMethod(String path, Method m){
-		String prefix = namePrefix(path);
-		String name = extractPrefix(path);
+		String prefix = Resolver.getPrefix(path);
+		String name = Resolver.extractPrefix(path);
 		if (prefix == null){
 			if (_methods.containsKey(name)){
 				_total_weight++;
@@ -47,8 +46,8 @@ public class MethodHNode extends EMHNode {
 	}
 	
 	public Object evaluate(String path, Object o, Object ... args ){
-		String prefix = namePrefix(path);
-		String name   = extractPrefix(path);
+		String prefix = Resolver.getPrefix(path);
+		String name   = Resolver.extractPrefix(path);
 		if (prefix == null){
 			if (_methods.containsKey(name)){
 				return doMethod(_methods.get(name),o,args);
