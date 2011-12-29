@@ -1,8 +1,7 @@
 package evoman.evo.pop;
 
-import evoman.evo.*;
 import evoman.evo.structs.*;
-import evoman.tools.Printable;
+import evoman.tools.*;
 
 /**
  * 
@@ -74,6 +73,6 @@ public class Genotype extends EMHNode implements Cloneable, Printable{
 	 * Print out this genotype.
 	 */
 	public String toString(){
-		return getFullName() + "< " + _rep.stringify(_pop.getETPrinter()) + " >";
+		return getFullName() + "< " + _rep.toString() + " >";
 	}
 }

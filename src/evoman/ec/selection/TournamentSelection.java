@@ -1,10 +1,9 @@
-package evoman.evo.evolutionoperators;
+package evoman.ec.selection;
 
 import java.util.*;
 
-import evoman.evo.*;
+import evoman.ec.mutation.*;
 import evoman.evo.pop.*;
-import evoman.evo.vm.*;
 import evoman.tools.*;
 
 public class TournamentSelection extends GenericEvolutionOperator {

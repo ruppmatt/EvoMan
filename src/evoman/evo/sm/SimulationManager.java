@@ -1,6 +1,5 @@
 package evoman.evo.sm;
 
-import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
@@ -20,5 +19,6 @@ public class SimulationManager extends EMConfigurableHNode {
 		_epool = parent;
 		addDefault("threads", 1, "Number of processing threads");
 	}
+
 
 }

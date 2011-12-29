@@ -1,5 +1,6 @@
 package evoman.evo.vm;
 
+import evoman.ec.mutation.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 

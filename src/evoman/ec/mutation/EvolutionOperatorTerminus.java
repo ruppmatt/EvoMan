@@ -1,4 +1,4 @@
-package evoman.evo.vm;
+package evoman.ec.mutation;
 
 import evoman.evo.*;
 import evoman.evo.pop.*;
