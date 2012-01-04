@@ -1,6 +1,6 @@
 package evoman.evo;
 
-import evoman.evo.io.*;
+import evoict.io.*;
 import evoman.evo.structs.*;
 
 public class EvoMan {
@@ -10,8 +10,8 @@ public class EvoMan {
 	protected Notifier    _notifier;
 	
 	public EvoMan(String[] args){
-		_fm = new FileManager(this);
-		_notifier = new Notifier(this);
+		_notifier = new Notifier();
+		_fm = new FileManager(_notifier, "output/");
 	}
 	
 	public void debug(String msg){

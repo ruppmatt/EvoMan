@@ -2,7 +2,7 @@ package evoman.evo.structs;
 
 import evoict.graphs.*;
 import evoict.io.*;
-import evoman.tools.*;
+import evoman.evo.*;
 
 /**
  * 

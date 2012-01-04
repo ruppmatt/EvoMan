@@ -1,21 +1,30 @@
 package evoman.evo.structs;
 
+
 import evoict.graphs.*;
 import evoict.io.*;
-import evoman.tools.*;
+import evoman.evo.*;
+
+
 
 public class EMConfigurableDANode extends ConfigurableDANode implements EMState {
 
-	protected EMState _emparent = null;
-	protected MersenneTwisterFast _rand = null;
-	protected Notifier _notifier = null;
-	protected EMThreader _threader = null;
-	protected boolean _initialized = false;
-	protected boolean _finished = false;
-	
-	public EMConfigurableDANode(String name, DAGraph graph) {
+	private static final long		serialVersionUID	= 1L;
+	protected EMState				_emparent			= null;
+	protected MersenneTwisterFast	_rand				= null;
+	protected Notifier				_notifier			= null;
+	protected EMThreader			_threader			= null;
+	protected boolean				_initialized		= false;
+	protected boolean				_finished			= false;
+
+
+
+	public EMConfigurableDANode(String name, DAGraph graph, EMState state) {
 		super(name, graph);
+		_emparent = state;
 	}
+
+
 
 	@Override
 	public EMState getESParent() {
@@ -23,34 +32,39 @@ public class EMConfigurableDANode extends ConfigurableDANode implements EMState 
 	}
 
 
+
 	@Override
 	public void init() {
 		if (_initialized == true)
 			return;
-		for (DANode next : connectedTo()){
-			if (next instanceof EMState){
+		for (DANode next : connectedTo()) {
+			if (next instanceof EMState) {
 				((EMState) next).init();
 			}
 		}
 	}
 
+
+
 	@Override
 	public void finish() {
 		if (_finished == true)
 			return;
-		for (DANode next : connectedTo()){
-			if (next instanceof EMState){
+		for (DANode next : connectedTo()) {
+			if (next instanceof EMState) {
 				((EMState) next).finish();
 			}
 		}
 	}
 
+
+
 	@Override
 	public MersenneTwisterFast getRandom() {
-		if ( _rand == null ){
+		if (_rand == null) {
 			if (_emparent != null)
 				_emparent.getRandom();
-			else{
+			else {
 				if (_kv.isSet("seed"))
 					_rand = new MersenneTwisterFast(_kv.I("seed"));
 				else
@@ -61,16 +75,17 @@ public class EMConfigurableDANode extends ConfigurableDANode implements EMState 
 	}
 
 
+
 	@Override
 	public EMThreader getThreader() {
-		if ( _threader == null ){
+		if (_threader == null) {
 			if (_emparent != null)
 				_emparent.getThreader();
-			else{
+			else {
 				if (_kv.isSet("max_threads"))
-					_threader = new EMThreader(this,I("max_threads"));
+					_threader = new EMThreader(this, I("max_threads"));
 				else
-					_threader = new EMThreader(this,1);
+					_threader = new EMThreader(this, 1);
 			}
 		}
 		return _threader;
@@ -80,15 +95,14 @@ public class EMConfigurableDANode extends ConfigurableDANode implements EMState 
 
 	@Override
 	public Notifier getNotifier() {
-		if ( _notifier == null ){
+		if (_notifier == null) {
 			if (_emparent != null)
 				_emparent.getThreader();
-			else{
+			else {
 				_notifier = new Notifier();
 			}
 		}
 		return _notifier;
 	}
-	
 
 }

@@ -1,77 +1,90 @@
 package evoman.evo.structs;
 
+
 import evoict.graphs.*;
 import evoict.io.*;
-import evoman.tools.*;
+import evoman.evo.*;
+
+
 
 /**
  * 
  * @author ruppmatt
- *
- *		EMConfigurables are Configurable/Hierarchical objects that share state information.
+ * 
+ *         EMConfigurables are Configurable/Hierarchical objects that share
+ *         state information.
  */
-public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
+public class EMConfigurableHNode extends ConfigurableHNode implements EMState {
 
-	protected EMState _emparent = null;
-	protected MersenneTwisterFast _rand = null;
-	protected Notifier _notifier = null;
-	protected EMThreader _threader = null;
-	
-	
+	private static final long		serialVersionUID	= 1L;
+	protected EMState				_emparent			= null;
+	protected MersenneTwisterFast	_rand				= null;
+	protected Notifier				_notifier			= null;
+	protected EMThreader			_threader			= null;
+
+
+
 	/**
 	 * Construct a parentless EMConfigurable
+	 * 
 	 * @param name
 	 */
-	public EMConfigurableHNode(String name){
+	public EMConfigurableHNode(String name) {
 		this(name, null);
 	}
-	
-	
-	
+
+
+
 	/**
 	 * Construct an EMConfigurable with a particular parent
+	 * 
 	 * @param name
 	 * @param parent
 	 */
-	public EMConfigurableHNode(String name, HNode parent){
+	public EMConfigurableHNode(String name, HNode parent) {
 		super(name, parent);
 		addDefault("rand_seed", (Integer) null, "The random number seed.");
 		if (parent instanceof EMState)
 			_emparent = (EMState) parent;
 	}
 
-	
-	
+
+
 	@Override
 	public EMState getESParent() {
 		return _emparent;
 	}
 
 
+
 	@Override
 	public void init() {
-		for (HNode child : getChildren()){
-			if (child instanceof EMState){
+		for (HNode child : getChildren()) {
+			if (child instanceof EMState) {
 				((EMState) child).init();
 			}
 		}
 	}
 
+
+
 	@Override
 	public void finish() {
-		for (HNode child : getChildren()){
-			if (child instanceof EMState){
+		for (HNode child : getChildren()) {
+			if (child instanceof EMState) {
 				((EMState) child).finish();
 			}
 		}
 	}
 
+
+
 	@Override
 	public MersenneTwisterFast getRandom() {
-		if ( _rand == null ){
+		if (_rand == null) {
 			if (_emparent != null)
 				_emparent.getRandom();
-			else{
+			else {
 				if (_kv.isSet("seed"))
 					_rand = new MersenneTwisterFast(_kv.I("seed"));
 				else
@@ -82,16 +95,17 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 	}
 
 
+
 	@Override
 	public EMThreader getThreader() {
-		if ( _threader == null ){
+		if (_threader == null) {
 			if (_emparent != null)
 				_emparent.getThreader();
-			else{
+			else {
 				if (_kv.isSet("max_threads"))
-					_threader = new EMThreader(this,I("max_threads"));
+					_threader = new EMThreader(this, I("max_threads"));
 				else
-					_threader = new EMThreader(this,1);
+					_threader = new EMThreader(this, 1);
 			}
 		}
 		return _threader;
@@ -101,10 +115,10 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState  {
 
 	@Override
 	public Notifier getNotifier() {
-		if ( _notifier == null ){
+		if (_notifier == null) {
 			if (_emparent != null)
 				_emparent.getThreader();
-			else{
+			else {
 				_notifier = new Notifier();
 			}
 		}

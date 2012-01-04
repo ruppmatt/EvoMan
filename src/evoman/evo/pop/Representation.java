@@ -1,9 +1,22 @@
 package evoman.evo.pop;
 
-import evoman.evo.structs.*;
+import java.io.*;
+
 
 public interface Representation {
-	public Object evaluate(Object o);
-	public MethodHNode getDictionary();
-	public void setDictionary();
+
+	public Object eval(Object o);
+
+
+
+	@Override
+	public String toString();
+
+
+
+	public String lastEval();
+
+
+
+	public void serializeRepresentation(ObjectOutputStream out) throws IOException;
 }

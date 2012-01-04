@@ -1,10 +1,7 @@
 package evoman.ec.mutation;
 
-import java.util.*;
-
 import evoman.evo.*;
 import evoman.evo.pop.*;
-import evoman.tools.*;
 
 public interface EvolutionOperator extends Constants {
 

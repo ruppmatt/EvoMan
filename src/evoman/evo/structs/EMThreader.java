@@ -1,6 +1,6 @@
 package evoman.evo.structs;
 
-import evoman.tools.Constants;
+import evoman.evo.*;
 
 public class EMThreader implements Constants{
 	protected int _running_threads = 0;

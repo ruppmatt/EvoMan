@@ -2,7 +2,7 @@ package evoman.evo.pop;
 
 import evoict.*;
 import evoman.evo.structs.*;
-import evoman.tools.*;
+
 
 /**
  * 

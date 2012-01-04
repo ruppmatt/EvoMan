@@ -5,22 +5,22 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import evoict.*;
-import evoict.graphs.*;
+import evoict.io.*;
+import evoman.evo.*;
 
-public class MethodHNode extends EMHNode {
+public class MethodHNode implements EMState {
 
 	LinkedHashMap<String,Method> _lhm_methods = new LinkedHashMap<String,Method>();
 	Map<String,Method> _methods = Collections.synchronizedMap(_lhm_methods);
+	LinkedHashMap<String,MethodHNode> _children = new LinkedHashMap<String,MethodHNode>();
 	MethodCache _cache = new MethodCache();
 	protected int _total_weight = 0;
 	protected int _node_weight = 0;
+	EMState _parent;
 	
-	public MethodHNode(String name){
-		this(name, null);
-	}
 	
-	public MethodHNode(String name, HNode parent) {
-		super(name, parent);
+	public MethodHNode(EMState parent){
+		_parent = parent;
 	}
 	
 	public boolean addMethod(String path, Method m){
@@ -35,7 +35,7 @@ public class MethodHNode extends EMHNode {
 			return true;
 		} else {
 			if (!_children.containsKey(prefix)){
-				_children.put(prefix, new MethodHNode(prefix));
+				_children.put(prefix, new MethodHNode(this));
 			} 				
 			boolean added =  ((MethodHNode) _children.get(prefix)).addMethod(name, m);
 			if (added == true){
@@ -93,13 +93,12 @@ public class MethodHNode extends EMHNode {
 			path = (String) _methods.keySet().toArray()[selection];
 		} else {
 			selection -= _node_weight;
-			for (HNode child : _children.values()){
-				MethodHNode node = (MethodHNode) child;
-				if (selection < node._node_weight){
-					path = node.getRandomPath();
+			for (MethodHNode child : _children.values()){
+				if (selection < child._node_weight){
+					path = child.getRandomPath();
 					break;
 				} 
-				selection -= node._node_weight;
+				selection -= child._node_weight;
 			}
 		}
 		return path;
@@ -107,11 +106,44 @@ public class MethodHNode extends EMHNode {
 	
 	protected void resetCache(){
 		_cache.reset();
-		for (HNode c : _children.values()){
-			if (c instanceof MethodHNode){
-				((MethodHNode) c).resetCache();
-			}
+		for (MethodHNode c : _children.values()){
+				c.resetCache();
 		}
+	}
+
+	@Override
+	public EMState getESParent() {
+		return _parent;
+	}
+
+	@Override
+	public void init() {
+	}
+
+	@Override
+	public void finish() {
+	}
+
+	@Override
+	public MersenneTwisterFast getRandom() {
+		return _parent.getRandom();
+	}
+
+	@Override
+	public EMThreader getThreader() {
+		return _parent.getThreader();
+	}
+
+	@Override
+	public Notifier getNotifier() {
+		return _parent.getNotifier();
+	}
+	
+	public String toString(){
+		StringBuffer buf = new StringBuffer();
+		//ToDo
+		return buf.toString();
+		
 	}
 
 }
