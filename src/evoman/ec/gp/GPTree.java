@@ -18,7 +18,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	private static final long	serialVersionUID	= 1L;
 	protected GPNode			_root				= null;
-	protected GPNodeClassList	_node_classes;
+	protected GPNodeDirectory	_node_classes;
 	protected ArrayList<GPNode>	_mutable_nodes		= new ArrayList<GPNode>();
 	protected GPTreeInitializer	_init				= null;
 	protected EMState			_state;
@@ -26,8 +26,8 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
-	public GPTree(EMState state, GPTreeInitializer init, GPNodeClassList nodes) {
-		_node_classes = new GPNodeClassList(state);
+	public GPTree(EMState state, GPTreeInitializer init, GPNodeDirectory nodes) {
+		_node_classes = new GPNodeDirectory(state);
 		_state = state;
 		_init = init;
 		_node_classes = nodes;

@@ -23,7 +23,7 @@ public class TestFullTree {
 		init_conf.set("depth", 2);
 		GPFullTree init = new GPFullTree(root, init_conf);
 
-		GPNodeClassList nodes = new GPNodeClassList(root);
+		GPNodeDirectory nodes = new GPNodeDirectory(root);
 
 		GPNodeConfig constOne = new GPNodeConfig(GPNodeDoubleConst.class);
 		constOne.set("value", 1.0);

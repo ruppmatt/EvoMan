@@ -10,7 +10,7 @@ import evoman.evo.structs.*;
 
 
 
-public class GPNodeClassList implements EMState {
+public class GPNodeDirectory implements EMState {
 
 	EMState										_parent;
 
@@ -23,7 +23,7 @@ public class GPNodeClassList implements EMState {
 
 
 
-	public GPNodeClassList(EMState parent) {
+	public GPNodeDirectory(EMState parent) {
 		_parent = parent;
 	}
 
