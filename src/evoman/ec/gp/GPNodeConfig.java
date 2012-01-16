@@ -10,6 +10,7 @@ public class GPNodeConfig extends KeyValueStore {
 	private static final long			serialVersionUID	= 1L;
 	protected GPNodeConstraints			_constraints;
 	protected Class<? extends GPNode>	_class;
+	protected String					_name;
 
 
 
@@ -30,4 +31,5 @@ public class GPNodeConfig extends KeyValueStore {
 	public GPNodeConstraints getConstraints() {
 		return _constraints;
 	}
+
 }

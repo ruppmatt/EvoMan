@@ -89,7 +89,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	public GPNode createNode(GPNode parent, GPNodeConfig conf) {
 		try {
-			int depth = (parent == null) ? -1 : parent.getDepth();
+			int depth = (parent == null) ? -1 : parent.getPosition().getDepth();
 			Constructor<? extends GPNode> construct =
 					conf.getNodeClass().getConstructor(GPTree.class, GPNodeConfig.class, int.class);
 			GPNode new_node = construct.newInstance(this, conf, depth + 1);
@@ -155,25 +155,6 @@ public class GPTree implements Representation, EMState, Serializable {
 	@Override
 	public Notifier getNotifier() {
 		return _state.getNotifier();
-	}
-
-}
-
-
-
-class NodeComparator implements Comparator<GPNode> {
-
-	@Override
-	public int compare(GPNode lhs, GPNode rhs) {
-		int l = lhs.getDepth();
-		int r = rhs.getDepth();
-		if (l > r) {
-			return 1;
-		} else if (l < r) {
-			return -1;
-		} else {
-			return 0;
-		}
 	}
 
 }

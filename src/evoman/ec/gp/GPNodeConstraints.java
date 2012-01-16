@@ -1,11 +1,16 @@
 package evoman.ec.gp;
 
 
+import java.io.*;
 import java.util.*;
 
 
 
-public class GPNodeConstraints {
+public class GPNodeConstraints implements Serializable {
+
+	private static final long	serialVersionUID	= 1L;
+
+
 
 	public static ArrayList<Class<?>> fromArray(Class<?>[] arr) {
 		ArrayList<Class<?>> retval = new ArrayList<Class<?>>();
@@ -37,7 +42,6 @@ public class GPNodeConstraints {
 	public GPNodeConstraints(GPNodeDescriptor desc) {
 		_return_type = desc.return_type();
 		_child_types = fromArray(desc.child_types());
-		_mutable = desc.mutable();
 	}
 
 

@@ -14,16 +14,14 @@ public abstract class GPNode implements Constants, Serializable {
 	protected GPTree			_tree;
 	protected ArrayList<GPNode>	_children			= new ArrayList<GPNode>();
 	protected GPNodeConfig		_conf;
-	protected int				_depth;
-	protected boolean			_evaluated;
+	protected GPNodePos			_pos;
 
 
 
-	public GPNode(GPTree t, GPNodeConfig conf, int depth) {
+	public GPNode(GPTree t, GPNodeConfig conf, GPNodePos pos) {
 		_tree = t;
-		_depth = depth;
+		_pos = pos;
 		_conf = conf;
-		_evaluated = false;
 	}
 
 
@@ -44,8 +42,8 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
-	public int getDepth() {
-		return _depth;
+	public GPNodePos getPosition() {
+		return _pos;
 	}
 
 
@@ -85,10 +83,6 @@ public abstract class GPNode implements Constants, Serializable {
 		buf.append(value);
 		return buf.toString();
 	}
-
-
-
-	public abstract void mutate();
 
 
 

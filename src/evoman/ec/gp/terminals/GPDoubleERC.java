@@ -6,7 +6,7 @@ import evoman.ec.gp.*;
 
 
 @GPNodeDescriptor(name = "ERC", return_type = Double.class, child_types = {})
-public class GPDoubleERC extends GPNode {
+public class GPDoubleERC extends GPMutableNode {
 
 	private static final long	serialVersionUID	= 1L;
 	Double						_min;
@@ -25,8 +25,8 @@ public class GPDoubleERC extends GPNode {
 
 
 
-	public GPDoubleERC(GPTree t, GPNodeConfig conf, int depth) {
-		super(t, conf, depth);
+	public GPDoubleERC(GPTree t, GPNodeConfig conf, GPNodePos pos) {
+		super(t, conf, pos);
 		_min = conf.D("min");
 		_max = conf.D("max");
 		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
@@ -37,7 +37,6 @@ public class GPDoubleERC extends GPNode {
 	@Override
 	public Object eval(Object context) {
 		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
-		_evaluated = true;
 		return _value;
 	}
 

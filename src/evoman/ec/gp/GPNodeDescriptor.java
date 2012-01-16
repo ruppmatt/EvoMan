@@ -16,9 +16,6 @@ public @interface GPNodeDescriptor {
 
 
 
-	Class<?>[] child_types() default {};
+	Class<?>[] child_types();
 
-
-
-	boolean mutable() default false;
 }

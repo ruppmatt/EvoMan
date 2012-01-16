@@ -34,7 +34,7 @@ public class GPFullTree extends GPTreeInitializer {
 
 	@Override
 	public boolean createTerminal(GPTree t, GPNode n, Class<?> cl) {
-		int depth = (n == null) ? -1 : n.getDepth();
+		int depth = (n == null) ? -1 : n.getPosition().getDepth();
 		if (depth == _max_depth - 1) {
 			return true;
 		} else {

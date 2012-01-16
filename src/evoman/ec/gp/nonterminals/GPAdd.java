@@ -13,8 +13,8 @@ public class GPAdd extends GPNode {
 
 
 
-	public GPAdd(GPTree t, GPNodeConfig conf, int depth) {
-		super(t, conf, depth);
+	public GPAdd(GPTree t, GPNodeConfig conf, GPNodePos pos) {
+		super(t, conf, pos);
 		_last = Double.NaN;
 	}
 
@@ -49,12 +49,6 @@ public class GPAdd extends GPNode {
 	@Override
 	public String lastEval() {
 		return super.lastEval("+<" + _last.toString() + ">");
-	}
-
-
-
-	@Override
-	public void mutate() {
 	}
 
 }

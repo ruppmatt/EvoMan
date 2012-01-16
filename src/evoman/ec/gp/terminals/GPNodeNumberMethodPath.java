@@ -6,8 +6,8 @@ import evoman.evo.structs.*;
 
 
 
-@GPNodeDescriptor(name = "MethodPathToNumber", return_type = Double.class, child_types = {}, mutable = true)
-public class GPNodeNumberMethodPath extends GPNode {
+@GPNodeDescriptor(name = "MethodPathToNumber", return_type = Double.class, child_types = {})
+public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	private static final long	serialVersionUID	= 1L;
 	protected MethodDictionary	_dict;
@@ -26,8 +26,8 @@ public class GPNodeNumberMethodPath extends GPNode {
 
 
 
-	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, int depth) {
-		super(t, conf, depth);
+	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNodePos pos) {
+		super(t, conf, pos);
 		_path = _dict.getRandomPath();
 		_dict = (MethodDictionary) conf.get("dict");
 		init();
@@ -39,7 +39,6 @@ public class GPNodeNumberMethodPath extends GPNode {
 	public Object eval(Object entity) {
 		Number retrieved = (Number) _dict.evaluate(_path, entity);
 		_value = retrieved.doubleValue();
-		_evaluated = true;
 		return _value;
 	}
 

@@ -5,7 +5,7 @@ import evoman.ec.gp.*;
 
 
 
-@GPNodeDescriptor(name = "GPNodeDoubleConst", return_type = Double.class, mutable = false)
+@GPNodeDescriptor(name = "GPNodeDoubleConst", return_type = Double.class, child_types = {})
 public class GPNodeDoubleConst extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
@@ -23,8 +23,8 @@ public class GPNodeDoubleConst extends GPNode {
 
 
 
-	public GPNodeDoubleConst(GPTree t, GPNodeConfig conf, int depth) {
-		super(t, conf, depth);
+	public GPNodeDoubleConst(GPTree t, GPNodeConfig conf, GPNodePos pos) {
+		super(t, conf, pos);
 		_value = conf.D("value");
 	}
 
@@ -47,12 +47,6 @@ public class GPNodeDoubleConst extends GPNode {
 	@Override
 	public String lastEval() {
 		return super.lastEval(_value.toString());
-	}
-
-
-
-	@Override
-	public void mutate() {
 	}
 
 
