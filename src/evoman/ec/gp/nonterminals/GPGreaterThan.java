@@ -13,8 +13,8 @@ public class GPGreaterThan extends GPNode {
 
 
 
-	public GPGreaterThan(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPGreaterThan(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 	}
 
 
@@ -46,6 +46,15 @@ public class GPGreaterThan extends GPNode {
 	@Override
 	public String toString() {
 		return super.toString("GREATER");
+	}
+
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPGreaterThan n = new GPGreaterThan(t, _conf, parent, _pos);
+		doClone(t, n);
+		return n;
 	}
 
 }

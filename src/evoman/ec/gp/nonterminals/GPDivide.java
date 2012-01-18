@@ -13,8 +13,8 @@ public class GPDivide extends GPNode {
 
 
 
-	public GPDivide(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPDivide(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 	}
 
 
@@ -53,6 +53,15 @@ public class GPDivide extends GPNode {
 	public String toString() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPDivide n = new GPDivide(t, _conf, parent, _pos);
+		doClone(t, n);
+		return n;
 	}
 
 }

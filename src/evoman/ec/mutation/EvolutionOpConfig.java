@@ -1,6 +1,7 @@
 package evoman.ec.mutation;
 
 
+import java.lang.reflect.*;
 import java.util.*;
 
 import evoict.*;
@@ -72,4 +73,22 @@ public class EvolutionOpConfig extends KeyValueStore implements Identifiable {
 		return _name;
 	}
 
+
+
+	public boolean validate(String msg) {
+		Method v = null;
+		try {
+			v = _cl.getMethod("validate", EvolutionOpConfig.class, String.class);
+		} catch (Exception e) {
+		}
+		if (v == null) {
+			return true;
+		} else {
+			try {
+				return (Boolean) v.invoke(this, msg);
+			} catch (Exception e) {
+				return false;
+			}
+		}
+	}
 }

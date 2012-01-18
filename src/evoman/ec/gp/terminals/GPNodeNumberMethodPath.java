@@ -26,8 +26,8 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 
-	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 		_path = _dict.getRandomPath();
 		_dict = (MethodDictionary) conf.get("dict");
 		init();
@@ -68,6 +68,18 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 	@Override
 	public void mutate() {
 		_path = _dict.getRandomPath();
+	}
+
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPNodeNumberMethodPath n = new GPNodeNumberMethodPath(t, _conf, parent, _pos);
+		n._dict = _dict;
+		n._path = _path;
+		n._value = _value;
+		doClone(t, n);
+		return n;
 	}
 
 }

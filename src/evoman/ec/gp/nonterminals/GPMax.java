@@ -13,8 +13,8 @@ public class GPMax extends GPNode {
 
 
 
-	public GPMax(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPMax(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 	}
 
 
@@ -46,6 +46,15 @@ public class GPMax extends GPNode {
 	@Override
 	public String toString() {
 		return super.toString("MAX");
+	}
+
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPMax n = new GPMax(t, _conf, parent, _pos);
+		doClone(t, n);
+		return n;
 	}
 
 }

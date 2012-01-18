@@ -15,13 +15,35 @@ public abstract class GPNode implements Constants, Serializable {
 	protected ArrayList<GPNode>	_children			= new ArrayList<GPNode>();
 	protected GPNodeConfig		_conf;
 	protected GPNodePos			_pos;
+	protected int				_num_descendents	= 0;
+	protected GPNode			_parent;
 
 
 
-	public GPNode(GPTree t, GPNodeConfig conf, GPNodePos pos) {
+	public GPNode(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		_tree = t;
 		_pos = pos;
 		_conf = conf;
+		_parent = parent;
+	}
+
+
+
+	protected GPNode(GPTree t) {
+		_tree = t;
+	}
+
+
+
+	public abstract GPNode clone(GPTree t, GPNode parent);
+
+
+
+	protected void doClone(GPTree t, GPNode clone) {
+		clone._num_descendents = _num_descendents;
+		for (GPNode child : _children) {
+			_children.add(child.clone(t, this));
+		}
 	}
 
 
@@ -32,6 +54,12 @@ public abstract class GPNode implements Constants, Serializable {
 
 	ArrayList<GPNode> getChildren() {
 		return _children;
+	}
+
+
+
+	public GPNode getParent() {
+		return _parent;
 	}
 
 
@@ -48,12 +76,14 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
-	public void init() {
+	public int init() {
+		int count = 0;
 		for (Class<?> cl : _conf.getConstraints().getChildTypes()) {
 			GPNode child_node = _tree.initCreateNode(this, cl);
 			_children.add(child_node);
-			child_node.init();
+			count += 1 + child_node.init();
 		}
+		return count;
 	}
 
 
@@ -88,6 +118,18 @@ public abstract class GPNode implements Constants, Serializable {
 
 	public int numChildren() {
 		return _children.size();
+	}
+
+
+
+	public boolean swap(GPNode child, GPNode replace) {
+		for (int k = 0; k < numChildren(); k++) {
+			if (_children.get(k) == child) {
+				_children.set(k, replace);
+				return true;
+			}
+		}
+		return false;
 	}
 
 

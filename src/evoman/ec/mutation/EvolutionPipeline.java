@@ -4,9 +4,9 @@ package evoman.ec.mutation;
 import java.lang.reflect.*;
 import java.util.*;
 
+import evoict.*;
 import evoict.graphs.*;
 import evoict.io.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
@@ -62,11 +62,32 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 
 
+	/**
+	 * Add an evolution operator configuration to the pipeline.
+	 * Configurations should be complete before calling this method.
+	 * The method will attempt to validate the configuration settings and
+	 * return false if the configuration is not valid.
+	 * 
+	 * @param conf
+	 *            Evolution operator configuration
+	 * @return
+	 */
+
 	public boolean addOperator(EvolutionOpConfig conf) {
 		if (_names.containsKey(conf.getName())) {
 			return false; // Can't have duplicate operators
 		} else {
-
+			String msg = null;
+			if (conf.validate(msg)) {
+				_conf.add(conf);
+				_names.put(conf.getName(), conf);
+				_pipe_ops.put(new DANode(_pipeline), conf);
+				return true;
+			} else {
+				getNotifier().warn(
+						"Unable to add evolution operator " + conf.getName() + getNotifier().endl + "Reason: " + msg);
+				return false;
+			}
 		}
 	}
 
@@ -110,6 +131,10 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 				getNotifier().fatal(
 						"Cannot connect " + from.getName() + " to " + to.getName()
 								+ ": exceeded input constraint.");
+			} else if (!from.getConstraints().usesSelection() && to.getConstraints().usesSelection()) {
+				getNotifier().fatal(
+						"Cannot connect a non-selection operator " + (from.getName()) + " to a selection operator "
+								+ (to.getName()) + ".");
 			} else if (!_pipeline.canConnect(_node_from, _node_to)) {
 				getNotifier().fatal("Cannot connect " + from.getName() + " to " + to.getName()
 						+ ": connection creates cycle in pipeline.");
@@ -140,7 +165,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 *            Receiving population from the VariationManager
 	 */
 	@SuppressWarnings("unchecked")
-	public void process(Population p) {
+	public Population process(Population p) {
 
 		// Begin by registering all start operators with a pipe that contains
 		// the initial population
@@ -154,6 +179,9 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 			start_pipe.send(p);
 		}
 
+		Population result = null;
+		// Every pipeline should have exactly one terminal node
+		EvolutionOpConfig terminal = _pipe_ops.get(_pipeline.getTerminal().toArray()[0]);
 		// Then process the pipeline using a breadth-first search order
 		for (DANode n : _pipeline.getEvalOrder()) {
 			EvolutionOpConfig conf = _pipe_ops.get(n);
@@ -161,23 +189,29 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 				Constructor<EvolutionOperator> constr_op = (Constructor<EvolutionOperator>) conf.getOpClass()
 						.getConstructor(EvolutionPipeline.class, EvolutionOpConfig.class);
 				EvolutionOperator op = constr_op.newInstance(this, conf);
-				if (_pipes.containsKey(conf)) {
+				Population produced = op.produce();
+				if (conf == terminal) {
+					result = produced;
+				} else if (_pipes.containsKey(conf)) {
 					for (EvolutionPipeConfig epc : _pipes.get(conf)) {
 						EvolutionPipe pipe = new EvolutionPipe(epc);
 						_conf_pipes.put(epc, pipe);
-						pipe.send(op.produce());
+						pipe.send(produced);
 					}
+				} else {
+					getNotifier().warn("Evolution operator results ignored: " + conf.getName());
 				}
+
 			} catch (Exception e) {
 				getNotifier().fatal("Unable to create evolution operator: " + conf.getName());
 			}
 		}
-
-		// Finish by clearing out pipes and resetting start nodes
+		// Cleanup
 		_conf_pipes.clear();
 		for (EvolutionOpConfig start : start_pipes.keySet()) {
 			start.unregisterPipe(start_pipes.get(start));
 		}
+		return result;
 	}
 
 
@@ -196,6 +230,12 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 		} else {
 			return null;
 		}
+	}
+
+
+
+	public Genotype makeGenotype(Representation r) {
+		return _vm.makeGenotype(r);
 	}
 
 
@@ -223,7 +263,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 
 	@Override
-	public MersenneTwisterFast getRandom() {
+	public RandomGenerator getRandom() {
 		return _vm.getRandom();
 	}
 

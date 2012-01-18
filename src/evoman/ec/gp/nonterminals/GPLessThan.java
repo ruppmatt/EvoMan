@@ -13,8 +13,8 @@ public class GPLessThan extends GPNode {
 
 
 
-	public GPLessThan(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPLessThan(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 	}
 
 
@@ -46,6 +46,15 @@ public class GPLessThan extends GPNode {
 	@Override
 	public String toString() {
 		return super.toString("LESS");
+	}
+
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPLessThan n = new GPLessThan(t, _conf, parent, _pos);
+		doClone(t, n);
+		return n;
 	}
 
 }

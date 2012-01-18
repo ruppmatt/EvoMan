@@ -1,21 +1,21 @@
 package evoman.evo.structs;
 
 
+import evoict.*;
 import evoict.graphs.*;
 import evoict.io.*;
-import evoman.evo.*;
 
 
 
 public class EMConfigurableDANode extends ConfigurableDANode implements EMState {
 
-	private static final long		serialVersionUID	= 1L;
-	protected EMState				_emparent			= null;
-	protected MersenneTwisterFast	_rand				= null;
-	protected Notifier				_notifier			= null;
-	protected EMThreader			_threader			= null;
-	protected boolean				_initialized		= false;
-	protected boolean				_finished			= false;
+	private static final long	serialVersionUID	= 1L;
+	protected EMState			_emparent			= null;
+	protected RandomGenerator	_rand				= null;
+	protected Notifier			_notifier			= null;
+	protected EMThreader		_threader			= null;
+	protected boolean			_initialized		= false;
+	protected boolean			_finished			= false;
 
 
 
@@ -60,15 +60,15 @@ public class EMConfigurableDANode extends ConfigurableDANode implements EMState 
 
 
 	@Override
-	public MersenneTwisterFast getRandom() {
+	public RandomGenerator getRandom() {
 		if (_rand == null) {
 			if (_emparent != null)
 				_emparent.getRandom();
 			else {
 				if (_kv.isSet("seed"))
-					_rand = new MersenneTwisterFast(_kv.I("seed"));
+					_rand = new RandomGenerator(_kv.I("seed"));
 				else
-					_rand = new MersenneTwisterFast();
+					_rand = new RandomGenerator();
 			}
 		}
 		return _rand;

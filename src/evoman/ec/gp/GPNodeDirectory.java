@@ -4,8 +4,8 @@ package evoman.ec.gp;
 import java.lang.reflect.*;
 import java.util.*;
 
+import evoict.*;
 import evoict.io.*;
-import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
@@ -144,7 +144,7 @@ public class GPNodeDirectory implements EMState {
 
 
 	@Override
-	public MersenneTwisterFast getRandom() {
+	public RandomGenerator getRandom() {
 		return _parent.getRandom();
 	}
 

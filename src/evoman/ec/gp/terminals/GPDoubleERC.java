@@ -25,8 +25,8 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 
-	public GPDoubleERC(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPDoubleERC(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 		_min = conf.D("min");
 		_max = conf.D("max");
 		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
@@ -68,4 +68,15 @@ public class GPDoubleERC extends GPMutableNode {
 		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
 	}
 
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPDoubleERC n = new GPDoubleERC(t, _conf, parent, _pos);
+		n._min = _min;
+		n._max = _max;
+		n._value = _value;
+		doClone(t, n);
+		return n;
+	}
 }

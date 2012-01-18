@@ -20,8 +20,8 @@ public class GPConditional extends GPNode {
 
 
 
-	public GPConditional(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPConditional(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 	}
 
 
@@ -56,4 +56,12 @@ public class GPConditional extends GPNode {
 		return super.toString("?:");
 	}
 
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPConditional n = new GPConditional(t, _conf, parent, _pos);
+		doClone(t, n);
+		return n;
+	}
 }

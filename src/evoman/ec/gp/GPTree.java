@@ -7,8 +7,8 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 
@@ -19,7 +19,6 @@ public class GPTree implements Representation, EMState, Serializable {
 	private static final long	serialVersionUID	= 1L;
 	protected GPNode			_root				= null;
 	protected GPNodeDirectory	_node_classes;
-	protected ArrayList<GPNode>	_mutable_nodes		= new ArrayList<GPNode>();
 	protected GPTreeInitializer	_init				= null;
 	protected EMState			_state;
 	protected KeyValueStore		_kv					= new KeyValueStore();
@@ -27,7 +26,6 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 	public GPTree(EMState state, GPTreeInitializer init, GPNodeDirectory nodes) {
-		_node_classes = new GPNodeDirectory(state);
 		_state = state;
 		_init = init;
 		_node_classes = nodes;
@@ -37,6 +35,12 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	public GPNode getRoot() {
 		return _root;
+	}
+
+
+
+	public GPNodeDirectory getNodeDirectory() {
+		return _node_classes;
 	}
 
 
@@ -87,14 +91,12 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
-	public GPNode createNode(GPNode parent, GPNodeConfig conf) {
+	protected GPNode createNode(GPNode parent, GPNodeConfig conf) {
 		try {
 			int depth = (parent == null) ? -1 : parent.getPosition().getDepth();
 			Constructor<? extends GPNode> construct =
 					conf.getNodeClass().getConstructor(GPTree.class, GPNodeConfig.class, int.class);
 			GPNode new_node = construct.newInstance(this, conf, depth + 1);
-			if (new_node.getConfig().getConstraints().isMutable())
-				_mutable_nodes.add(new_node);
 			return new_node;
 
 		} catch (Exception e) {
@@ -113,6 +115,55 @@ public class GPTree implements Representation, EMState, Serializable {
 		_state = null;
 		out.defaultWriteObject();
 		_state = temp;
+	}
+
+
+
+	@Override
+	public Object clone() {
+		GPTree newtree = new GPTree(_state, _init, _node_classes);
+		newtree._root = _root.clone(newtree, null);
+		return newtree;
+	}
+
+
+
+	public int getSize() {
+		return _root._num_descendents + 1;
+	}
+
+
+
+	public void reRoot(GPNode newroot) {
+		_root = newroot;
+	}
+
+
+
+	public void bfs(FindNode fn) {
+		LinkedList<GPNode> q = new LinkedList<GPNode>();
+		q.add(_root);
+		while (!q.isEmpty() && !fn.done()) {
+			GPNode n = q.poll();
+			fn.examine(n);
+			for (GPNode child : n.getChildren()) {
+				q.add(child);
+			}
+		}
+	}
+
+
+
+	public void dfs(FindNode fn) {
+		Stack<GPNode> q = new Stack<GPNode>();
+		q.add(_root);
+		while (!q.isEmpty() && !fn.done()) {
+			GPNode n = q.pop();
+			fn.examine(n);
+			for (GPNode child : n.getChildren()) {
+				q.add(child);
+			}
+		}
 	}
 
 
@@ -139,7 +190,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 	@Override
-	public MersenneTwisterFast getRandom() {
+	public RandomGenerator getRandom() {
 		return _state.getRandom();
 	}
 

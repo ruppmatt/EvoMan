@@ -1,6 +1,8 @@
 package evoman.evo.pop;
 
+
 import java.io.*;
+
 
 
 public interface Representation {
@@ -19,4 +21,9 @@ public interface Representation {
 
 
 	public void serializeRepresentation(ObjectOutputStream out) throws IOException;
+
+
+
+	public Object clone();
+
 }

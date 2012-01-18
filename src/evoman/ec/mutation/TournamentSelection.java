@@ -3,13 +3,13 @@ package evoman.ec.mutation;
 
 import java.util.*;
 
-import evoman.ec.mutation.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
+import evoman.evo.structs.*;
 
 
 
-@EvolutionDescriptor(name = "TournamentSelection")
+@EvolutionDescriptor(name = "TournamentSelection", selection = true)
 public class TournamentSelection extends EvolutionOperator {
 
 	private static final long	serialVersionUID	= 1L;
@@ -18,7 +18,7 @@ public class TournamentSelection extends EvolutionOperator {
 
 
 
-	public static boolean validate(EvolutionOpConfig conf) {
+	public static boolean validate(EvolutionOpConfig conf, String msg) {
 		if (conf.validate("pop_size", Integer.class)) {
 			if (conf.I("pop_size") < 1) {
 				conf.set("pop_size", Constants.ASINPUT);
@@ -51,10 +51,13 @@ public class TournamentSelection extends EvolutionOperator {
 				num_genotypes += p.size();
 			}
 			ArrayList<Genotype> all = new ArrayList<Genotype>(num_genotypes);
+			EMState state = null;
 			for (Population p : _received.values()) {
+				if (state == null)
+					state = p.getESParent();
 				all.addAll(p.getGenotypes());
 			}
-			Population selected = new Population();
+			Population selected = new Population(state);
 			int new_size = (pop_size != Constants.ASINPUT) ? pop_size : num_genotypes;
 			for (int i = 0; i < new_size; i++) {
 				Genotype winner = all.get(_pipeline.getRandom().nextInt(num_genotypes));

@@ -10,10 +10,10 @@ import evoman.evo.pop.*;
 
 public abstract class EvolutionOperator implements Serializable {
 
-	private static final long					serialVersionUID	= 1L;
-	EvolutionPipeline							_pipeline;
-	EvolutionOpConfig							_conf;
-	LinkedHashMap<EvolutionPipeConfig, Population>	_received			= new LinkedHashMap<EvolutionPipeConfig, Population>();
+	private static final long									serialVersionUID	= 1L;
+	protected EvolutionPipeline									_pipeline;
+	protected EvolutionOpConfig									_conf;
+	protected LinkedHashMap<EvolutionPipeConfig, Population>	_received			= new LinkedHashMap<EvolutionPipeConfig, Population>();
 
 
 

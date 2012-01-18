@@ -1,130 +1,181 @@
 package evoman.evo.pop;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
+
+import java.util.*;
 
 import evoict.*;
-import evoman.evo.*;
+import evoict.io.*;
 import evoman.evo.structs.*;
+
+
 
 /**
  * 
  * @author ruppmatt
- *
- *		A population is a collection of Genotypes
+ * 
+ *         A population is a collection of Genotypes
  */
-public class Population extends EMHNode implements Cloneable, Printable {
+public class Population implements EMState, Cloneable, Printable {
 
-	protected LinkedHashMap<String,Genotype> _genotypes =
-			new LinkedHashMap<String,Genotype>();
-	protected EvoPool _ep;
-	
-	public Population(){
-		this("Population");
-	}
-	
-	/**
-	 * Construct a Population without a parent
-	 * @param name
-	 */
-	public Population(String name){
-		this(name, null);
-	}
-	
-	
+	protected ArrayList<Genotype>	_genotypes		= new ArrayList<Genotype>();
+	protected Notifier				_local_notifier	= null;
+	protected RandomGenerator		_local_random	= null;
+	protected EMState				_state;
+
+
+
 	/**
 	 * Construct a population and assign it to an EvoPool
+	 * 
 	 * @param name
 	 * @param ep
 	 */
-	public Population(String name, EvoPool ep){
-		super(name, ep);
-		_ep = ep;
+	public Population(EMState state) {
+		_state = state;
 	}
-	
+
+
+
 	/**
 	 * Add a Genotype to this population
+	 * 
 	 * @param g
 	 */
-	public void addGenotype(Genotype g){
-		_genotypes.put(g.getName(), g);
-		addChild(g);
+	public void addGenotype(Genotype g) {
+		_genotypes.add(g);
 	}
-	
+
+
+
 	/**
 	 * Remove a genotype from this pool.
+	 * 
 	 * @param g
 	 */
-	public void removeGenotype(Genotype g){
-		String name = g.getName();
-		if (_genotypes.containsKey(name))
-			_genotypes.remove(name);
-		removeChild(g);
+	public void removeGenotype(Genotype g) {
+		_genotypes.remove(g);
 	}
-	
+
+
+
+	public boolean placeGenotype(Genotype g, Genotype... parents) {
+		int ndx = getRandom().nextInt(size());
+		_genotypes.set(ndx, g);
+		return true;
+	}
+
+
+
 	/**
 	 * Try to get a genotype from this population with a particular name.
+	 * 
 	 * @param name
 	 * @return
 	 */
-	public Genotype getGenotype(String name){
-		return (_genotypes.containsKey(name)) ? _genotypes.get(name) : null;
+	public Genotype getGenotype(int ndx) {
+		if (ndx > _genotypes.size() - 1 || ndx < 0) {
+			return null;
+		} else {
+			return _genotypes.get(ndx);
+		}
 	}
-	
-	public Collection<Genotype> getGenotypes(){
-		return _genotypes.values();
+
+
+
+	public ArrayList<Genotype> getGenotypes() {
+		return _genotypes;
 	}
-	
+
+
+
 	/**
 	 * Return the number of genotypes in the population.
+	 * 
 	 * @return
 	 */
-	public int size(){
+	public int size() {
 		return _genotypes.size();
 	}
-	
-	/**
-	 * Return the EvoType printer.
-	 * @return
-	 */
-	public RepresentationPrinter getETPrinter(){
-		return (_ep != null) ? _ep.getETPrinter() : null;
-	}
-	
+
+
+
 	/**
 	 * Move this population to another EvoPool
+	 * 
 	 * @param ep
 	 */
-	public void moveTo(EvoPool ep){
-		if (_ep != null)
-			_ep.removePopulation(this);
-		_ep = ep;
-		_ep.setPopulation(this);
+	public void moveTo(EvoPool ep) {
+		_state = ep;
+		ep.setPopulation(this);
 	}
-	
+
+
+
 	/**
 	 * Clone this population.
 	 */
-	public Population clone(){
-		Population cl = new Population(_name, null);
-		for (String g : _genotypes.keySet())
-			cl._genotypes.put(g, _genotypes.get(g));
+	@Override
+	public Population clone() {
+		Population cl = new Population(_state);
+		for (Genotype g : _genotypes)
+			cl._genotypes.add((Genotype) g.clone());
 		return cl;
 	}
-	
-	/**
-	 * Print this population as a string.
-	 */
-	public String toString(){
-		StringBuffer sb = new StringBuffer();
-		sb.append("[ " + getFullName() + " ]" + ENDL);
-		Collection<Genotype> g = _genotypes.values();
-		if (g.size() > 0)
-			sb.append(g.toString());
-		for (int k=1; k < _genotypes.size(); k++)
-			sb.append(ENDL + g.toString());
-		return sb.toString();
+
+
+
+	@Override
+	public EMState getESParent() {
+		return _state;
 	}
-	
+
+
+
+	@Override
+	public void init() {
+	}
+
+
+
+	@Override
+	public void finish() {
+	}
+
+
+
+	@Override
+	public RandomGenerator getRandom() {
+		if (_state != null) {
+			return _state.getRandom();
+		} else {
+			if (_local_random == null) {
+				_local_random = new RandomGenerator();
+			}
+			return _local_random;
+		}
+	}
+
+
+
+	@Override
+	public EMThreader getThreader() {
+		if (_state != null)
+			return _state.getThreader();
+		else
+			return null;
+	}
+
+
+
+	@Override
+	public Notifier getNotifier() {
+		if (_state != null) {
+			return _state.getNotifier();
+		} else {
+			if (_local_notifier == null)
+				_local_notifier = new Notifier();
+			return _local_notifier;
+		}
+	}
 
 }

@@ -23,8 +23,8 @@ public class GPNodeDoubleConst extends GPNode {
 
 
 
-	public GPNodeDoubleConst(GPTree t, GPNodeConfig conf, GPNodePos pos) {
-		super(t, conf, pos);
+	public GPNodeDoubleConst(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(t, conf, parent, pos);
 		_value = conf.D("value");
 	}
 
@@ -54,6 +54,16 @@ public class GPNodeDoubleConst extends GPNode {
 	@Override
 	public String toString() {
 		return super.toString(_value.toString());
+	}
+
+
+
+	@Override
+	public GPNode clone(GPTree t, GPNode parent) {
+		GPNodeDoubleConst n = new GPNodeDoubleConst(t, _conf, parent, _pos);
+		n._value = _value;
+		doClone(t, n);
+		return n;
 	}
 
 }
