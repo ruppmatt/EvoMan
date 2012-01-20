@@ -3,9 +3,9 @@ package evoman.ec.gp.init;
 
 import java.io.*;
 
+import evoict.*;
 import evoict.io.*;
 import evoman.ec.gp.*;
-import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
@@ -25,7 +25,19 @@ public abstract class GPTreeInitializer implements EMState, Serializable {
 
 
 
-	public abstract boolean createTerminal(GPTree t, GPNode n, Class<?> cl);
+	/**
+	 * Check to see whether or not a terminal node should be created.
+	 * Parent is allowed to be null
+	 * 
+	 * @param t
+	 *            GPTree
+	 * @param parent
+	 *            Parent node requesting child
+	 * @param cl
+	 *            Expected return type of child
+	 * @return
+	 */
+	public abstract boolean createTerminal(GPTree t, GPNode parent, Class<?> cl);
 
 
 
@@ -55,7 +67,7 @@ public abstract class GPTreeInitializer implements EMState, Serializable {
 
 
 	@Override
-	public MersenneTwisterFast getRandom() {
+	public RandomGenerator getRandom() {
 		return _state.getRandom();
 	}
 

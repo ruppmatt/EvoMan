@@ -1,7 +1,9 @@
 package evoman.ec.gp.terminals;
 
 
+import evoman.*;
 import evoman.ec.gp.*;
+import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
@@ -16,11 +18,9 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 
-	public boolean validate(GPNodeConfig conf) {
-		if (conf.isSet("dict") && conf.get("dict") instanceof MethodDictionary) {
-			return true;
-		} else {
-			return false;
+	public void validate(GPNodeConfig conf) throws BadConfiguration {
+		if (conf.validate("dict", MethodDictionary.class)) {
+			throw new BadConfiguration("GPNodeConfig: dict is not set correctly.");
 		}
 	}
 
@@ -74,7 +74,7 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPNodeNumberMethodPath n = new GPNodeNumberMethodPath(t, _conf, parent, _pos);
+		GPNodeNumberMethodPath n = new GPNodeNumberMethodPath(t, _conf, parent, (GPNodePos) _pos.clone());
 		n._dict = _dict;
 		n._path = _path;
 		n._value = _value;

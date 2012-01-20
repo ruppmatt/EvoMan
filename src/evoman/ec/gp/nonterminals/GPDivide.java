@@ -35,31 +35,28 @@ public class GPDivide extends GPNode {
 
 	@Override
 	public String lastEval() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.lastEval("/<" + _value.toString() + ">");
 	}
 
 
 
 	@Override
 	public Object last() {
-		// TODO Auto-generated method stub
-		return null;
+		return _value;
 	}
 
 
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "/";
 	}
 
 
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPDivide n = new GPDivide(t, _conf, parent, _pos);
+		GPDivide n = new GPDivide(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}

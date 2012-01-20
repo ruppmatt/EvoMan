@@ -52,7 +52,7 @@ public class GPMultiply extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPMultiply n = new GPMultiply(t, _conf, parent, _pos);
+		GPMultiply n = new GPMultiply(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}

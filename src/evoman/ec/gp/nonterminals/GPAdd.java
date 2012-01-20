@@ -55,7 +55,7 @@ public class GPAdd extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPAdd n = new GPAdd(t, _conf, parent, _pos);
+		GPAdd n = new GPAdd(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}

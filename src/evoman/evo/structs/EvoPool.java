@@ -20,11 +20,12 @@ import evoman.evo.vm.*;
  */
 public class EvoPool extends EMConfigurableHNode {
 
-	protected VariationManager					_vm			= null;
-	protected Population						_pop		= null;
-	LinkedHashMap<String, EvoPool>				_ep			= new LinkedHashMap<String, EvoPool>();
-	LinkedHashMap<String, SimulationManager>	_sm			= new LinkedHashMap<String, SimulationManager>();
-	RepresentationPrinter						_printer	= null;
+	private static final long					serialVersionUID	= 1L;
+	protected VariationManager					_vm					= null;
+	protected Population						_pop				= null;
+	LinkedHashMap<String, EvoPool>				_ep					= new LinkedHashMap<String, EvoPool>();
+	LinkedHashMap<String, SimulationManager>	_sm					= new LinkedHashMap<String, SimulationManager>();
+	RepresentationPrinter						_printer			= null;
 
 
 
@@ -59,6 +60,14 @@ public class EvoPool extends EMConfigurableHNode {
 	 */
 	public EvoPool(String name, EvoPool parent) {
 		super(name, parent);
+	}
+
+
+
+	@Override
+	public void init() {
+		super.init();
+		_vm.init();
 	}
 
 
@@ -106,10 +115,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * @param vm
 	 */
 	public void setVM(VariationManager vm) {
-		if (_vm != null)
-			removeChild(_vm);
 		_vm = vm;
-		addChild(_vm);
 	}
 
 

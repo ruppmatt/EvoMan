@@ -1,6 +1,10 @@
 package evoman.evo.vm;
 
 
+import java.io.*;
+
+import evoict.*;
+import evoict.io.*;
 import evoman.ec.mutation.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
@@ -14,63 +18,52 @@ import evoman.evo.structs.*;
  *         A variation manager provides mutations and fitness filters to create
  *         new populations.
  */
-public class VariationManager extends EMConfigurableHNode {
+public abstract class VariationManager implements EMState, Serializable {
 
-	private static final long	serialVersionUID	= 1L;
-	protected EvoPool			_ep					= null;
-	protected EvolutionPipeline	_evopipe			= null;
-	protected int				_total_genotypes	= 0;
-	protected MethodHNode		_dictionary			= null;
+	private static final long				serialVersionUID	= 1L;
+	protected EvoPool						_ep					= null;
+	protected EvolutionPipeline				_evopipeline		= null;
+	protected int							_total_genotypes	= 0;
+	protected final VariationManagerConfig	_config;
 
 
 
-	public VariationManager(String name, EvoPool parent) {
-		super(name, parent);
+	public VariationManager(EvoPool parent, VariationManagerConfig conf) {
 		_ep = parent;
-		addDefault("size", 100, "Default size of the population");
+		_config = conf;
+		_ep.setVM(this);
 	}
 
 
 
-	public void evolve() {
-		Population new_pop = _evopipe.process(_ep.getPopulation());
-		_ep.setPopulation(new_pop);
+	public VariationManagerConfig getConfig() {
+		return _config;
 	}
 
 
 
-	public void addDictionary(MethodHNode dict) {
-		_dictionary = dict;
-	}
+	public abstract void evolve();
 
 
 
-	public void removeMethodDictionary() {
-		_dictionary = null;
-	}
+	public abstract int getPopSize();
 
 
 
-	public MethodHNode getMethodDictionary() {
-		return _dictionary;
-	}
-
-
-
-	public void addEP(EvolutionPipeline evopipe) {
-		_evopipe = evopipe;
+	public void addEP(EvolutionPipeline ep) {
+		_evopipeline = ep;
 	}
 
 
 
 	public void removeEP() {
-		_evopipe = null;
+		_evopipeline = null;
 	}
 
 
 
 	public Genotype makeGenotype(Representation r) {
-		String id = String.format("%s-%d", getName(), _total_genotypes++);
+		String id = String.format("%s-%d", _ep.getName(), _total_genotypes++);
 		Genotype g = new Genotype(id, r);
 		return g;
 	}
@@ -79,5 +72,33 @@ public class VariationManager extends EMConfigurableHNode {
 
 	public Population getPoolPopulation() {
 		return _ep.getPopulation();
+	}
+
+
+
+	@Override
+	public EMState getESParent() {
+		return _ep;
+	}
+
+
+
+	@Override
+	public RandomGenerator getRandom() {
+		return _ep.getRandom();
+	}
+
+
+
+	@Override
+	public EMThreader getThreader() {
+		return _ep.getThreader();
+	}
+
+
+
+	@Override
+	public Notifier getNotifier() {
+		return _ep.getNotifier();
 	}
 }

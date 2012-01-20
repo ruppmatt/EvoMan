@@ -52,7 +52,7 @@ public class GPSubtract extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPSubtract n = new GPSubtract(t, _conf, parent, _pos);
+		GPSubtract n = new GPSubtract(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}

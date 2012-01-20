@@ -7,8 +7,10 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.*;
 import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
+import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 
@@ -16,19 +18,38 @@ import evoman.evo.structs.*;
 
 public class GPTree implements Representation, EMState, Serializable {
 
+	protected static void validate(GPTreeConfig conf) throws BadConfiguration {
+		BadConfiguration bad = new BadConfiguration();
+		if (!conf.validate("max_depth", Integer.class) || conf.getMaxDepth() < 1) {
+			bad.append("GPTree: max_depth not set.");
+		}
+		if (conf._init == null) {
+			bad.append("GPTree: no initializer specified in configuration.");
+		}
+		if (conf._node_dir == null) {
+			bad.append("GPTree: no node directory specified in configuration");
+		}
+		if (!conf.validate("return_type", Class.class)) {
+			bad.append("GPTree: no return_type specified");
+		}
+		try {
+			conf._node_dir.validate();
+		} catch (BadConfiguration bc) {
+			bad.append(bc.getMessage());
+		}
+		bad.validate();
+	}
+
 	private static final long	serialVersionUID	= 1L;
 	protected GPNode			_root				= null;
-	protected GPNodeDirectory	_node_classes;
-	protected GPTreeInitializer	_init				= null;
+	protected GPTreeConfig		_config;
 	protected EMState			_state;
-	protected KeyValueStore		_kv					= new KeyValueStore();
 
 
 
-	public GPTree(EMState state, GPTreeInitializer init, GPNodeDirectory nodes) {
+	public GPTree(EMState state, GPTreeConfig conf) {
 		_state = state;
-		_init = init;
-		_node_classes = nodes;
+		_config = conf;
 	}
 
 
@@ -39,8 +60,14 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
+	public GPTreeConfig getConfig() {
+		return _config;
+	}
+
+
+
 	public GPNodeDirectory getNodeDirectory() {
-		return _node_classes;
+		return _config.getNodeDirectory();
 	}
 
 
@@ -72,31 +99,31 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
-	public GPNode initCreateNode(GPNode n, Class<?> ret_type) {
-		boolean terminal = _init.createTerminal(this, n, ret_type);
+	public GPNode createNode(GPNode parent, Class<?> ret_type, GPNodePos pos, GPTreeInitializer init) {
+		int depth = (parent != null) ? parent.getDepth() : 1;
+		boolean terminal = init.createTerminal(this, parent, ret_type) || depth == getConfig().getMaxDepth();
 		GPNodeConfig cl_con = null;
 		if (terminal) {
-			cl_con = _node_classes.randomTerminal(ret_type);
+			cl_con = getConfig().getNodeDirectory().randomTerminal(ret_type);
 			if (cl_con == null) {
 				getNotifier().fatal("No terminal nodes found with type: " + ret_type.getName());
 			}
 		} else {
-			cl_con = _node_classes.randomFunction(ret_type);
+			cl_con = getConfig().getNodeDirectory().randomFunction(ret_type);
 			if (cl_con == null) {
 				getNotifier().fatal("No function nodes for return type found: " + ret_type.getName());
 			}
 		}
-		return createNode(n, cl_con);
+		return buildNode(parent, cl_con, pos);
 	}
 
 
 
-	protected GPNode createNode(GPNode parent, GPNodeConfig conf) {
+	protected GPNode buildNode(GPNode parent, GPNodeConfig conf, GPNodePos pos) {
 		try {
-			int depth = (parent == null) ? -1 : parent.getPosition().getDepth();
 			Constructor<? extends GPNode> construct =
-					conf.getNodeClass().getConstructor(GPTree.class, GPNodeConfig.class, int.class);
-			GPNode new_node = construct.newInstance(this, conf, depth + 1);
+					conf.getNodeClass().getConstructor(GPTree.class, GPNodeConfig.class, GPNode.class, GPNodePos.class);
+			GPNode new_node = construct.newInstance(this, conf, parent, pos);
 			return new_node;
 
 		} catch (Exception e) {
@@ -121,7 +148,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	@Override
 	public Object clone() {
-		GPTree newtree = new GPTree(_state, _init, _node_classes);
+		GPTree newtree = new GPTree(_state, _config);
 		newtree._root = _root.clone(newtree, null);
 		return newtree;
 	}
@@ -177,7 +204,8 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	@Override
 	public void init() {
-		_root = initCreateNode(null, Double.class);
+		_root = createNode(null, (Class<?>) getConfig().get("return_type"), new GPNodePos(), getConfig()
+				.getInitializer());
 		_root.init();
 	}
 

@@ -6,6 +6,7 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
@@ -29,13 +30,13 @@ public class GPNodeDirectory implements EMState {
 
 
 
-	public boolean addNodeConfig(GPNodeConfig conf) {
+	public void addNodeConfig(GPNodeConfig conf) throws BadConfiguration {
 		if (conf == null) {
-			getNotifier().fatal("Cannot add GPNode with null configuration.");
+			throw new BadConfiguration("Cannot add GPNode with null configuration.");
 		} else if (conf.getConstraints() == null) {
-			getNotifier().fatal("Cannot add GPNode with no constraints (is there a missing GPNodeDescriptor?)");
+			throw new BadConfiguration("Cannot add GPNode with no constraints (is there a missing GPNodeDescriptor?)");
 		} else if (conf.getNodeClass() == null) {
-			getNotifier().fatal("Cannot add GPNode with null class");
+			throw new BadConfiguration("Cannot add GPNode with null class");
 		}
 		GPNodeConstraints cnstr = conf.getConstraints();
 		Class<?> ret = cnstr.getReturnType();
@@ -43,8 +44,11 @@ public class GPNodeDirectory implements EMState {
 
 		_all.add(conf);
 
-		if (validateConfig(conf) == false)
-			return false;
+		try {
+			validateNodeConfig(conf);
+		} catch (BadConfiguration e) {
+			throw e;
+		}
 
 		if (num_child == 0) {
 			if (!_terminals.containsKey(ret)) {
@@ -58,7 +62,6 @@ public class GPNodeDirectory implements EMState {
 			_functions.get(ret).add(conf);
 		}
 
-		return true;
 	}
 
 
@@ -101,25 +104,36 @@ public class GPNodeDirectory implements EMState {
 
 
 
-	public boolean validateConfig(GPNodeConfig conf) {
-		boolean valid = false;
+	public void validateNodeConfig(GPNodeConfig conf) throws BadConfiguration {
 		try {
 			Method m = conf.getNodeClass().getDeclaredMethod("validate", GPNodeConfig.class);
 			try {
-				valid = (Boolean) m.invoke(null, conf);
+				m.invoke(null, conf);
+			} catch (InvocationTargetException e) {
+				throw (((BadConfiguration) e.getCause()));
 			} catch (Exception e) {
-				getNotifier().fatal("Unable to invoke validate(...) on " + conf.getNodeClass());
-				e.printStackTrace();
+				getNotifier().fatal("Unable to invoke validation method for " + conf.getNodeClass());
 			}
 		} catch (SecurityException e) {
 			getNotifier().fatal(
 					"Unable to validate node configuration.  validate(...) is not visible for " + conf.getNodeClass());
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
-			getNotifier().warn("No validation for node: " + conf.getNodeClass());
-			valid = true;
 		}
-		return valid;
+	}
+
+
+
+	public void validate() throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
+		for (GPNodeConfig conf : _all) {
+			for (Class<?> cl : conf.getConstraints().getChildTypes()) {
+				if (!_terminals.containsKey(cl)) {
+					bc.append(conf.getNodeClass().toString() + " requires a terminal node of class " + cl.getName());
+				}
+			}
+		}
+		bc.validate();
 	}
 
 

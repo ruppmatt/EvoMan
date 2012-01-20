@@ -43,7 +43,7 @@ public class EMConfigurableHNode extends ConfigurableHNode implements EMState {
 	 */
 	public EMConfigurableHNode(String name, HNode parent) {
 		super(name, parent);
-		addDefault("rand_seed", (Integer) null, "The random number seed.");
+		set("rand_seed", (Integer) null);
 		if (parent instanceof EMState)
 			_emparent = (EMState) parent;
 	}

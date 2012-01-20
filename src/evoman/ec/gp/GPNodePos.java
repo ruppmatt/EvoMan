@@ -1,14 +1,16 @@
 package evoman.ec.gp;
 
 
+import java.io.*;
 import java.util.*;
 
 import evoman.evo.*;
 
 
 
-public class GPNodePos {
+public class GPNodePos implements Serializable, Cloneable {
 
+	private static final long		serialVersionUID	= 1L;
 	protected ArrayList<Integer>	_pos;
 
 
@@ -20,7 +22,7 @@ public class GPNodePos {
 
 
 	public int getDepth() {
-		return _pos.size();
+		return _pos.size() + 1;
 	}
 
 
@@ -47,5 +49,15 @@ public class GPNodePos {
 
 	public ArrayList<Integer> getPos() {
 		return _pos;
+	}
+
+
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object clone() {
+		GPNodePos cl = new GPNodePos();
+		cl._pos = (ArrayList<Integer>) _pos.clone();
+		return cl;
 	}
 }

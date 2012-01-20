@@ -15,8 +15,15 @@ public class GPFullTree extends GPTreeInitializer {
 
 
 
-	public static boolean validate(GPInitConfig conf) {
-		if (conf.validate("depth", Integer.class) && conf.I("depth") > 0) {
+	public static boolean validate(GPInitConfig conf, GPTree t, String msg) {
+		if (conf.validate("depth", Integer.class)) {
+			if (conf.I("depth") < 0) {
+				msg = "Tree depth cannot be negative.";
+				return false;
+			} else if (conf.I("depth") > t.getConfig().I("max_depth")) {
+				msg = "Tree initializer maximum depth greater than allowed.";
+				return false;
+			}
 			return true;
 		} else {
 			return false;
@@ -33,8 +40,8 @@ public class GPFullTree extends GPTreeInitializer {
 
 
 	@Override
-	public boolean createTerminal(GPTree t, GPNode n, Class<?> cl) {
-		int depth = (n == null) ? -1 : n.getPosition().getDepth();
+	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl) {
+		int depth = (parent == null) ? -1 : parent.getDepth();
 		if (depth == _max_depth - 1) {
 			return true;
 		} else {

@@ -76,10 +76,16 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
+	public int getDepth() {
+		return _pos.getDepth();
+	}
+
+
+
 	public int init() {
 		int count = 0;
 		for (Class<?> cl : _conf.getConstraints().getChildTypes()) {
-			GPNode child_node = _tree.initCreateNode(this, cl);
+			GPNode child_node = _tree.createNode(this, cl, _pos.newPos(count), _tree.getConfig().getInitializer());
 			_children.add(child_node);
 			count += 1 + child_node.init();
 		}

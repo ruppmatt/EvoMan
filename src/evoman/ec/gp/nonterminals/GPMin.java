@@ -52,7 +52,7 @@ public class GPMin extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPMin n = new GPMin(t, _conf, parent, _pos);
+		GPMin n = new GPMin(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}

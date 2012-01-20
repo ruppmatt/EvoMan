@@ -1,7 +1,9 @@
 package evoman.ec.gp.terminals;
 
 
+import evoman.*;
 import evoman.ec.gp.*;
+import evoman.evo.*;
 
 
 
@@ -15,11 +17,9 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 
-	public static boolean validate(GPNodeConfig conf) {
-		if (conf.validate("max", Double.class) && conf.validate("min", Double.class)) {
-			return true;
-		} else {
-			return false;
+	public static void validate(GPNodeConfig conf) throws BadConfiguration {
+		if (!conf.validate("max", Double.class) || !conf.validate("min", Double.class)) {
+			throw new BadConfiguration("GPDoubleERC: min and/or max not set correctly.");
 		}
 	}
 
@@ -36,7 +36,6 @@ public class GPDoubleERC extends GPMutableNode {
 
 	@Override
 	public Object eval(Object context) {
-		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
 		return _value;
 	}
 
@@ -72,7 +71,7 @@ public class GPDoubleERC extends GPMutableNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPDoubleERC n = new GPDoubleERC(t, _conf, parent, _pos);
+		GPDoubleERC n = new GPDoubleERC(t, _conf, parent, (GPNodePos) _pos.clone());
 		n._min = _min;
 		n._max = _max;
 		n._value = _value;

@@ -2,6 +2,7 @@ package evoman.ec.gp.terminals;
 
 
 import evoman.ec.gp.*;
+import evoman.evo.*;
 
 
 
@@ -13,11 +14,9 @@ public class GPNodeDoubleConst extends GPNode {
 
 
 
-	public static boolean validate(GPNodeConfig conf) {
-		if (conf.validate("value", Double.class)) {
-			return true;
-		} else {
-			return false;
+	public static void validate(GPNodeConfig conf) throws BadConfiguration {
+		if (!conf.validate("value", Double.class)) {
+			throw new BadConfiguration("GPNodeDoubleConst: value is not set correctly");
 		}
 	}
 
@@ -60,7 +59,7 @@ public class GPNodeDoubleConst extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPNodeDoubleConst n = new GPNodeDoubleConst(t, _conf, parent, _pos);
+		GPNodeDoubleConst n = new GPNodeDoubleConst(t, _conf, parent, (GPNodePos) _pos.clone());
 		n._value = _value;
 		doClone(t, n);
 		return n;

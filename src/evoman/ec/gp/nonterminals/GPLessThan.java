@@ -52,7 +52,7 @@ public class GPLessThan extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPLessThan n = new GPLessThan(t, _conf, parent, _pos);
+		GPLessThan n = new GPLessThan(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}

@@ -52,7 +52,7 @@ public class GPMax extends GPNode {
 
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
-		GPMax n = new GPMax(t, _conf, parent, _pos);
+		GPMax n = new GPMax(t, _conf, parent, (GPNodePos) _pos.clone());
 		doClone(t, n);
 		return n;
 	}
