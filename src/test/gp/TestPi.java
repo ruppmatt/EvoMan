@@ -77,7 +77,7 @@ public class TestPi {
 		GPFullTree init = new GPFullTree(root, tree_init_conf);
 
 		GPTreeConfig tree_conf = new GPTreeConfig(dir, init);
-		tree_conf.set("max_depth", 10);
+		tree_conf.set("max_depth", 2);
 		tree_conf.set("return_type", Double.class);
 		vm.setTreeConfig(tree_conf);
 

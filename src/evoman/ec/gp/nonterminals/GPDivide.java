@@ -49,7 +49,7 @@ public class GPDivide extends GPNode {
 
 	@Override
 	public String toString() {
-		return "/";
+		return super.toString("/");
 	}
 
 
