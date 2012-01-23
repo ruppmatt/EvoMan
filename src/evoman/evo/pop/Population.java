@@ -58,6 +58,16 @@ public class Population implements EMState, Cloneable, Printable {
 
 
 
+	public boolean replaceGenotype(Genotype original, Genotype replacement) {
+		int ndx = _genotypes.indexOf(original);
+		if (ndx == -1)
+			return false;
+		_genotypes.set(ndx, replacement);
+		return true;
+	}
+
+
+
 	public boolean placeGenotype(Genotype g, Genotype... parents) {
 		int ndx = getRandom().nextInt(size());
 		_genotypes.set(ndx, g);

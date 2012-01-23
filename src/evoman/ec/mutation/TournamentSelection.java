@@ -18,18 +18,19 @@ public class TournamentSelection extends EvolutionOperator {
 
 
 
-	public static boolean validate(EvolutionOpConfig conf, String msg) {
+	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
 		if (conf.validate("pop_size", Integer.class)) {
 			if (conf.I("pop_size") < 1) {
 				conf.set("pop_size", Constants.ASINPUT);
 			}
 		}
 		if (!conf.validate("tour_size", Integer.class)) {
-			return false;
+			bc.append("Tournament Selection: tournament size is missing.");
 		} else if (conf.I("tour_size") < 1) {
-			return false;
+			bc.append("Tournament Selection: tournament sie is less than 1.");
 		}
-		return true;
+		bc.validate();
 	}
 
 
@@ -43,7 +44,7 @@ public class TournamentSelection extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() {
+	public Population produce() throws BadConfiguration {
 		if (drainPipes()) {
 			int num_genotypes = 0;
 
@@ -70,8 +71,7 @@ public class TournamentSelection extends EvolutionOperator {
 
 			return selected;
 		} else {
-			_pipeline.getNotifier().fatal(getConfig().getName() + ": input populations are not ready for production.");
-			return null;
+			throw new BadConfiguration(getConfig().getName() + ": input populations are not ready for production.");
 		}
 	}
 

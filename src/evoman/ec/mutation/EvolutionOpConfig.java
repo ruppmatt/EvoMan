@@ -5,6 +5,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import evoict.*;
+import evoman.evo.*;
 import evoman.interpreter.*;
 
 
@@ -75,20 +76,27 @@ public class EvolutionOpConfig extends KeyValueStore implements Identifiable {
 
 
 
-	public boolean validate(String msg) {
+	public void validate() throws BadConfiguration {
 		Method v = null;
 		try {
-			v = _cl.getMethod("validate", EvolutionOpConfig.class, String.class);
-		} catch (Exception e) {
+			v = getOpClass().getMethod("validate", EvolutionOpConfig.class);
+		} catch (SecurityException e) {
+			throw new BadConfiguration(getName() + ": check validation visibility.");
+		} catch (NoSuchMethodException e) {
+			// Okay, there is no validation method;
 		}
-		if (v == null) {
-			return true;
-		} else {
-			try {
-				return (Boolean) v.invoke(this, msg);
-			} catch (Exception e) {
-				return false;
-			}
+		try {
+			v.invoke(null, this);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
 	}
 }

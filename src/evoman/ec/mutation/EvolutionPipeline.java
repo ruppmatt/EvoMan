@@ -7,6 +7,7 @@ import java.util.*;
 import evoict.*;
 import evoict.graphs.*;
 import evoict.io.*;
+import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
@@ -73,21 +74,19 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 * @return
 	 */
 
-	public boolean addOperator(EvolutionOpConfig conf) {
+	public void addOperator(EvolutionOpConfig conf) throws BadConfiguration {
 		if (_names.containsKey(conf.getName())) {
-			return false; // Can't have duplicate operators
+			throw new BadConfiguration("Evolution operator with the name " + conf.getName() + " already exists.");
 		} else {
 			String msg = null;
-			if (conf.validate(msg)) {
-				_conf.add(conf);
-				_names.put(conf.getName(), conf);
-				_pipe_ops.put(new DANode(_pipeline), conf);
-				return true;
-			} else {
-				getNotifier().warn(
-						"Unable to add evolution operator " + conf.getName() + getNotifier().endl + "Reason: " + msg);
-				return false;
+			try {
+				conf.validate();
+			} catch (BadConfiguration bc) {
+				throw bc;
 			}
+			_conf.add(conf);
+			_names.put(conf.getName(), conf);
+			_pipe_ops.put(new DANode(_pipeline), conf);
 		}
 	}
 
@@ -102,7 +101,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 *            name of receiving operator configuration
 	 * @return
 	 */
-	public EvolutionPipeConfig createPipe(String from, String to) {
+	public EvolutionPipeConfig createPipe(String from, String to) throws BadConfiguration {
 		return createPipe(_names.get(from), _names.get(to));
 	}
 
@@ -122,21 +121,20 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 *            Receiving evolution operator configuration
 	 * @return Configuration to evolution pipeline
 	 */
-	public EvolutionPipeConfig createPipe(EvolutionOpConfig from, EvolutionOpConfig to) {
+	public EvolutionPipeConfig createPipe(EvolutionOpConfig from, EvolutionOpConfig to) throws BadConfiguration {
 		EvolutionPipeConfig pipe_conf = null;
 		if (_pipe_nodes.containsKey(from) && _pipe_nodes.containsKey(to)) {
 			DANode _node_from = _pipe_nodes.get(from);
 			DANode _node_to = _pipe_nodes.get(to);
 			if (_node_from.outEdges() == from.getConstraints().inMax()) {
-				getNotifier().fatal(
-						"Cannot connect " + from.getName() + " to " + to.getName()
-								+ ": exceeded input constraint.");
+				throw new BadConfiguration("Cannot connect " + from.getName() + " to " + to.getName()
+						+ ": exceeded input constraint.");
 			} else if (!from.getConstraints().usesSelection() && to.getConstraints().usesSelection()) {
-				getNotifier().fatal(
-						"Cannot connect a non-selection operator " + (from.getName()) + " to a selection operator "
-								+ (to.getName()) + ".");
+				throw new BadConfiguration("Cannot connect a non-selection operator " + (from.getName())
+						+ " to a selection operator "
+						+ (to.getName()) + ".");
 			} else if (!_pipeline.canConnect(_node_from, _node_to)) {
-				getNotifier().fatal("Cannot connect " + from.getName() + " to " + to.getName()
+				throw new BadConfiguration("Cannot connect " + from.getName() + " to " + to.getName()
 						+ ": connection creates cycle in pipeline.");
 			} else if (_pipeline.connect(_node_from, _node_to)) {
 				pipe_conf = new EvolutionPipeConfig(from, to);
@@ -147,7 +145,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 				_pipes.get(from).add(pipe_conf);
 			}
 		} else {
-			getNotifier().fatal("Cannot connect " + from.getName() + " to " + to.getName()
+			throw new BadConfiguration("Cannot connect " + from.getName() + " to " + to.getName()
 					+ ": operator was not created by this pipeline.");
 		}
 		return pipe_conf;
@@ -189,17 +187,21 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 				Constructor<EvolutionOperator> constr_op = (Constructor<EvolutionOperator>) conf.getOpClass()
 						.getConstructor(EvolutionPipeline.class, EvolutionOpConfig.class);
 				EvolutionOperator op = constr_op.newInstance(this, conf);
-				Population produced = op.produce();
-				if (conf == terminal) {
-					result = produced;
-				} else if (_pipes.containsKey(conf)) {
-					for (EvolutionPipeConfig epc : _pipes.get(conf)) {
-						EvolutionPipe pipe = new EvolutionPipe(epc);
-						_conf_pipes.put(epc, pipe);
-						pipe.send(produced);
+				try {
+					Population produced = op.produce();
+					if (conf == terminal) {
+						result = produced;
+					} else if (_pipes.containsKey(conf)) {
+						for (EvolutionPipeConfig epc : _pipes.get(conf)) {
+							EvolutionPipe pipe = new EvolutionPipe(epc);
+							_conf_pipes.put(epc, pipe);
+							pipe.send(produced);
+						}
+					} else {
+						getNotifier().warn("Evolution operator results ignored: " + conf.getName());
 					}
-				} else {
-					getNotifier().warn("Evolution operator results ignored: " + conf.getName());
+				} catch (BadConfiguration bc) {
+					getNotifier().fatal("Unable to produce population. " + bc.getMessage());
 				}
 
 			} catch (Exception e) {

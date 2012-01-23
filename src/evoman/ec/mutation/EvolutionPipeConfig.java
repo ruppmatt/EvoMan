@@ -43,4 +43,14 @@ public class EvolutionPipeConfig extends KeyValueStore {
 		}
 	}
 
+
+
+	public int getPriority() {
+		if (validate("priority", Integer.class)) {
+			return I("priority");
+		} else {
+			return 1;
+		}
+	}
+
 }

@@ -7,6 +7,7 @@ import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
 import evoman.ec.mutation.*;
+import evoman.evo.*;
 import evoman.evo.pop.*;
 
 
@@ -18,24 +19,24 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 
 
-	public static boolean validate(EvolutionOpConfig conf, String msg) {
+	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
 		if (!conf.validate("max_avg_depth_change", Double.class)) {
 			conf.set("max_depth_change", 1.15);
 		} else if (!conf.validate("min_avg_depth_change", Double.class)) {
 			conf.set("min_depth_change", 0.0);
 		}
 		if (conf.D("max_avg_depth_change") < conf.D("min_avg_depth_change")) {
-			msg = "Maximum average depth < Minimum average depth";
-			return false;
+			bc.append("Maximum average depth < Minimum average depth");
+
 		}
 		if (!conf.validate("prob", Double.class) || conf.D("prob") < 0.0 || conf.D("prob") > 1.0) {
-			msg = "prob not set or is not in range (0.0,1.0)";
-			return false;
+			bc.append("prob not set or is not in range (0.0,1.0)");
 		}
 		if (!conf.validate("tries", Integer.class) || conf.I("tries") < 0) {
 			conf.set("tries", 10);
 		}
-		return true;
+		bc.validate();
 	}
 
 
@@ -47,26 +48,24 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() {
+	public Population produce() throws BadConfiguration {
 		if (drainPipes()) {
 			if (_received.size() == 1) {
 				Population received = (Population) _received.values().toArray()[0];
 				Population newpop = received.clone();
 				return doMutation(newpop);
 			} else {
-				_pipeline.getNotifier()
-						.fatal(getConfig().getName() + " expected 1 population, got " + _received.size());
+				throw new BadConfiguration(getConfig().getName() + " expected 1 population, got " + _received.size());
 			}
 
 		} else {
-			_pipeline.getNotifier().fatal("Unable to process population for operator " + getConfig().getName());
+			throw new BadConfiguration("Unable to process population for operator " + getConfig().getName());
 		}
-		return null;
 	}
 
 
 
-	protected Population doMutation(Population pop) {
+	protected Population doMutation(Population pop) throws BadConfiguration {
 
 		double p = getConfig().D("prob");
 		int popsize = pop.size();
@@ -82,13 +81,13 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 			GPNode selection = finder.collect().get(0);
 			GPNode replacement = makeSubtree(t, selection);
 			if (replacement == null) {
-				_pipeline.getNotifier().fatal("Unable to generate replacement subtree in " + getConfig().getName());
+				throw new BadConfiguration("Unable to generate replacement subtree in " + getConfig().getName());
 			}
 			if (selection == t.getRoot()) {
 				t.reRoot(replacement);
 			} else {
 				if (!selection.getParent().swap(selection, replacement)) {
-					_pipeline.getNotifier().fatal("Unable to replace subtree in " + getConfig().getName());
+					throw new BadConfiguration("Unable to replace subtree in " + getConfig().getName());
 				}
 			}
 			Genotype new_gen = _pipeline.makeGenotype(t);
@@ -100,7 +99,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 
 
-	protected GPNode makeSubtree(GPTree t, GPNode selection) {
+	protected GPNode makeSubtree(GPTree t, GPNode selection) throws BadConfiguration {
 
 		// Find the allowed depths
 		double min_change = getConfig().D("min_avg_depth_change");
@@ -132,8 +131,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 				selection.getConfig().getConstraints().getReturnType(),
 				(GPNodePos) selection.getPosition().clone(), init);
 		if (root == null) {
-			_pipeline.getNotifier().warn("Cannot create root of replacement subtree.");
-			return null;
+			throw new BadConfiguration("Cannot create root of replacement subtree.");
 		} else {
 			Stack<GPNode> populate = new Stack<GPNode>();
 			populate.push(root);
@@ -144,8 +142,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 					GPNode child = t.createNode(cur, cl, cur.getPosition().newPos(pos), init);
 					pos++;
 					if (child == null) {
-						_pipeline.getNotifier().warn("Problem instantiating non-root element in subtree.");
-						return null;
+						throw new BadConfiguration("Problem instantiating non-root element in subtree.");
 					}
 					populate.push(child);
 				}
