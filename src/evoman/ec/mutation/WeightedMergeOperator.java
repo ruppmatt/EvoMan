@@ -42,9 +42,12 @@ public class WeightedMergeOperator extends EvolutionOperator {
 			int pop_size = (getConfig().I("pop_size") == Constants.ASINPUT) ? _pipeline._vm.getPopSize() : getConfig()
 					.I("pop_size");
 			double total_weight = genotypes.totalWeight();
+
 			Population new_pop = new Population(_pipeline._vm);
 			for (int k = 0; k < pop_size; k++) {
 				double w = total_weight * _pipeline.getRandom().nextDouble();
+				// System.err.println("Total weight= " + total_weight +
+				// "\t find=" + w);
 				Genotype inc = genotypes.get(w);
 				new_pop.addGenotype((Genotype) inc.clone());
 			}

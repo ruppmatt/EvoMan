@@ -16,7 +16,7 @@ public class NodeMutation extends EvolutionOperator {
 
 
 
-	public void validate(EvolutionOpConfig conf) throws BadConfiguration {
+	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
 		if (!conf.validate("prob", Double.class) || conf.D("prob") < 0.0 || conf.D("prob") > 1.0) {
 			throw new BadConfiguration("NodeMutation: missing or invalid mutation probability.");
 		}
@@ -32,7 +32,7 @@ public class NodeMutation extends EvolutionOperator {
 
 	@Override
 	public Population produce() throws BadConfiguration {
-		if (!drainPipes()) {
+		if (drainPipes()) {
 			if (_received.size() != 1) {
 				throw new BadConfiguration(getConfig().getName() + " expected 1 input population, received "
 						+ _received.size());

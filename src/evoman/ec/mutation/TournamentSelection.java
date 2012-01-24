@@ -5,7 +5,6 @@ import java.util.*;
 
 import evoman.evo.*;
 import evoman.evo.pop.*;
-import evoman.evo.structs.*;
 
 
 
@@ -24,6 +23,8 @@ public class TournamentSelection extends EvolutionOperator {
 			if (conf.I("pop_size") < 1) {
 				conf.set("pop_size", Constants.ASINPUT);
 			}
+		} else {
+			conf.set("pop_size", Constants.ASINPUT);
 		}
 		if (!conf.validate("tour_size", Integer.class)) {
 			bc.append("Tournament Selection: tournament size is missing.");
@@ -52,13 +53,10 @@ public class TournamentSelection extends EvolutionOperator {
 				num_genotypes += p.size();
 			}
 			ArrayList<Genotype> all = new ArrayList<Genotype>(num_genotypes);
-			EMState state = null;
 			for (Population p : _received.values()) {
-				if (state == null)
-					state = p.getESParent();
 				all.addAll(p.getGenotypes());
 			}
-			Population selected = new Population(state);
+			Population selected = new Population(_pipeline._vm);
 			int new_size = (pop_size != Constants.ASINPUT) ? pop_size : num_genotypes;
 			for (int i = 0; i < new_size; i++) {
 				Genotype winner = all.get(_pipeline.getRandom().nextInt(num_genotypes));

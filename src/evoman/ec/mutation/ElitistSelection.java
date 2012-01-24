@@ -15,7 +15,7 @@ public class ElitistSelection extends EvolutionOperator {
 
 
 
-	public void validate(EvolutionOpConfig conf) throws BadConfiguration {
+	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
 		if (!conf.validate("num", Integer.class) || conf.I("num") < 0) {
 			throw new BadConfiguration(conf.getName() + ": is not set or less than 0");
 		}
@@ -56,6 +56,7 @@ public class ElitistSelection extends EvolutionOperator {
 
 		for (int k = 0; k < num; k++) {
 			np.addGenotype(genotypes.get(k));
+			System.err.println("\t Add genotype with fitness + " + genotypes.get(k).getFitness());
 		}
 
 		return np;

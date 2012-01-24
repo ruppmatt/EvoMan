@@ -13,7 +13,7 @@ import evoict.*;
  */
 public class Genotype implements Cloneable, Printable {
 
-	protected final double			_fitness	= 0.0;
+	protected double				_fitness	= 0.0;
 	protected Boolean				_evaluated	= false;
 	protected final Representation	_rep;
 	protected final String			_id;
@@ -42,6 +42,19 @@ public class Genotype implements Cloneable, Printable {
 	 */
 	public double getFitness() {
 		return _fitness;
+	}
+
+
+
+	public void setFitness(double w) {
+		_evaluated = true;
+		_fitness = w;
+	}
+
+
+
+	public void reset() {
+		_evaluated = false;
 	}
 
 

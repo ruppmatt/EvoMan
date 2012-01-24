@@ -9,7 +9,7 @@ import evoman.ec.gp.*;
 
 public class FindLeaves implements FindNode {
 
-	protected ArrayList<GPNode>	leaves;
+	protected ArrayList<GPNode>	leaves	= new ArrayList<GPNode>();
 
 
 

@@ -21,12 +21,13 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
-		if (!conf.validate("max_avg_depth_change", Double.class)) {
-			conf.set("max_depth_change", 1.15);
-		} else if (!conf.validate("min_avg_depth_change", Double.class)) {
-			conf.set("min_depth_change", 0.0);
+		if (!conf.validate("max_depth", Double.class)) {
+			conf.set("max_depth", 1.15);
 		}
-		if (conf.D("max_avg_depth_change") < conf.D("min_avg_depth_change")) {
+		if (!conf.validate("min_depth", Double.class)) {
+			conf.set("min_depth", 0.0);
+		}
+		if (conf.D("max_depth") < conf.D("min_depth")) {
 			bc.append("Maximum average depth < Minimum average depth");
 
 		}
@@ -102,8 +103,8 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 	protected GPNode makeSubtree(GPTree t, GPNode selection) throws BadConfiguration {
 
 		// Find the allowed depths
-		double min_change = getConfig().D("min_avg_depth_change");
-		double max_change = getConfig().D("max_avg_depth_change");
+		double min_change = getConfig().D("min_depth");
+		double max_change = getConfig().D("max_depth");
 		FindLeaves leaves = new FindLeaves();
 		t.bfs(leaves);
 		double sum_depth = 0;
@@ -140,6 +141,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 				int pos = 0;
 				for (Class<?> cl : cur.getConfig().getConstraints().getChildTypes()) {
 					GPNode child = t.createNode(cur, cl, cur.getPosition().newPos(pos), init);
+					cur.getChildren().add(child);
 					pos++;
 					if (child == null) {
 						throw new BadConfiguration("Problem instantiating non-root element in subtree.");

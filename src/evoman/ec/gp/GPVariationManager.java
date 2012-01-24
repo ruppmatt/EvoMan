@@ -1,7 +1,6 @@
 package evoman.ec.gp;
 
 
-import evoman.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
@@ -42,7 +41,9 @@ public class GPVariationManager extends VariationManager {
 		if (_evopipeline == null) {
 			return;
 		} else {
-			_ep.setPopulation(_evopipeline.process(getPoolPopulation()));
+			Population result = _evopipeline.process(getPoolPopulation());
+			result.reset();
+			_ep.setPopulation(result);
 		}
 	}
 

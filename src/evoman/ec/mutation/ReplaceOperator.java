@@ -23,6 +23,7 @@ public class ReplaceOperator extends EvolutionOperator {
 		if (!conf.validate("replacement", String.class)) {
 			bc.append("ReplaceOperator: Replacement population not named.");
 		}
+		bc.validate();
 	}
 
 
@@ -44,7 +45,8 @@ public class ReplaceOperator extends EvolutionOperator {
 			for (EvolutionPipeConfig epc : _received.keySet()) {
 				if (epc.getSender().getName().equals(getConfig().S("background"))) {
 					background = _received.get(epc);
-				} else if (epc.getSender().getName().equals(getConfig().S("replacement"))) {
+				}
+				if (epc.getSender().getName().equals(getConfig().S("replacement"))) {
 					replacement = _received.get(epc);
 				}
 			}

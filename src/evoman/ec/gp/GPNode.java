@@ -42,7 +42,7 @@ public abstract class GPNode implements Constants, Serializable {
 	protected void doClone(GPTree t, GPNode clone) {
 		clone._num_descendents = _num_descendents;
 		for (GPNode child : _children) {
-			_children.add(child.clone(t, this));
+			clone._children.add(child.clone(t, this));
 		}
 	}
 
@@ -52,7 +52,7 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
-	ArrayList<GPNode> getChildren() {
+	public ArrayList<GPNode> getChildren() {
 		return _children;
 	}
 

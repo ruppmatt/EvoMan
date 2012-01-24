@@ -83,7 +83,7 @@ public class EvolutionOpConfig extends KeyValueStore implements Identifiable {
 		} catch (SecurityException e) {
 			throw new BadConfiguration(getName() + ": check validation visibility.");
 		} catch (NoSuchMethodException e) {
-			// Okay, there is no validation method;
+			return;
 		}
 		try {
 			v.invoke(null, this);
@@ -94,8 +94,8 @@ public class EvolutionOpConfig extends KeyValueStore implements Identifiable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.getCause().printStackTrace();
+			throw (BadConfiguration) e.getTargetException();
 		}
 
 	}

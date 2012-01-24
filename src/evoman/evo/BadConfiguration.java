@@ -30,8 +30,10 @@ public class BadConfiguration extends Exception {
 
 
 	public void validate() throws BadConfiguration {
-		if (_msg.length() > 0)
+		if (_msg.length() > 0) {
+
 			throw this;
+		}
 	}
 
 

@@ -126,7 +126,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * @param vm
 	 * @return
 	 */
-	public VariationManager getVM(VariationManager vm) {
+	public VariationManager getVM() {
 		return _vm;
 	}
 

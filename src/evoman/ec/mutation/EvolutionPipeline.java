@@ -43,7 +43,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	// Configuration objects (user configurable)
 	protected HashSet<EvolutionOpConfig>										_conf				= new HashSet<EvolutionOpConfig>();
 	protected LinkedHashMap<EvolutionOpConfig, ArrayList<EvolutionPipeConfig>>	_pipes				= new LinkedHashMap<EvolutionOpConfig, ArrayList<EvolutionPipeConfig>>();
-	protected LinkedHashMap<String, EvolutionOpConfig>							_names;
+	protected LinkedHashMap<String, EvolutionOpConfig>							_names				= new LinkedHashMap<String, EvolutionOpConfig>();
 
 	// Pipeline to store topography
 	protected Pipeline															_pipeline			= new Pipeline();
@@ -75,10 +75,12 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 */
 
 	public void addOperator(EvolutionOpConfig conf) throws BadConfiguration {
+		if (conf.getName() == null) {
+			conf._name = "Operator-" + Integer.toString(_conf.size());
+		}
 		if (_names.containsKey(conf.getName())) {
 			throw new BadConfiguration("Evolution operator with the name " + conf.getName() + " already exists.");
 		} else {
-			String msg = null;
 			try {
 				conf.validate();
 			} catch (BadConfiguration bc) {
@@ -86,7 +88,9 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 			}
 			_conf.add(conf);
 			_names.put(conf.getName(), conf);
-			_pipe_ops.put(new DANode(_pipeline), conf);
+			DANode n = new DANode(_pipeline);
+			_pipe_ops.put(n, conf);
+			_pipe_nodes.put(conf, n);
 		}
 	}
 
@@ -126,8 +130,8 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 		if (_pipe_nodes.containsKey(from) && _pipe_nodes.containsKey(to)) {
 			DANode _node_from = _pipe_nodes.get(from);
 			DANode _node_to = _pipe_nodes.get(to);
-			if (_node_from.outEdges() == from.getConstraints().inMax()) {
-				throw new BadConfiguration("Cannot connect " + from.getName() + " to " + to.getName()
+			if (_node_to.inEdges() == to.getConstraints().inMax()) {
+				throw new BadConfiguration("Cannot connect " + to.getName() + " to " + to.getName()
 						+ ": exceeded input constraint.");
 			} else if (!from.getConstraints().usesSelection() && to.getConstraints().usesSelection()) {
 				throw new BadConfiguration("Cannot connect a non-selection operator " + (from.getName())
@@ -167,33 +171,43 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 		// Begin by registering all start operators with a pipe that contains
 		// the initial population
+		Collection<DANode> start_nodes = _pipeline.getStart();
 		LinkedHashMap<EvolutionOpConfig, EvolutionPipeConfig> start_pipes = new LinkedHashMap<EvolutionOpConfig, EvolutionPipeConfig>();
-		for (DANode start : _pipeline.getStart()) {
-			EvolutionOpConfig eoc = _pipe_ops.get(start);
-			EvolutionPipeConfig start_pipe_conf = new EvolutionPipeConfig(null, eoc);
-			eoc.registerPipe(start_pipe_conf);
-			EvolutionPipe start_pipe = new EvolutionPipe(start_pipe_conf);
-			_conf_pipes.put(start_pipe_conf, start_pipe);
-			start_pipe.send(p);
+		for (DANode node : start_nodes) {
+			EvolutionOpConfig start_conf = _pipe_ops.get(node);
+			EvolutionPipeConfig new_pipe = new EvolutionPipeConfig(null, start_conf);
+			start_conf.registerPipe(new_pipe);
+			start_pipes.put(start_conf, new_pipe);
+			EvolutionPipe pipe = new EvolutionPipe(new_pipe);
+			pipe.send(_vm.getPoolPopulation());
+			_conf_pipes.put(new_pipe, pipe);
 		}
 
 		Population result = null;
 		// Every pipeline should have exactly one terminal node
 		EvolutionOpConfig terminal = _pipe_ops.get(_pipeline.getTerminal().toArray()[0]);
+		System.err.println("Evaluation order:");
+		for (DANode n : _pipeline.getEvalOrder()) {
+			EvolutionOpConfig conf = _pipe_ops.get(n);
+			System.err.println(conf.getName());
+		}
 		// Then process the pipeline using a breadth-first search order
 		for (DANode n : _pipeline.getEvalOrder()) {
 			EvolutionOpConfig conf = _pipe_ops.get(n);
+			System.err.println("\n\nAbout to process " + conf.getName());
 			try {
 				Constructor<EvolutionOperator> constr_op = (Constructor<EvolutionOperator>) conf.getOpClass()
 						.getConstructor(EvolutionPipeline.class, EvolutionOpConfig.class);
 				EvolutionOperator op = constr_op.newInstance(this, conf);
 				try {
 					Population produced = op.produce();
+					System.err.println("Success: " + conf.getName());
 					if (conf == terminal) {
 						result = produced;
 					} else if (_pipes.containsKey(conf)) {
 						for (EvolutionPipeConfig epc : _pipes.get(conf)) {
 							EvolutionPipe pipe = new EvolutionPipe(epc);
+							System.err.println("Filled pipe " + epc.toString() + " with " + pipe);
 							_conf_pipes.put(epc, pipe);
 							pipe.send(produced);
 						}
@@ -205,13 +219,16 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 				}
 
 			} catch (Exception e) {
-				getNotifier().fatal("Unable to create evolution operator: " + conf.getName());
+				e.printStackTrace();
+				getNotifier().fatal("Unable to create and/or execute evolution operator: " + conf.getName());
+				System.exit(1);
 			}
 		}
+
 		// Cleanup
 		_conf_pipes.clear();
-		for (EvolutionOpConfig start : start_pipes.keySet()) {
-			start.unregisterPipe(start_pipes.get(start));
+		for (EvolutionOpConfig conf : start_pipes.keySet()) {
+			conf.unregisterPipe(start_pipes.get(conf));
 		}
 		return result;
 	}
@@ -227,6 +244,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 * @return
 	 */
 	protected EvolutionPipe getPipe(EvolutionPipeConfig epc) {
+		System.err.println("Attempting to access pipe: " + epc);
 		if (_conf_pipes.containsKey(epc)) {
 			return _conf_pipes.get(epc);
 		} else {

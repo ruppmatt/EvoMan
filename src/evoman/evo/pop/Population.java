@@ -109,6 +109,14 @@ public class Population implements EMState, Cloneable, Printable {
 
 
 
+	public void reset() {
+		for (Genotype g : _genotypes) {
+			g.reset();
+		}
+	}
+
+
+
 	/**
 	 * Move this population to another EvoPool
 	 * 

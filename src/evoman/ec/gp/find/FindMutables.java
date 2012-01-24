@@ -9,7 +9,7 @@ import evoman.ec.gp.*;
 
 public class FindMutables implements FindNode {
 
-	protected ArrayList<GPNode>	mutables;
+	protected ArrayList<GPNode>	mutables	= new ArrayList<GPNode>();
 
 
 

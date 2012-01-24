@@ -21,7 +21,7 @@ public class CrossOver extends EvolutionOperator {
 
 
 
-	public void validate(EvolutionOpConfig conf) throws BadConfiguration {
+	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
 		if (!conf.validate("prob", Double.class) || conf.D("prob") < 0.0 || conf.D("prob") > 1.0) {
 			bc.append(conf.getName() + ": prob is either not set or out of range");
@@ -60,12 +60,14 @@ public class CrossOver extends EvolutionOperator {
 
 
 	protected Population doMutation(Population p) {
+		System.err.println("CrossOver: doMutation entered");
 		int psize = p.size();
 		double prob = getConfig().D("prob");
 		int samples = getConfig().I("sample_trials");
 		double prob_leaf = getConfig().D("prob_leaf");
 
 		int num_xover = _pipeline.getRandom().getBinomial(psize, prob);
+
 		for (int k = 0; k < num_xover; k++) {
 
 			// Find our first parent tree
@@ -77,7 +79,8 @@ public class CrossOver extends EvolutionOperator {
 			// Find our cross-over point
 			ArrayList<GPNode> targets = new ArrayList<GPNode>();
 			int trials = 0;
-			while (targets.size() == 0 || trials < samples) {
+
+			while (targets.size() == 0 && trials < samples) {
 				if (prob_leaf <= _pipeline.getRandom().nextDouble()) {
 					FindLeaves f = new FindLeaves();
 					nt.bfs(f);
@@ -87,22 +90,28 @@ public class CrossOver extends EvolutionOperator {
 					nt.bfs(f);
 					targets = f.collect();
 				}
+				trials++;
 			}
 			if (targets.size() == 0) {
 				continue;
 			}
+			System.err.println("Exted first trial loop");
 			int num_targets = targets.size();
 			GPNode xover = targets.get(_pipeline.getRandom().nextInt(num_targets));
 
 			targets = new ArrayList<GPNode>();
 			Genotype g2 = null;
-			while (targets.size() == 0 || trials < samples) {
+
+			while (targets.size() == 0 && trials < samples) {
 				int ndx2 = _pipeline.getRandom().nextInt(psize);
 				g2 = p.getGenotype(ndx2);
 				GPTree t2 = (GPTree) g2.rep();
 				FindReturnType find = new FindReturnType(xover.getConfig().getConstraints().getReturnType());
+				t2.bfs(find);
 				targets = find.collect();
+				trials++;
 			}
+
 			if (targets.size() == 0) {
 				continue;
 			}
@@ -117,6 +126,7 @@ public class CrossOver extends EvolutionOperator {
 			Genotype ng = _pipeline.makeGenotype(nt);
 			p.placeGenotype(ng, g1, g2);
 		}
+
 		return p;
 	}
 }
