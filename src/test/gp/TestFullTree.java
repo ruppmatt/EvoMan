@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 
 import org.junit.*;
 
+import evoict.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.init.*;
 import evoman.ec.gp.nonterminals.*;

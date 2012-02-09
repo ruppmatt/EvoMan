@@ -7,10 +7,8 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
-import evoman.*;
 import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 
@@ -74,7 +72,16 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	@Override
 	public Object eval(Object o) {
-		return _root.eval(o);
+		try {
+			return _root.eval(o);
+		} catch (BadNodeValue bv) {
+			getNotifier().fatal("GPTree contains a node with a bad value."
+					+ getNotifier().endl
+					+ "Node subtree: " + bv.getNode().toString()
+					+ getNotifier().endl
+					+ "Message: " + bv.getMessage());
+		}
+		return null;
 	}
 
 

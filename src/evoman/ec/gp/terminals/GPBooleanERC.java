@@ -41,7 +41,7 @@ public class GPBooleanERC extends GPMutableNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		return _value;
 	}
 

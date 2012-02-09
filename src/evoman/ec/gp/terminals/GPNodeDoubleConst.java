@@ -1,8 +1,8 @@
 package evoman.ec.gp.terminals;
 
 
+import evoict.*;
 import evoman.ec.gp.*;
-import evoman.evo.*;
 
 
 
@@ -30,7 +30,7 @@ public class GPNodeDoubleConst extends GPNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		return _value;
 	}
 

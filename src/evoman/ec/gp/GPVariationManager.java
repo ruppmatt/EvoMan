@@ -1,6 +1,7 @@
 package evoman.ec.gp;
 
 
+import evoict.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;

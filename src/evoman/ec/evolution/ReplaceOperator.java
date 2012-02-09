@@ -1,8 +1,9 @@
-package evoman.ec.mutation;
+package evoman.ec.evolution;
 
 
 import java.util.*;
 
+import evoict.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 
@@ -22,6 +23,9 @@ public class ReplaceOperator extends EvolutionOperator {
 		}
 		if (!conf.validate("replacement", String.class)) {
 			bc.append("ReplaceOperator: Replacement population not named.");
+		}
+		if (!conf.validate("attempts", Integer.class) || conf.I("attempts") < 0) {
+			bc.append("ReplacementOperator: maximum replacement attempts not set or less than 0.");
 		}
 		bc.validate();
 	}
@@ -66,6 +70,7 @@ public class ReplaceOperator extends EvolutionOperator {
 				Genotype to_replace = old_gens.get(ndx);
 				old_gens.remove(ndx);
 				new_pop.replaceGenotype(to_replace, (Genotype) replacement.getGenotype(k).clone());
+
 			}
 			return new_pop;
 

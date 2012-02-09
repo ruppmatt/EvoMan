@@ -1,4 +1,4 @@
-package evoman.evo.structs;
+package evoman.ec.evolution;
 
 import java.lang.reflect.*;
 import java.util.*;

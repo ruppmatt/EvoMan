@@ -21,7 +21,7 @@ public class GPAdd extends GPNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		Double retval = 0.0;
 		for (GPNode c : _children) {
 			retval += (Double) c.eval(context);

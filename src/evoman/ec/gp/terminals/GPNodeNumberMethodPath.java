@@ -1,10 +1,9 @@
 package evoman.ec.gp.terminals;
 
 
-import evoman.*;
+import evoict.*;
+import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
-import evoman.evo.*;
-import evoman.evo.structs.*;
 
 
 
@@ -15,29 +14,44 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 	protected MethodDictionary	_dict;
 	protected String			_path;
 	protected Double			_value;
+	protected Integer			_max_path;
 
 
 
 	public void validate(GPNodeConfig conf) throws BadConfiguration {
-		if (conf.validate("dict", MethodDictionary.class)) {
-			throw new BadConfiguration("GPNodeConfig: dict is not set correctly.");
+		BadConfiguration bc = new BadConfiguration();
+		if (!conf.validate("dict", MethodDictionary.class)) {
+			bc.append("GPNodeConfig: dict is not set correctly.");
 		}
+		if (!conf.validate("max_path", Integer.class) || conf.I("max_path") < 1) {
+			bc.append("GPNodeConfig: max_path is either not set or less than zero.");
+		}
+		bc.validate();
 	}
 
 
 
+	// TODO: Set Method Path
 	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		_path = _dict.getRandomPath();
 		_dict = (MethodDictionary) conf.get("dict");
+		_max_path = conf.I("max_path");
+		_path = _dict.getRandomPath(_max_path);
 		init();
 	}
 
 
 
 	@Override
-	public Object eval(Object entity) {
-		Number retrieved = (Number) _dict.evaluate(_path, entity);
+	public Object eval(Object entity) throws BadNodeValue {
+
+		Number retrieved;
+		try {
+			retrieved = (Number) _dict.evaluate(_path, entity);
+		} catch (UnresolvableException e) {
+			throw new BadNodeValue("Unable to resolve path + " + _path + " for entity of class "
+					+ entity.getClass().getName() + "  Resolution returns: " + e.getMessage(), this);
+		}
 		_value = retrieved.doubleValue();
 		return _value;
 	}
@@ -67,7 +81,7 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	@Override
 	public void mutate() {
-		_path = _dict.getRandomPath();
+		_path = _dict.getRandomPath(_max_path);
 	}
 
 

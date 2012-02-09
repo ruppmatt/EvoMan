@@ -1,4 +1,4 @@
-package evoman.ec.mutation;
+package evoman.ec.evolution;
 
 
 import evoict.*;

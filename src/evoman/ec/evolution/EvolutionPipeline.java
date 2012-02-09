@@ -1,4 +1,4 @@
-package evoman.ec.mutation;
+package evoman.ec.evolution;
 
 
 import java.lang.reflect.*;
@@ -186,28 +186,29 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 		Population result = null;
 		// Every pipeline should have exactly one terminal node
 		EvolutionOpConfig terminal = _pipe_ops.get(_pipeline.getTerminal().toArray()[0]);
-		System.err.println("Evaluation order:");
+		// System.err.println("Evaluation order:");
 		for (DANode n : _pipeline.getEvalOrder()) {
 			EvolutionOpConfig conf = _pipe_ops.get(n);
-			System.err.println(conf.getName());
+			// System.err.println(conf.getName());
 		}
 		// Then process the pipeline using a breadth-first search order
 		for (DANode n : _pipeline.getEvalOrder()) {
 			EvolutionOpConfig conf = _pipe_ops.get(n);
-			System.err.println("\n\nAbout to process " + conf.getName());
+			// System.err.println("\n\nAbout to process " + conf.getName());
 			try {
 				Constructor<EvolutionOperator> constr_op = (Constructor<EvolutionOperator>) conf.getOpClass()
 						.getConstructor(EvolutionPipeline.class, EvolutionOpConfig.class);
 				EvolutionOperator op = constr_op.newInstance(this, conf);
 				try {
 					Population produced = op.produce();
-					System.err.println("Success: " + conf.getName());
+					// System.err.println("Success: " + conf.getName());
 					if (conf == terminal) {
 						result = produced;
 					} else if (_pipes.containsKey(conf)) {
 						for (EvolutionPipeConfig epc : _pipes.get(conf)) {
 							EvolutionPipe pipe = new EvolutionPipe(epc);
-							System.err.println("Filled pipe " + epc.toString() + " with " + pipe);
+							// System.println("Filled pipe " + epc.toString() +
+							// " with " + pipe);
 							_conf_pipes.put(epc, pipe);
 							pipe.send(produced);
 						}
@@ -244,7 +245,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 * @return
 	 */
 	protected EvolutionPipe getPipe(EvolutionPipeConfig epc) {
-		System.err.println("Attempting to access pipe: " + epc);
+		// System.err.println("Attempting to access pipe: " + epc);
 		if (_conf_pipes.containsKey(epc)) {
 			return _conf_pipes.get(epc);
 		} else {

@@ -48,7 +48,7 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
-	abstract public Object eval(Object context);
+	abstract public Object eval(Object context) throws BadNodeValue;
 
 
 

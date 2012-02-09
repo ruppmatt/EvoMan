@@ -1,9 +1,8 @@
 package evoman.ec.gp.terminals;
 
 
-import evoman.*;
+import evoict.*;
 import evoman.ec.gp.*;
-import evoman.evo.*;
 
 
 
@@ -35,7 +34,7 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		return _value;
 	}
 

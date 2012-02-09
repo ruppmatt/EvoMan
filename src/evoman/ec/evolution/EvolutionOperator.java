@@ -1,9 +1,10 @@
-package evoman.ec.mutation;
+package evoman.ec.evolution;
 
 
 import java.io.*;
 import java.util.*;
 
+import evoict.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 
@@ -29,9 +30,8 @@ public abstract class EvolutionOperator implements Serializable {
 		boolean ready = true;
 		for (EvolutionPipeConfig epc : _conf._epc) {
 			EvolutionPipe pipe = _pipeline.getPipe(epc);
-			System.err.println("EvolutionOperator: tring to access pipe " + pipe + " from configuration " + epc);
-			if (epc.getSender() != null)
-				System.err.println("\t from: " + epc.getSender().getName());
+			// System.println("EvolutionOperator: tring to access pipe " + pipe
+			// + " from configuration " + epc);
 			ready = ready && !_pipeline.getPipe(epc).empty();
 		}
 		return ready;

@@ -20,7 +20,7 @@ public class GPMultiply extends GPNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		Double v = (Double) _children.get(0).eval(context) *
 				(Double) _children.get(1).eval(context);
 		_value = v;

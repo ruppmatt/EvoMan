@@ -68,4 +68,13 @@ public class GPNodeConstraints implements Serializable {
 		return _child_types.size();
 	}
 
+
+
+	public void setChildTypes(Class<?>[] types) {
+		_child_types = new ArrayList<Class<?>>();
+		for (Class<?> cl : types) {
+			_child_types.add(cl);
+		}
+	}
+
 }

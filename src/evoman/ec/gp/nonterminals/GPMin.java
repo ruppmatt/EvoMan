@@ -20,7 +20,7 @@ public class GPMin extends GPNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		Double _v1 = (Double) _children.get(0).eval(context);
 		Double _v2 = (Double) _children.get(1).eval(context);
 		_value = (_v1 < _v2) ? _v1 : _v2;

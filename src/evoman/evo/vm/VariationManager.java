@@ -5,7 +5,7 @@ import java.io.*;
 
 import evoict.*;
 import evoict.io.*;
-import evoman.ec.mutation.*;
+import evoman.ec.evolution.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 

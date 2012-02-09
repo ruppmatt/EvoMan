@@ -3,16 +3,15 @@ package test.gp;
 
 import static org.junit.Assert.*;
 
-import java.util.*;
-
 import org.junit.*;
 
+import evoict.*;
+import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.init.*;
 import evoman.ec.gp.mutation.*;
 import evoman.ec.gp.nonterminals.*;
 import evoman.ec.gp.terminals.*;
-import evoman.ec.mutation.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
@@ -102,6 +101,7 @@ public class TestPi {
 		EvolutionOpConfig replace = new EvolutionOpConfig("Replace", ReplaceOperator.class);
 		replace.set("background", "Merge");
 		replace.set("replacement", "Elitism");
+		replace.set("attempts", 1000);
 		try {
 			ep.addOperator(elitism);
 			ep.addOperator(tour_sel);
@@ -124,29 +124,21 @@ public class TestPi {
 		root.getVM().addEP(ep);
 		root.init();
 
-		ArrayList<String> results = new ArrayList<String>();
-		for (int k = 0; k < 500; k++) {
-			double avg_w = 0.0;
-			double avg_pi = 0.0;
-			double best = 0.0;
+		double last_best = Double.MIN_VALUE;
+		for (int gen = 0; gen < 100; gen++) {
+			double best_pi = 0.0;
+			double best_w = 0.0;
 			for (Genotype g : root.getPopulation().getGenotypes()) {
 				double v = (Double) g.rep().eval(null);
 				double w = Math.pow(v - Math.PI, -2);
 				g.setFitness(w);
-				avg_w += w / root.getPopulation().size();
-				avg_pi += v / root.getPopulation().size();
-				best = (Math.abs(Math.PI - v) < Math.abs(Math.PI - best)) ? v : best;
+				best_pi = (Math.abs(Math.PI - v) < Math.abs(Math.PI - best_pi)) ? v : best_pi;
+				best_w = (w > best_w) ? w : best_w;
 			}
-			results.add(Integer.toString(k) + "\t" + Double.toString(avg_w) + "\t" + Double.toString(avg_pi) + "\t"
-					+ Double.toString(best));
-			root.getVM().evolve();
+			assertTrue(last_best <= best_w);
+			last_best = best_w;
 		}
 
-		System.err.println("Done evaluating.  Pop size =" + root.getPopulation().size());
-
-		for (int k = 0; k < results.size(); k++) {
-			System.err.println(results.get(k));
-		}
 		int count = 0;
 		for (Genotype g : root.getPopulation().getGenotypes()) {
 			try {
@@ -156,7 +148,7 @@ public class TestPi {
 			}
 		}
 
-		System.err.println("Invalid genotypes: " + count);
+		assertEquals(count, 0);
 
 	}
 }

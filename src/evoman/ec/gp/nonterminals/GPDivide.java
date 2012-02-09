@@ -20,7 +20,7 @@ public class GPDivide extends GPNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		Double v = (Double) _children.get(0).eval(context);
 		Double div = (Double) _children.get(1).eval(context);
 		if (div == 0.0) {

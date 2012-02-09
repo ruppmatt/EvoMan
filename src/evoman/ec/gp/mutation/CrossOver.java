@@ -3,9 +3,10 @@ package evoman.ec.gp.mutation;
 
 import java.util.*;
 
+import evoict.*;
+import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
-import evoman.ec.mutation.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 
@@ -60,7 +61,6 @@ public class CrossOver extends EvolutionOperator {
 
 
 	protected Population doMutation(Population p) {
-		System.err.println("CrossOver: doMutation entered");
 		int psize = p.size();
 		double prob = getConfig().D("prob");
 		int samples = getConfig().I("sample_trials");
@@ -95,7 +95,6 @@ public class CrossOver extends EvolutionOperator {
 			if (targets.size() == 0) {
 				continue;
 			}
-			System.err.println("Exted first trial loop");
 			int num_targets = targets.size();
 			GPNode xover = targets.get(_pipeline.getRandom().nextInt(num_targets));
 

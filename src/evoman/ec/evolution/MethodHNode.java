@@ -1,4 +1,4 @@
-package evoman.evo.structs;
+package evoman.ec.evolution;
 
 
 import java.lang.reflect.*;
@@ -6,6 +6,7 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.evo.structs.*;
 
 
 
@@ -28,8 +29,8 @@ public class MethodHNode implements EMState {
 
 
 	public boolean addMethod(String path, Method m) {
-		String prefix = Resolver.getPrefix(path);
-		String name = Resolver.extractPrefix(path);
+		String prefix = PathResolver.getPrefix(path);
+		String name = PathResolver.extractPrefix(path);
 		if (prefix == null) {
 			if (_methods.containsKey(name)) {
 				_total_weight++;
@@ -52,8 +53,8 @@ public class MethodHNode implements EMState {
 
 
 	public Object evaluate(String path, Object o, Object... args) {
-		String prefix = Resolver.getPrefix(path);
-		String name = Resolver.extractPrefix(path);
+		String prefix = PathResolver.getPrefix(path);
+		String name = PathResolver.extractPrefix(path);
 		if (prefix == null) {
 			if (_methods.containsKey(name)) {
 				return doMethod(_methods.get(name), o, args);

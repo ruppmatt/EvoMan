@@ -27,7 +27,7 @@ public class GPConditional extends GPNode {
 
 
 	@Override
-	public Object eval(Object context) {
+	public Object eval(Object context) throws BadNodeValue {
 		_cexpr = (Boolean) _children.get(0).eval(context);
 		_v1 = (Double) _children.get(1).eval(context);
 		_v2 = (Double) _children.get(2).eval(context);

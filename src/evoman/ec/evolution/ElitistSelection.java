@@ -1,8 +1,9 @@
-package evoman.ec.mutation;
+package evoman.ec.evolution;
 
 
 import java.util.*;
 
+import evoict.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 
@@ -56,7 +57,8 @@ public class ElitistSelection extends EvolutionOperator {
 
 		for (int k = 0; k < num; k++) {
 			np.addGenotype(genotypes.get(k));
-			System.err.println("\t Add genotype with fitness + " + genotypes.get(k).getFitness());
+			// System.err.println("\t Add genotype with fitness + " +
+			// genotypes.get(k).getFitness());
 		}
 
 		return np;
