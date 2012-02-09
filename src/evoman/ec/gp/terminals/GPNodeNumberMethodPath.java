@@ -2,6 +2,7 @@ package evoman.ec.gp.terminals;
 
 
 import evoict.*;
+import evoict.reflection.*;
 import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 
@@ -36,7 +37,11 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 		super(t, conf, parent, pos);
 		_dict = (MethodDictionary) conf.get("dict");
 		_max_path = conf.I("max_path");
-		_path = _dict.getRandomPath(_max_path);
+		try {
+			_path = _dict.getRandomPath(t.getRandom(), _max_path);
+		} catch (BadConfiguration e) {
+			_path = null;
+		}
 		init();
 	}
 
@@ -81,7 +86,11 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	@Override
 	public void mutate() {
-		_path = _dict.getRandomPath(_max_path);
+		try {
+			_path = _dict.getRandomPath(_tree.getRandom(), _max_path);
+		} catch (BadConfiguration e) {
+			_path = null;
+		}
 	}
 
 
