@@ -5,6 +5,13 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPDivide divides the first double-valued child by the second. In the event of
+ * a divide-by-zero, a NaN is returned.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "Divide", return_type = Double.class, child_types = { Double.class, Double.class })
 public class GPDivide extends GPNode {
 
@@ -21,8 +28,8 @@ public class GPDivide extends GPNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		Double v = (Double) _children.get(0).eval(context);
-		Double div = (Double) _children.get(1).eval(context);
+		Double v = (Double) _children[0].eval(context);
+		Double div = (Double) _children[1].eval(context);
 		if (div == 0.0) {
 			_value = Double.NaN;
 		} else {

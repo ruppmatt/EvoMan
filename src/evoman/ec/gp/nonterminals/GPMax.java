@@ -5,6 +5,12 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPMax returns the maximum of two double-valued children.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "Max", return_type = Double.class, child_types = { Double.class, Double.class })
 public class GPMax extends GPNode {
 
@@ -21,8 +27,8 @@ public class GPMax extends GPNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		Double _v1 = (Double) _children.get(0).eval(context);
-		Double _v2 = (Double) _children.get(1).eval(context);
+		Double _v1 = (Double) _children[0].eval(context);
+		Double _v2 = (Double) _children[1].eval(context);
 		_value = (_v1 > _v2) ? _v1 : _v2;
 		return _value;
 	}

@@ -1,11 +1,25 @@
 package evoman.ec.gp.init;
 
 
+import evoict.*;
 import evoman.ec.gp.*;
 import evoman.evo.structs.*;
 
 
 
+/**
+ * GPFullTree constructs a new (sub)tree with all leaves at the a depth
+ * specified by max_depth. In the event max_depth exceeds the maximum depth
+ * allowed by a GP Tree's configuration, the latter is used.
+ * 
+ * 
+ * Required configuration:
+ * "depth"
+ * The depth of the (sub)tree.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPInitDescriptor(name = "FullTree")
 public class GPFullTree extends GPTreeInitializer {
 
@@ -15,19 +29,14 @@ public class GPFullTree extends GPTreeInitializer {
 
 
 
-	public static boolean validate(GPInitConfig conf, GPTree t, String msg) {
+	public static void validate(GPInitConfig conf) throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
 		if (conf.validate("depth", Integer.class)) {
 			if (conf.I("depth") < 0) {
-				msg = "Tree depth cannot be negative.";
-				return false;
-			} else if (conf.I("depth") > t.getConfig().I("max_depth")) {
-				msg = "Tree initializer maximum depth greater than allowed.";
-				return false;
+				bc.append("Tree depth cannot be negative.");
 			}
-			return true;
-		} else {
-			return false;
 		}
+		bc.validate();
 	}
 
 
@@ -42,7 +51,8 @@ public class GPFullTree extends GPTreeInitializer {
 	@Override
 	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl) {
 		int depth = (parent == null) ? -1 : parent.getDepth();
-		if (depth == _max_depth - 1) {
+		int max = (_max_depth > t.getConfig().getMaxDepth()) ? _max_depth : t.getConfig().getMaxDepth();
+		if (depth == max - 1) {
 			return true;
 		} else {
 			return false;

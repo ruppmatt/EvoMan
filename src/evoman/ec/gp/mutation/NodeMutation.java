@@ -5,7 +5,6 @@ import evoict.*;
 import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 
 
@@ -54,12 +53,22 @@ public class NodeMutation extends EvolutionOperator {
 
 
 	protected Population doMutation(Population p) {
-		Double prob = getConfig().D("prob");
+		Double prob = getConfig().D("prob"); // The probability of mutation
+
+		/**
+		 * For all genotypes in the tree, collect the ones that are mutable.
+		 * Even if the genotype is mutable, check to see if there are
+		 * other restrictions placed on it by the tree (e.g. if it is the
+		 * root of a fixed-root tree, it can't mutate). Mutate the node
+		 * randomly with a probably set by "prob".
+		 */
 		for (Genotype g : p.getGenotypes()) {
 			GPTree t = (GPTree) g.rep();
 			FindMutables finder = new FindMutables();
 			t.bfs(finder);
 			for (GPNode n : finder.collect()) {
+				if (!t.canAlter(n))
+					continue;
 				if (_pipeline.getRandom().nextDouble() <= prob) {
 					((GPMutableNode) n).mutate();
 				}

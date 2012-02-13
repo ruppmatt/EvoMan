@@ -7,6 +7,12 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * FindMutables collects nodes that are mutable.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class FindMutables implements FindNode {
 
 	protected ArrayList<GPNode>	mutables	= new ArrayList<GPNode>();
@@ -15,7 +21,7 @@ public class FindMutables implements FindNode {
 
 	@Override
 	public void examine(GPNode n) {
-		if (n instanceof GPMutableNode) {
+		if (n instanceof GPMutableNode && n.getTree().canAlter(n)) {
 			mutables.add(n);
 		}
 	}

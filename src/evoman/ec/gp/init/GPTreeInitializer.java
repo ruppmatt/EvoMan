@@ -10,6 +10,12 @@ import evoman.evo.structs.*;
 
 
 
+/**
+ * GPTreeInitializer constructs a new (sub)tree.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public abstract class GPTreeInitializer implements EMState, Serializable {
 
 	private static final long	serialVersionUID	= 1L;
@@ -18,6 +24,14 @@ public abstract class GPTreeInitializer implements EMState, Serializable {
 
 
 
+	/**
+	 * Create a new initializer
+	 * 
+	 * @param state
+	 *            EMState for random number generation
+	 * @param conf
+	 *            Initializer configuration
+	 */
 	public GPTreeInitializer(EMState state, GPInitConfig conf) {
 		_state = state;
 		_conf = conf;

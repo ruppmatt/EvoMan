@@ -6,6 +6,20 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPDoubleERC is a node that stores an ephemeral random constant within a
+ * specified range. This value may be changed via mutation.
+ * 
+ * Configuration requires:
+ * "min"
+ * The minimum value of the constant.
+ * 
+ * "max"
+ * The maximum value of the constant.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "ERC", return_type = Double.class, child_types = {})
 public class GPDoubleERC extends GPMutableNode {
 

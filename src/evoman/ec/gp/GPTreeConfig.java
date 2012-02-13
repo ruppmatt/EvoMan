@@ -7,6 +7,12 @@ import evoman.evo.structs.*;
 
 
 
+/**
+ * A GPTreeConfig contains global configuration information about a GPTree.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class GPTreeConfig extends KeyValueStore {
 
 	private static final long	serialVersionUID	= 1L;

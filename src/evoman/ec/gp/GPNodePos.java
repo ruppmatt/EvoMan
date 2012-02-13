@@ -2,52 +2,85 @@ package evoman.ec.gp;
 
 
 import java.io.*;
-import java.util.*;
 
 import evoman.evo.*;
 
 
 
+/**
+ * GPNodePos gives information about where a node is located in the tree by
+ * listing the order of its ascendents.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class GPNodePos implements Serializable, Cloneable {
 
-	private static final long		serialVersionUID	= 1L;
-	protected ArrayList<Integer>	_pos;
+	private static final long	serialVersionUID	= 1L;
+	protected int[]				_pos;
 
 
 
+	/**
+	 * Create an empty position.
+	 */
 	public GPNodePos() {
-		_pos = new ArrayList<Integer>();
+		_pos = null;
 	}
 
 
 
+	/**
+	 * Return the depth indicated by the position.
+	 * 
+	 * @return
+	 */
 	public int getDepth() {
-		return _pos.size() + 1;
+		return (_pos == null) ? 1 : _pos.length + 1;
 	}
 
 
 
+	/**
+	 * Return the position of its parent
+	 * 
+	 * @return
+	 */
 	public int getLastPos() {
-		if (_pos.size() == 0) {
+		if (_pos.length < 2) {
 			return Constants.UNDEFINED;
 		} else {
-			return _pos.get(_pos.size() - 1);
+			return _pos[_pos.length - 2];
 		}
 	}
 
 
 
+	/**
+	 * Create a new position
+	 * 
+	 * @param pos
+	 *            The location of this new position in relation to other
+	 *            children of the same node
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public GPNodePos newPos(int pos) {
 		GPNodePos ret = new GPNodePos();
-		ret._pos = (ArrayList<Integer>) _pos.clone();
-		ret._pos.add(pos);
+		int new_length = (_pos == null) ? 1 : _pos.length + 1;
+		ret._pos = new int[new_length];
+		ret._pos[new_length - 1] = pos;
 		return ret;
 	}
 
 
 
-	public ArrayList<Integer> getPos() {
+	/**
+	 * Return the position of the node
+	 * 
+	 * @return
+	 */
+	public int[] getPos() {
 		return _pos;
 	}
 
@@ -55,9 +88,18 @@ public class GPNodePos implements Serializable, Cloneable {
 
 	@Override
 	@SuppressWarnings("unchecked")
+	/**
+	 * Clone the position information
+	 */
 	public Object clone() {
 		GPNodePos cl = new GPNodePos();
-		cl._pos = (ArrayList<Integer>) _pos.clone();
-		return cl;
+		if (_pos == null) {
+			return cl;
+		} else {
+			cl._pos = new int[_pos.length];
+			for (int k = 0; k < _pos.length; k++)
+				cl._pos[k] = _pos[k];
+			return cl;
+		}
 	}
 }

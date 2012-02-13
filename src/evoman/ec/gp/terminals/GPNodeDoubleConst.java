@@ -6,6 +6,16 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPNodeDoubleConst creates a constant with a particular immutable value.
+ * 
+ * Configuration requires:
+ * "value"
+ * The value of the constant.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "GPNodeDoubleConst", return_type = Double.class, child_types = {})
 public class GPNodeDoubleConst extends GPNode {
 

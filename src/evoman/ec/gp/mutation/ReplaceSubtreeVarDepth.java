@@ -8,7 +8,6 @@ import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 
 
@@ -23,20 +22,20 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 	public static void validate(EvolutionOpConfig conf) throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
 		if (!conf.validate("max_depth", Double.class)) {
-			conf.set("max_depth", 1.15);
+			bc.append("ReplaceSubtreeVarDepth: max_depth is not set.");
 		}
 		if (!conf.validate("min_depth", Double.class)) {
-			conf.set("min_depth", 0.0);
+			bc.append("ReplaceSubtreeVarDepth: min_depth is not set.");
 		}
+		bc.validate();
 		if (conf.D("max_depth") < conf.D("min_depth")) {
-			bc.append("Maximum average depth < Minimum average depth");
-
+			bc.append("ReplaceSubtreeVarDepth: Maximum average depth < Minimum average depth");
 		}
 		if (!conf.validate("prob", Double.class) || conf.D("prob") < 0.0 || conf.D("prob") > 1.0) {
-			bc.append("prob not set or is not in range (0.0,1.0)");
+			bc.append("ReplaceSubtreeVarDepth: prob not set or is not in range (0.0,1.0)");
 		}
-		if (!conf.validate("tries", Integer.class) || conf.I("tries") < 0) {
-			conf.set("tries", 10);
+		if (!conf.validate("max_tries", Integer.class) || conf.I("max_tries") < 0) {
+			bc.append("ReplaceSubtreeVarDepth: max_tries is either not set or invalid.");
 		}
 		bc.validate();
 	}
@@ -67,24 +66,53 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 
 
+	/**
+	 * 
+	 * @param pop
+	 * @return a mutated population
+	 * @throws BadConfiguration
+	 */
 	protected Population doMutation(Population pop) throws BadConfiguration {
 
+		// Find the number of trees to have sub-tree replacements
 		double p = getConfig().D("prob");
 		int popsize = pop.size();
 		int n = _pipeline.getRandom().getBinomial(popsize, p);
 
+		/*
+		 * Find n GP trees that need to have a subtree replaced. Once a random
+		 * tree is picked, clone it. Then find a random node in the tree to
+		 * serve as the replacement. This selected node needs to be alterable.
+		 */
 		for (int k = 0; k < n; k++) {
 			int gen_ndx = _pipeline.getRandom().nextInt(popsize);
 			Genotype parent = pop.getGenotype(gen_ndx);
 			GPTree t = (GPTree) parent.rep().clone();
-			int node_ndx = _pipeline.getRandom().nextInt(t.getSize());
-			FindByIndex finder = new FindByIndex(node_ndx);
-			t.bfs(finder);
-			GPNode selection = finder.collect().get(0);
+			GPNode selection = null;
+			int tries = 0;
+			int max_tries = getConfig().I("max_tries");
+			do {
+				int node_ndx = _pipeline.getRandom().nextInt(t.getSize());
+				FindByIndex finder = new FindByIndex(node_ndx);
+				t.bfs(finder);
+				selection = finder.collect().get(0);
+				tries++;
+			} while (selection == null || !t.canAlter(selection) || tries < max_tries);
+
+			// If we can't find a node to do the replacement, skip this and go
+			// to the next
+			if (selection == null || !t.canAlter(selection)) {
+				continue;
+			}
+
+			// Construct a new subtree to replace the current one
 			GPNode replacement = makeSubtree(t, selection);
 			if (replacement == null) {
 				throw new BadConfiguration("Unable to generate replacement subtree in " + getConfig().getName());
 			}
+
+			// Try to reRoot the tree if necessary or swap the selection with
+			// the new replacement subtree
 			if (selection == t.getRoot()) {
 				t.reRoot(replacement);
 			} else {
@@ -92,6 +120,9 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 					throw new BadConfiguration("Unable to replace subtree in " + getConfig().getName());
 				}
 			}
+
+			// Construct a new genotype for the replacement tree and place it in
+			// the population
 			Genotype new_gen = _pipeline.makeGenotype(t);
 			pop.placeGenotype(new_gen, parent);
 		}
@@ -101,13 +132,26 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 
 
+	/**
+	 * Make a new subtree based on a node that is to be replaced.
+	 * 
+	 * @param t
+	 *            The tree to place the new subtree
+	 * @param selection
+	 *            The node to be replaced
+	 * @return
+	 *         The root of the new subtree
+	 * @throws BadConfiguration
+	 */
 	protected GPNode makeSubtree(GPTree t, GPNode selection) throws BadConfiguration {
 
 		// Find the allowed depths
+		// Min and max depth are based on multiples of the average depth of the
+		// selected subtree
 		double min_change = getConfig().D("min_depth");
 		double max_change = getConfig().D("max_depth");
 		FindLeaves leaves = new FindLeaves();
-		t.bfs(leaves);
+		t.bfs(leaves, selection);
 		double sum_depth = 0;
 		for (GPNode leaf : leaves.collect()) {
 			sum_depth += leaf.getDepth();
@@ -119,6 +163,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 			min_avg_depth = 1;
 		}
 
+		// Set up a new tree initializer
 		GPInitConfig conf = new GPInitConfig();
 		conf.set("min_depth", min_avg_depth);
 		conf.set("max_depth", max_avg_depth);
@@ -129,21 +174,23 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		}
 		GPVarDepth init = new GPVarDepth(_pipeline.getESParent(), conf);
 
+		// Create the root of the new tree.
 		GPNode root = t.createNode(selection.getParent(),
 				selection.getConfig().getConstraints().getReturnType(),
 				(GPNodePos) selection.getPosition().clone(), init);
 		if (root == null) {
 			throw new BadConfiguration("Cannot create root of replacement subtree.");
 		} else {
+
+			// Go ahead and create the new subtree
 			Stack<GPNode> populate = new Stack<GPNode>();
 			populate.push(root);
 			while (!populate.isEmpty()) {
 				GPNode cur = populate.pop();
-				int pos = 0;
-				for (Class<?> cl : cur.getConfig().getConstraints().getChildTypes()) {
-					GPNode child = t.createNode(cur, cl, cur.getPosition().newPos(pos), init);
-					cur.getChildren().add(child);
-					pos++;
+				Class<?>[] child_types = cur.getConfig().getConstraints().getChildTypes();
+				for (int k = 0; k < cur.getConfig().getConstraints().numChildren(); k++) {
+					GPNode child = t.createNode(cur, child_types[k], cur.getPosition().newPos(k), init);
+					cur.getChildren()[k] = child;
 					if (child == null) {
 						throw new BadConfiguration("Problem instantiating non-root element in subtree.");
 					}

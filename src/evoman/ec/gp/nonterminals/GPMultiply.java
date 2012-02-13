@@ -5,6 +5,12 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPMultiply performs multiplication on two double children.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "Multiply", return_type = Double.class, child_types = { Double.class, Double.class })
 public class GPMultiply extends GPNode {
 
@@ -21,8 +27,8 @@ public class GPMultiply extends GPNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		Double v = (Double) _children.get(0).eval(context) *
-				(Double) _children.get(1).eval(context);
+		Double v = (Double) _children[0].eval(context) *
+				(Double) _children[1].eval(context);
 		_value = v;
 		return _value;
 	}

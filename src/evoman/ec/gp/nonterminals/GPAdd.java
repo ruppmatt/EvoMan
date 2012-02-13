@@ -5,6 +5,12 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPAdd adds the first double-valued child to the second double-valued child.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "Add", return_type = Double.class, child_types = { Double.class, Double.class })
 public class GPAdd extends GPNode {
 

@@ -5,6 +5,13 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPGreaterThan returns true if the first double-valued child is greater than
+ * the secon double-valued child.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "GreaterThan", return_type = Boolean.class, child_types = { Double.class, Double.class })
 public class GPGreaterThan extends GPNode {
 
@@ -21,8 +28,8 @@ public class GPGreaterThan extends GPNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		Double lhs = (Double) _children.get(0).eval(context);
-		Double rhs = (Double) _children.get(1).eval(context);
+		Double lhs = (Double) _children[0].eval(context);
+		Double rhs = (Double) _children[1].eval(context);
 		_value = (lhs > rhs) ? true : false;
 		return _value;
 	}

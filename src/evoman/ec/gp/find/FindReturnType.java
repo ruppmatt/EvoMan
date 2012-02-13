@@ -7,6 +7,12 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * Find return type collects nodes that return a particular class.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class FindReturnType implements FindNode {
 
 	ArrayList<GPNode>	_rettype	= new ArrayList<GPNode>();
@@ -14,6 +20,11 @@ public class FindReturnType implements FindNode {
 
 
 
+	/**
+	 * 
+	 * @param cl
+	 *            The return type of the nodes being collected
+	 */
 	public FindReturnType(Class<?> cl) {
 		_cl = cl;
 	}

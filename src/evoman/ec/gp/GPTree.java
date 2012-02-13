@@ -135,7 +135,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-
+			e.getCause().printStackTrace();
 			getNotifier().fatal("Unable to instantiate GPNode:" + conf.getNodeClass());
 		}
 		return null; // Should never be reached
@@ -153,6 +153,22 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
+	public int getSize() {
+		LinkedList<GPNode> q = new LinkedList<GPNode>();
+		q.add(_root);
+		int count = 0;
+		while (!q.isEmpty()) {
+			count++;
+			GPNode cur = q.poll();
+			for (int k = 0; k < cur.numChildren(); k++) {
+				q.add(cur.getChildren()[k]);
+			}
+		}
+		return count;
+	}
+
+
+
 	@Override
 	public Object clone() {
 		GPTree newtree = new GPTree(_state, _config);
@@ -162,23 +178,48 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
-	public int getSize() {
-		return _root._num_descendents + 1;
+	public boolean reRoot(GPNode newroot) {
+		_root = newroot;
+		_root.rebase(null, -1);
+		return true;
 	}
 
 
 
-	public void reRoot(GPNode newroot) {
-		_root = newroot;
+	public boolean canAlter(GPNode n) {
+		return true;
+	}
+
+
+
+	public void bfs(FindNode fn, GPNode start) {
+		LinkedList<GPNode> q = new LinkedList<GPNode>();
+		q.add(start);
+		while (!q.isEmpty() && !fn.done()) {
+			GPNode n = q.poll();
+			fn.examine(n);
+			GPNode[] children = n.getChildren();
+			if (children != null) {
+				for (int k = 0; k < children.length; k++) {
+					q.add(children[k]);
+				}
+			}
+		}
 	}
 
 
 
 	public void bfs(FindNode fn) {
-		LinkedList<GPNode> q = new LinkedList<GPNode>();
-		q.add(_root);
+		bfs(fn, _root);
+	}
+
+
+
+	public void dfs(FindNode fn, GPNode start) {
+		Stack<GPNode> q = new Stack<GPNode>();
+		q.add(start);
 		while (!q.isEmpty() && !fn.done()) {
-			GPNode n = q.poll();
+			GPNode n = q.pop();
 			fn.examine(n);
 			for (GPNode child : n.getChildren()) {
 				q.add(child);
@@ -189,15 +230,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 	public void dfs(FindNode fn) {
-		Stack<GPNode> q = new Stack<GPNode>();
-		q.add(_root);
-		while (!q.isEmpty() && !fn.done()) {
-			GPNode n = q.pop();
-			fn.examine(n);
-			for (GPNode child : n.getChildren()) {
-				q.add(child);
-			}
-		}
+		dfs(fn, _root);
 	}
 
 

@@ -5,6 +5,12 @@ import evoict.*;
 
 
 
+/**
+ * BadNodeValue returns information about a faulty node evaluation.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class BadNodeValue extends BadConfiguration {
 
 	/**

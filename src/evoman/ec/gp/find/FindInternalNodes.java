@@ -7,6 +7,12 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * FindInternalNodes collects all non-terminal nodes in a tree.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class FindInternalNodes implements FindNode {
 
 	ArrayList<GPNode>	_internal	= new ArrayList<GPNode>();

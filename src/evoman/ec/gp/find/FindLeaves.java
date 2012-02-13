@@ -7,6 +7,13 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * FindLeaves collects the leaves of a tree.
+ * 
+ * @author ruppmatt
+ * 
+ */
+
 public class FindLeaves implements FindNode {
 
 	protected ArrayList<GPNode>	leaves	= new ArrayList<GPNode>();

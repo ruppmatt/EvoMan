@@ -6,15 +6,25 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
-import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
 
+/**
+ * The GPNodeDirectory contains a listing of GP node configurations. It also
+ * performs validation checks on the nodes and provides an interface to get
+ * different types of nodes out of the directory.
+ * 
+ * @author ruppmatt
+ * 
+ */
+
 public class GPNodeDirectory implements EMState {
 
+	// A link to the parent EMState object
 	EMState										_parent;
 
+	// A list of all configuration objects
 	ArrayList<GPNodeConfig>						_all		= new ArrayList<GPNodeConfig>();
 
 	// Sorted by return type
@@ -24,13 +34,31 @@ public class GPNodeDirectory implements EMState {
 
 
 
+	/**
+	 * Create a new GPNode directory. An EMState parent is required.
+	 * 
+	 * @param parent
+	 *            EMState parent required for notifier and random number
+	 *            generation.
+	 */
 	public GPNodeDirectory(EMState parent) {
 		_parent = parent;
 	}
 
 
 
+	/**
+	 * Add a new node configuration to the directory. The configuration attempt
+	 * be validated. Invalid configurations will throw a BadConfiguration.
+	 * 
+	 * @param conf
+	 *            GPNode configuration to add
+	 * @throws BadConfiguration
+	 *             If there is something wrong with the configuration
+	 */
 	public void addNodeConfig(GPNodeConfig conf) throws BadConfiguration {
+
+		// Check the contents of the configuration
 		if (conf == null) {
 			throw new BadConfiguration("Cannot add GPNode with null configuration.");
 		} else if (conf.getConstraints() == null) {
@@ -38,24 +66,29 @@ public class GPNodeDirectory implements EMState {
 		} else if (conf.getNodeClass() == null) {
 			throw new BadConfiguration("Cannot add GPNode with null class");
 		}
-		GPNodeConstraints cnstr = conf.getConstraints();
-		Class<?> ret = cnstr.getReturnType();
-		int num_child = cnstr.numChildren();
 
-		_all.add(conf);
-
+		// Try to validate the configuration
 		try {
 			validateNodeConfig(conf);
 		} catch (BadConfiguration e) {
 			throw e;
 		}
 
-		if (num_child == 0) {
+		// Collect information about the configuration for putting it into the
+		// directory correctly
+		GPNodeConstraints cnstr = conf.getConstraints();
+		Class<?> ret = cnstr.getReturnType();
+		int num_child = cnstr.numChildren();
+
+		// Add to the directory
+		_all.add(conf);
+
+		if (num_child == 0) { // Terminal check
 			if (!_terminals.containsKey(ret)) {
 				_terminals.put(ret, new ArrayList<GPNodeConfig>());
 			}
 			_terminals.get(ret).add(conf);
-		} else {
+		} else { // Function (internal) check
 			if (!_functions.containsKey(ret)) {
 				_functions.put(ret, new ArrayList<GPNodeConfig>());
 			}
@@ -66,6 +99,11 @@ public class GPNodeDirectory implements EMState {
 
 
 
+	/**
+	 * Get a random configuration from the directory.
+	 * 
+	 * @return
+	 */
 	public GPNodeConfig random() {
 		if (_all.size() == 0) {
 			return null;
@@ -76,6 +114,13 @@ public class GPNodeDirectory implements EMState {
 
 
 
+	/**
+	 * Get a random configuration from a list of configurations
+	 * 
+	 * @param avail
+	 *            List of configurations to select randomly from
+	 * @return
+	 */
 	public GPNodeConfig random(ArrayList<GPNodeConfig> avail) {
 		int num = avail.size();
 		int ndx = getRandom().nextInt(num);
@@ -84,6 +129,13 @@ public class GPNodeDirectory implements EMState {
 
 
 
+	/**
+	 * Get a random terminal node configuration
+	 * 
+	 * @param return_type
+	 *            The required return type of the terminal
+	 * @return
+	 */
 	public GPNodeConfig randomTerminal(Class<?> return_type) {
 		if (!_terminals.containsKey(return_type)) {
 			return null;
@@ -94,6 +146,13 @@ public class GPNodeDirectory implements EMState {
 
 
 
+	/**
+	 * Get a random function (internal) node configuration
+	 * 
+	 * @param return_type
+	 *            The required return type of the function (internal) node
+	 * @return
+	 */
 	public GPNodeConfig randomFunction(Class<?> return_type) {
 		if (!_functions.containsKey(return_type)) {
 			return null;
@@ -104,7 +163,18 @@ public class GPNodeDirectory implements EMState {
 
 
 
-	public void validateNodeConfig(GPNodeConfig conf) throws BadConfiguration {
+	/**
+	 * Validate a node's configuration locally. If no static validate(..)
+	 * function is
+	 * present, no action is performed.
+	 * 
+	 * @param conf
+	 *            Node configuration to validate
+	 * @throws BadConfiguration
+	 *             If there is a problem using the validation function or if the
+	 *             configuration isn't valid.
+	 */
+	public static void validateNodeConfig(GPNodeConfig conf) throws BadConfiguration {
 		try {
 			Method m = conf.getNodeClass().getDeclaredMethod("validate", GPNodeConfig.class);
 			try {
@@ -112,21 +182,30 @@ public class GPNodeDirectory implements EMState {
 			} catch (InvocationTargetException e) {
 				throw (((BadConfiguration) e.getCause()));
 			} catch (Exception e) {
-				getNotifier().fatal("Unable to invoke validation method for " + conf.getNodeClass());
+				throw new BadConfiguration("Unable to invoke validation method for " + conf.getNodeClass());
 			}
 		} catch (SecurityException e) {
-			getNotifier().fatal(
-					"Unable to validate node configuration.  validate(...) is not visible for " + conf.getNodeClass());
-			e.printStackTrace();
+			throw new BadConfiguration("Unable to validate node configuration.  validate(...) is not visible for " +
+					conf.getNodeClass());
 		} catch (NoSuchMethodException e) {
 		}
 	}
 
 
 
+	/**
+	 * Validates the entire node directory
+	 * 
+	 * @throws BadConfiguration
+	 */
 	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
 		for (GPNodeConfig conf : _all) {
+			try {
+				validateNodeConfig(conf);
+			} catch (BadConfiguration valid_bc) {
+				bc.append(valid_bc.getMessage());
+			}
 			for (Class<?> cl : conf.getConstraints().getChildTypes()) {
 				if (!_terminals.containsKey(cl)) {
 					bc.append(conf.getNodeClass().toString() + " requires a terminal node of class " + cl.getName());

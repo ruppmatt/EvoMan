@@ -2,12 +2,20 @@ package evoman.ec.gp;
 
 
 import evoict.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
 
 
+
+/**
+ * A GPVariationManager controls the composition of a population of GPTrees. It
+ * contains the EvolutionPipeline to manipulate GPTrees as well as the
+ * initializer information for the population at the start of the experiment.
+ * 
+ * @author ruppmatt
+ * 
+ */
 
 public class GPVariationManager extends VariationManager {
 
@@ -38,19 +46,6 @@ public class GPVariationManager extends VariationManager {
 
 
 	@Override
-	public void evolve() {
-		if (_evopipeline == null) {
-			return;
-		} else {
-			Population result = _evopipeline.process(getPoolPopulation());
-			result.reset();
-			_ep.setPopulation(result);
-		}
-	}
-
-
-
-	@Override
 	public int getPopSize() {
 		return _config.I("pop_size");
 	}
@@ -66,6 +61,9 @@ public class GPVariationManager extends VariationManager {
 			GPTree.validate(_tree_config);
 		} catch (BadConfiguration bc) {
 			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": " + bc.getMessage());
+		}
+		if (_evopipeline != null) {
+			_evopipeline.init();
 		}
 		Population p = new Population(_ep);
 		int size = getPopSize();

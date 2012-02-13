@@ -5,6 +5,13 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPless returns true if the first double-valued child is less than the second
+ * double-valued child.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "LessThan", return_type = Double.class, child_types = { Double.class, Double.class })
 public class GPLessThan extends GPNode {
 
@@ -21,8 +28,8 @@ public class GPLessThan extends GPNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		Double lhs = (Double) _children.get(0).eval(context);
-		Double rhs = (Double) _children.get(1).eval(context);
+		Double lhs = (Double) _children[0].eval(context);
+		Double rhs = (Double) _children[1].eval(context);
 		_value = (lhs < rhs) ? lhs : rhs;
 		return _value;
 	}

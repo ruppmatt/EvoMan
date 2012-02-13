@@ -6,6 +6,21 @@ import evoman.evo.structs.*;
 
 
 
+/**
+ * GPVarDepth creates a tree with leaves in a range of depths. In the event that
+ * max_depth exceeds the maximum depth allowed for a particular GPTree, the
+ * latter is used.
+ * 
+ * Configuraiton required:
+ * "max_depth"
+ * The maximum depth of a leaf
+ * 
+ * "min_depth"
+ * The minimum depth of the leaf.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class GPVarDepth extends GPTreeInitializer {
 
 	private static final long	serialVersionUID	= 1L;

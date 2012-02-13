@@ -5,6 +5,15 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * GPBooleanERC creates a boolean-valued random constant. This constant is
+ * mutable.
+ * 
+ * No configuration is required.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "GPBooleanERC", return_type = Boolean.class, child_types = {})
 public class GPBooleanERC extends GPMutableNode {
 

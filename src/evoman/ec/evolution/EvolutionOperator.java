@@ -5,7 +5,6 @@ import java.io.*;
 import java.util.*;
 
 import evoict.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 
 
@@ -44,7 +43,8 @@ public abstract class EvolutionOperator implements Serializable {
 			return false;
 		} else {
 			for (EvolutionPipeConfig epc : _conf._epc) {
-				_received.put(epc, _pipeline.getPipe(epc).receive());
+				Population p = _pipeline.receivePopulation(epc);
+				_received.put(epc, p);
 			}
 			return true;
 		}

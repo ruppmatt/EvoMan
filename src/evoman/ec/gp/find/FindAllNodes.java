@@ -7,6 +7,13 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * FindAllNodes selects all nodes examined.
+ * 
+ * @author ruppmatt
+ * 
+ */
+
 public class FindAllNodes implements FindNode {
 
 	ArrayList<GPNode>	nodes	= new ArrayList<GPNode>();

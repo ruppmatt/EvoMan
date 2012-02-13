@@ -7,6 +7,14 @@ import evoman.ec.gp.*;
 
 
 
+/**
+ * FindByIndex returns the node found at a particular index. The location of
+ * this node depends on the tree traversal method used in conjunction with this
+ * object.
+ * 
+ * @author ruppmatt
+ * 
+ */
 public class FindByIndex implements FindNode {
 
 	protected int		found;
@@ -15,6 +23,11 @@ public class FindByIndex implements FindNode {
 
 
 
+	/**
+	 * 
+	 * @param ndx
+	 *            The index to return
+	 */
 	public FindByIndex(int ndx) {
 		found = 0;
 	}

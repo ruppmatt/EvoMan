@@ -7,7 +7,6 @@ import java.util.*;
 import evoict.*;
 import evoict.graphs.*;
 import evoict.io.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
@@ -186,11 +185,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 		Population result = null;
 		// Every pipeline should have exactly one terminal node
 		EvolutionOpConfig terminal = _pipe_ops.get(_pipeline.getTerminal().toArray()[0]);
-		// System.err.println("Evaluation order:");
-		for (DANode n : _pipeline.getEvalOrder()) {
-			EvolutionOpConfig conf = _pipe_ops.get(n);
-			// System.err.println(conf.getName());
-		}
+
 		// Then process the pipeline using a breadth-first search order
 		for (DANode n : _pipeline.getEvalOrder()) {
 			EvolutionOpConfig conf = _pipe_ops.get(n);
@@ -236,6 +231,19 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 
 
+	protected Population receivePopulation(EvolutionPipeConfig epc) {
+		Population p = null;
+		if (_conf_pipes.containsKey(epc)) {
+			EvolutionPipe pipe = _conf_pipes.get(epc);
+			p = pipe.receive();
+			_conf_pipes.remove(epc); // remove the pipes as they are drained
+		}
+		return p;
+
+	}
+
+
+
 	/**
 	 * Retrieve a pipeline for a particular pipeline configuration.
 	 * Pipelines are only in existence during the invocation of process()
@@ -262,6 +270,34 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 
 	@Override
+	public void validate() throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
+		try {
+			super.validate();
+		} catch (BadConfiguration par_bc) {
+			bc.append(par_bc.getMessage());
+		}
+		for (EvolutionOpConfig op : _conf) {
+			Class<? extends EvolutionOperator> cl = op.getOpClass();
+			try {
+				Method m = cl.getMethod("validate", EvolutionOpConfig.class);
+				try {
+					m.invoke(null, op);
+				} catch (Exception e) {
+					bc.append("Unable to access validation method for operator" + op.getName() + " on class "
+							+ cl.toString());
+				}
+			} catch (SecurityException e) {
+				bc.append("Validation method for " + cl.toString() + " is not accessible for operator " + op.getName());
+			} catch (NoSuchMethodException e) {
+				// Nothing to validate
+			}
+		}
+	}
+
+
+
+	@Override
 	public EMState getESParent() {
 		return _vm;
 	}
@@ -270,8 +306,10 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 	@Override
 	public void init() {
-		if (!_pipeline.validate()) {
-			getNotifier().fatal("Pipeline is not configured correctly.");
+		try {
+			validate();
+		} catch (BadConfiguration bc) {
+			getNotifier().fatal("Pipeline is not configured correctly." + getNotifier().endl + bc.getMessage());
 		}
 	}
 

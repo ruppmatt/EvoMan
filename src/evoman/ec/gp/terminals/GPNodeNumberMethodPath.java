@@ -3,11 +3,28 @@ package evoman.ec.gp.terminals;
 
 import evoict.*;
 import evoict.reflection.*;
-import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 
 
 
+/**
+ * GPNumberMethodPath uses a string path into a method dictionary. The method
+ * dictionary must contain methods that are able to be evaluated on the
+ * evaluation's context object. If the method path cannot be mapped to
+ * a valid method via eval's context object, then a BadNodeValue exception is
+ * thrown.
+ * 
+ * GPNumberMethod configuration requires:
+ * "dict"
+ * A method dictionary that maps the context object's methods; all methods must
+ * return some type of number.
+ * 
+ * "max_path"
+ * A maximum path length to cap the depth of lookups and avoid infinite loops.
+ * 
+ * @author ruppmatt
+ * 
+ */
 @GPNodeDescriptor(name = "MethodPathToNumber", return_type = Double.class, child_types = {})
 public class GPNodeNumberMethodPath extends GPMutableNode {
 
@@ -32,7 +49,6 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 
-	// TODO: Set Method Path
 	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
 		_dict = (MethodDictionary) conf.get("dict");
@@ -48,14 +64,14 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 	@Override
-	public Object eval(Object entity) throws BadNodeValue {
+	public Object eval(Object context) throws BadNodeValue {
 
 		Number retrieved;
 		try {
-			retrieved = (Number) _dict.evaluate(_path, entity);
+			retrieved = (Number) _dict.evaluate(_path, context);
 		} catch (UnresolvableException e) {
 			throw new BadNodeValue("Unable to resolve path + " + _path + " for entity of class "
-					+ entity.getClass().getName() + "  Resolution returns: " + e.getMessage(), this);
+					+ context.getClass().getName() + "  Resolution returns: " + e.getMessage(), this);
 		}
 		_value = retrieved.doubleValue();
 		return _value;

@@ -30,6 +30,11 @@ import evoman.ec.gp.*;
  *         where the last period delimited field is the method name and the
  *         prefix fields define the package path to the method.
  * 
+ *         Configuration required:
+ *         "method" a string resource-path to the method to invoke on the actor
+ * 
+ *         Automatically configured:
+ *         "_method" the actual method that will be invoked
  */
 
 @GPNodeDescriptor(name = "Action", return_type = Boolean.class, child_types = {})
@@ -106,14 +111,14 @@ public class GPAction extends GPNode {
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
 		try {
-			Boolean do_action = (Boolean) _children.get(0).eval(context);
+			Boolean do_action = (Boolean) _children[0].eval(context);
 			if (do_action) {
 				Object actor = findActor(context);
 				int num_children = getConfig().getConstraints().numChildren();
 				int num_params = num_children - 1;
 				Object[] params = (num_params > 0) ? new Object[getConfig().getConstraints().numChildren() - 1] : null;
 				for (int k = 0; k < num_params; k++) {
-					params[k] = _children.get(k + 1).eval(context);
+					params[k] = _children[k + 1].eval(context);
 				}
 				if (actor == null) {
 					doMethod(context, params);
