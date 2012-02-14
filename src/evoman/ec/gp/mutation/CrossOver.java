@@ -87,9 +87,10 @@ public class CrossOver extends EvolutionOperator {
 				} else {
 					replaced.getParent().swap(replaced, inserted_clone);
 				}
-				if (GPTreeUtil.maxDepth(base_clone.getRoot()) > base_clone.getConfig().getMaxDepth()) {
-					System.err.println("Tree height error in CrossOver.");
-				}
+				// if (GPTreeUtil.maxDepth(base_clone.getRoot()) >
+				// base_clone.getConfig().getMaxDepth()) {
+				// System.err.println("Tree height error in CrossOver.");
+				// }
 				Genotype new_gen = _pipeline.makeGenotype(base_clone);
 				p.placeGenotype(new_gen);
 				break;

@@ -57,7 +57,7 @@ public class GPFullTree extends GPTreeInitializer {
 		} else if (node_depth < max) {
 			return false;
 		} else {
-			System.err.println("Exceeding maximum, value = " + node_depth);
+			// System.err.println("Exceeding maximum, value = " + node_depth);
 			return true;
 		}
 	}

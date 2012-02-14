@@ -138,7 +138,7 @@ public class TestPi {
 		double last_best = Double.MIN_VALUE;
 		double last_best_pi = Double.MAX_VALUE;
 		for (int gen = 0; gen < 100; gen++) {
-			System.err.println("~~~~~" + gen);
+			// System.err.println("~~~~~" + gen);
 			double best_pi = Double.MAX_VALUE;
 			double best_w = Double.MIN_VALUE;
 			for (Genotype g : root.getPopulation().getGenotypes()) {
@@ -170,7 +170,8 @@ public class TestPi {
 			GPNode r = ((GPTree) g.rep()).getRoot();
 			int max_depth = GPTreeUtil.maxDepth(r);
 			if (max_depth > tree_conf.getMaxDepth()) {
-				System.err.println(max_depth + " should be <= " + tree_conf.getMaxDepth());
+				// System.err.println(max_depth + " should be <= " +
+				// tree_conf.getMaxDepth());
 				fail();
 			}
 		}
@@ -178,6 +179,6 @@ public class TestPi {
 		assertEquals(count, 0);
 		assertTrue((Math.abs(last_best_pi - Math.PI) < 0.1));
 		assertTrue((Math.abs(first_best_pi - Math.PI) >= Math.abs(last_best_pi - Math.PI)));
-		System.err.println(first_best_pi + " " + last_best_pi);
+		// System.err.println(first_best_pi + " " + last_best_pi);
 	}
 }

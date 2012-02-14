@@ -121,9 +121,10 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 				}
 			}
 
-			if (GPTreeUtil.maxDepth(t.getRoot()) > t.getConfig().getMaxDepth()) {
-				System.err.println("Tree height error in RepalceSubtreeVarDepth.");
-			}
+			// if (GPTreeUtil.maxDepth(t.getRoot()) >
+			// t.getConfig().getMaxDepth()) {
+			// System.err.println("Tree height error in RepalceSubtreeVarDepth.");
+			// }
 			// Construct a new genotype for the replacement tree and place it in
 			// the population
 			Genotype new_gen = _pipeline.makeGenotype(t);
