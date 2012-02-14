@@ -187,7 +187,7 @@ public class GPTree implements Representation, EMState, Serializable {
 
 	public boolean reRoot(GPNode newroot) {
 		_root = newroot;
-		_root.rebase(null, -1);
+		_root.rebase(null, (byte) 0); // The second parameter is discarded
 		return true;
 	}
 

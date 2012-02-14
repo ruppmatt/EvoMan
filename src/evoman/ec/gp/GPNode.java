@@ -171,7 +171,7 @@ public abstract class GPNode implements Constants, Serializable {
 	 * @return
 	 */
 	public void init() {
-		int count = 0;
+		byte count = 0;
 		int num_children = _conf.getConstraints().numChildren();
 		_children = new GPNode[num_children];
 		for (int k = 0; k < num_children; k++) {
@@ -261,7 +261,7 @@ public abstract class GPNode implements Constants, Serializable {
 		for (int k = 0; k < numChildren(); k++) {
 			if (_children[k] == child) {
 				_children[k] = replace;
-				replace.rebase(this, k);
+				replace.rebase(this, (byte) k);
 				return true;
 			}
 		}
@@ -277,10 +277,10 @@ public abstract class GPNode implements Constants, Serializable {
 	 * @param parent
 	 * @param pos
 	 */
-	protected void rebase(GPNode parent, int pos) {
+	protected void rebase(GPNode parent, byte pos) {
 		_pos = (parent == null) ? new GPNodePos() : parent.getPosition().newPos(pos);
 		for (int k = 0; k < numChildren(); k++) {
-			_children[k].rebase(this, k);
+			_children[k].rebase(this, (byte) k);
 		}
 	}
 

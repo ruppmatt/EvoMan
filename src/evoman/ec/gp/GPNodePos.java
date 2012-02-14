@@ -17,7 +17,7 @@ import evoman.evo.*;
 public class GPNodePos implements Serializable, Cloneable {
 
 	private static final long	serialVersionUID	= 1L;
-	protected int[]				_pos;
+	protected byte[]			_pos;
 
 
 
@@ -65,10 +65,10 @@ public class GPNodePos implements Serializable, Cloneable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public GPNodePos newPos(int pos) {
+	public GPNodePos newPos(byte pos) {
 		GPNodePos ret = new GPNodePos();
 		int new_length = (_pos == null) ? 1 : _pos.length + 1;
-		ret._pos = new int[new_length];
+		ret._pos = new byte[new_length];
 		ret._pos[new_length - 1] = pos;
 		return ret;
 	}
@@ -80,7 +80,7 @@ public class GPNodePos implements Serializable, Cloneable {
 	 * 
 	 * @return
 	 */
-	public int[] getPos() {
+	public byte[] getPos() {
 		return _pos;
 	}
 
@@ -96,7 +96,7 @@ public class GPNodePos implements Serializable, Cloneable {
 		if (_pos == null) {
 			return cl;
 		} else {
-			cl._pos = new int[_pos.length];
+			cl._pos = new byte[_pos.length];
 			for (int k = 0; k < _pos.length; k++)
 				cl._pos[k] = _pos[k];
 			return cl;
