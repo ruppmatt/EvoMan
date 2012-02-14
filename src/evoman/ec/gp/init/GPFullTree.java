@@ -32,8 +32,8 @@ public class GPFullTree extends GPTreeInitializer {
 	public static void validate(GPInitConfig conf) throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
 		if (conf.validate("depth", Integer.class)) {
-			if (conf.I("depth") < 0) {
-				bc.append("Tree depth cannot be negative.");
+			if (conf.I("depth") < 1) {
+				bc.append("Tree depth cannot be less than 1.");
 			}
 		}
 		bc.validate();
@@ -50,12 +50,15 @@ public class GPFullTree extends GPTreeInitializer {
 
 	@Override
 	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl) {
-		int depth = (parent == null) ? -1 : parent.getDepth();
-		int max = (_max_depth > t.getConfig().getMaxDepth()) ? _max_depth : t.getConfig().getMaxDepth();
-		if (depth == max - 1) {
+		int node_depth = (parent == null) ? 1 : parent.getDepth() + 1;
+		int max = (_max_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : _max_depth;
+		if (node_depth == max) {
 			return true;
-		} else {
+		} else if (node_depth < max) {
 			return false;
+		} else {
+			System.err.println("Exceeding maximum, value = " + node_depth);
+			return true;
 		}
 	}
 }

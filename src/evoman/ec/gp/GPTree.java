@@ -107,10 +107,17 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 	public GPNode createNode(GPNode parent, Class<?> ret_type, GPNodePos pos, GPTreeInitializer init) {
-		int depth = (parent != null) ? parent.getDepth() : 1;
-		boolean terminal = init.createTerminal(this, parent, ret_type) || depth == getConfig().getMaxDepth();
+		int depth = (parent != null) ? parent.getDepth() + 1 : 1;
+		boolean terminal = init.createTerminal(this, parent, ret_type);// ||
+																		// depth
+																		// ==
+																		// getConfig().getMaxDepth();
 		GPNodeConfig cl_con = null;
-		if (terminal) {
+
+		if (!terminal && depth > getConfig().getMaxDepth()) {
+			System.err.println("In createNode -- exceeding maximum depth.");
+		}
+		if (terminal == true) {
 			cl_con = getConfig().getNodeDirectory().randomTerminal(ret_type);
 			if (cl_con == null) {
 				getNotifier().fatal("No terminal nodes found with type: " + ret_type.getName());

@@ -121,6 +121,9 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 				}
 			}
 
+			if (GPTreeUtil.maxDepth(t.getRoot()) > t.getConfig().getMaxDepth()) {
+				System.err.println("Tree height error in RepalceSubtreeVarDepth.");
+			}
 			// Construct a new genotype for the replacement tree and place it in
 			// the population
 			Genotype new_gen = _pipeline.makeGenotype(t);
@@ -150,13 +153,11 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		// selected subtree
 		double min_change = getConfig().D("min_depth");
 		double max_change = getConfig().D("max_depth");
-		FindLeaves leaves = new FindLeaves();
-		t.bfs(leaves, selection);
-		double sum_depth = 0;
-		for (GPNode leaf : leaves.collect()) {
-			sum_depth += leaf.getDepth();
-		}
-		double avg_depth = (sum_depth == 0.0) ? 0.0 : sum_depth / leaves.collect().size();
+
+		double avg_depth = GPTreeUtil.averageDepth(selection);
+		if (avg_depth == Double.NaN)
+			return selection; // Can't make any changes
+
 		int min_avg_depth = (int) Math.floor(min_change * avg_depth);
 		int max_avg_depth = (int) Math.ceil(max_change * avg_depth);
 		if (min_avg_depth < 1) {

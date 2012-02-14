@@ -73,6 +73,9 @@ public class NodeMutation extends EvolutionOperator {
 					((GPMutableNode) n).mutate();
 				}
 			}
+			if (GPTreeUtil.maxDepth(t.getRoot()) > t.getConfig().getMaxDepth()) {
+				System.err.println("Tree height error in NodeMutation.");
+			}
 		}
 		return p;
 	}

@@ -116,15 +116,15 @@ public class TestPi {
 			ep.addOperator(elitism);
 			ep.addOperator(tour_sel);
 			ep.addOperator(xover);
-			// ep.addOperator(pointmut);
-			// ep.addOperator(subtreerep);
+			ep.addOperator(pointmut);
+			ep.addOperator(subtreerep);
 			ep.addOperator(merge);
 			ep.addOperator(replace);
 			ep.createPipe(tour_sel, xover);
-			// ep.createPipe(pointmut, subtreerep);
-			// ep.createPipe(tour_sel, subtreerep);
-			// ep.createPipe(subtreerep, merge);
-			ep.createPipe(xover, merge);
+			ep.createPipe(tour_sel, subtreerep);
+			ep.createPipe(xover, pointmut);
+			ep.createPipe(subtreerep, merge);
+			ep.createPipe(pointmut, merge);
 			ep.createPipe(elitism, replace);
 			ep.createPipe(merge, replace);
 		} catch (BadConfiguration e) {
@@ -138,7 +138,7 @@ public class TestPi {
 		double last_best = Double.MIN_VALUE;
 		double last_best_pi = Double.MAX_VALUE;
 		for (int gen = 0; gen < 100; gen++) {
-			System.err.println(gen);
+			System.err.println("~~~~~" + gen);
 			double best_pi = Double.MAX_VALUE;
 			double best_w = Double.MIN_VALUE;
 			for (Genotype g : root.getPopulation().getGenotypes()) {
@@ -167,7 +167,12 @@ public class TestPi {
 			} catch (Exception e) {
 				count++;
 			}
-			assertTrue((GPTreeUtil.maxDepth(((GPTree) g.rep()).getRoot())) <= tree_conf.getMaxDepth());
+			GPNode r = ((GPTree) g.rep()).getRoot();
+			int max_depth = GPTreeUtil.maxDepth(r);
+			if (max_depth > tree_conf.getMaxDepth()) {
+				System.err.println(max_depth + " should be <= " + tree_conf.getMaxDepth());
+				fail();
+			}
 		}
 
 		assertEquals(count, 0);

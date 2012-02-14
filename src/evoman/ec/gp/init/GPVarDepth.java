@@ -39,15 +39,15 @@ public class GPVarDepth extends GPTreeInitializer {
 		return true;
 	}
 
-	protected final int	max_depth;
-	protected final int	min_depth;
+	protected final int	_max_depth;
+	protected final int	_min_depth;
 
 
 
 	public GPVarDepth(EMState state, GPInitConfig conf) {
 		super(state, conf);
-		max_depth = conf.I("max_depth");
-		min_depth = conf.I("min_depth");
+		_max_depth = conf.I("max_depth");
+		_min_depth = conf.I("min_depth");
 	}
 
 
@@ -55,12 +55,14 @@ public class GPVarDepth extends GPTreeInitializer {
 	@Override
 	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl) {
 		int cur_depth = (parent != null) ? parent.getDepth() + 1 : 1;
-		if (cur_depth == max_depth) {
+		int max = (_max_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : _max_depth;
+		int min = (_min_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : _min_depth;
+		if (cur_depth == max) {
 			return true;
-		} else if (cur_depth < min_depth) {
+		} else if (cur_depth < min) {
 			return false;
 		} else {
-			int delta = max_depth - cur_depth;
+			int delta = max - cur_depth;
 			return (_state.getRandom().nextInt(delta) == 0);
 		}
 	}
