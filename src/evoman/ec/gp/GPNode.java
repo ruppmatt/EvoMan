@@ -184,21 +184,7 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
-	/**
-	 * Return the string version of the last evaluation
-	 * 
-	 * @return
-	 */
-	abstract public String lastEval();
-
-
-
-	/**
-	 * Return the last evaluation
-	 * 
-	 * @return
-	 */
-	abstract public Object last();
+	public abstract String toString(Object context) throws BadNodeValue;
 
 
 
@@ -208,14 +194,14 @@ public abstract class GPNode implements Constants, Serializable {
 	 * @param value
 	 * @return
 	 */
-	protected String lastEval(String value) {
+	protected String toString(Object context, String value) throws BadNodeValue {
 		StringBuffer buf = new StringBuffer();
 		int num_children = numChildren();
 		if (num_children > 0) {
 			buf.append("(");
 			for (int k = 0; k < num_children; k++) {
 				GPNode child = _children[k];
-				buf.append(child.lastEval());
+				buf.append(child.toString(context));
 				if (k < num_children - 1) {
 					buf.append(",");
 				}
@@ -302,10 +288,10 @@ public abstract class GPNode implements Constants, Serializable {
 	 */
 	protected String toString(String value) {
 		StringBuffer buf = new StringBuffer();
-		int num_children = _children.length;
+		int num_children = numChildren();
 		if (num_children > 0) {
+			buf.append("(");
 			for (int k = 0; k < num_children; k++) {
-				buf.append("(");
 				GPNode child = _children[k];
 				buf.append(child.toString());
 				if (k < num_children - 1) {

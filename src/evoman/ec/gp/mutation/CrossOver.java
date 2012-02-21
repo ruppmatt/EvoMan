@@ -50,7 +50,7 @@ public class CrossOver extends EvolutionOperator {
 				throw new BadConfiguration(getConfig().getName() + ": expected 1 input population, received "
 						+ _received.size());
 			}
-			Population p = ((Population) _received.values().toArray()[0]).clone();
+			Population p = (Population) ((Population) _received.values().toArray()[0]).clone();
 			return doMutation(p);
 		} else {
 			throw new BadConfiguration(getConfig().getName() + ": no populations received.");

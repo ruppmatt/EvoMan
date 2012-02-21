@@ -24,8 +24,6 @@ import evoman.ec.gp.*;
 public class GPDoubleERC extends GPMutableNode {
 
 	private static final long	serialVersionUID	= 1L;
-	Double						_min;
-	Double						_max;
 	Double						_value;
 
 
@@ -40,9 +38,9 @@ public class GPDoubleERC extends GPMutableNode {
 
 	public GPDoubleERC(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		_min = conf.D("min");
-		_max = conf.D("max");
-		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
+		Double min = conf.D("min");
+		Double max = conf.D("max");
+		_value = new Double(min + (max - min) * _tree.getRandom().nextDouble());
 	}
 
 
@@ -55,29 +53,26 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 	@Override
-	public Object last() {
-		return _value;
-	}
-
-
-
-	@Override
 	public String toString() {
-		return super.toString("ERC<min=" + _min.toString() + ",max=" + _max.toString() + ">");
+		Double min = getConfig().D("min");
+		Double max = getConfig().D("max");
+		return super.toString("ERC<min=" + min.toString() + ",max=" + max.toString() + ">");
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("ERC<" + _value.toString() + ">");
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "ERC<" + eval(context) + ">");
 	}
 
 
 
 	@Override
 	public void mutate() {
-		_value = new Double(_min + (_max - _min) * _tree.getRandom().nextDouble());
+		Double min = getConfig().D("min");
+		Double max = getConfig().D("max");
+		_value = new Double(min + (max - min) * _tree.getRandom().nextDouble());
 	}
 
 
@@ -85,8 +80,6 @@ public class GPDoubleERC extends GPMutableNode {
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
 		GPDoubleERC n = new GPDoubleERC(t, _conf, parent, (GPNodePos) _pos.clone());
-		n._min = _min;
-		n._max = _max;
 		n._value = _value;
 		doClone(t, n);
 		return n;

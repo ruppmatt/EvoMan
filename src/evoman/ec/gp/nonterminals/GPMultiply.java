@@ -15,7 +15,6 @@ import evoman.ec.gp.*;
 public class GPMultiply extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected Double			_value;
 
 
 
@@ -29,22 +28,14 @@ public class GPMultiply extends GPNode {
 	public Object eval(Object context) throws BadNodeValue {
 		Double v = (Double) _children[0].eval(context) *
 				(Double) _children[1].eval(context);
-		_value = v;
-		return _value;
+		return v;
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("*<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "*<" + eval(context).toString() + ">");
 	}
 
 

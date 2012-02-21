@@ -4,7 +4,6 @@ package evoman.ec.evolution;
 import java.util.*;
 
 import evoict.*;
-import evoman.evo.*;
 import evoman.evo.pop.*;
 
 
@@ -59,10 +58,10 @@ public class ReplaceOperator extends EvolutionOperator {
 			if (replacement == null)
 				throw new BadConfiguration(getConfig().getName() + ": no replacement population found.");
 			if (background.size() < replacement.size()) {
-				return replacement.clone();
+				return (Population) replacement.clone();
 			}
 
-			Population new_pop = background.clone();
+			Population new_pop = (Population) background.clone();
 			@SuppressWarnings("unchecked")
 			ArrayList<Genotype> old_gens = (ArrayList<Genotype>) new_pop.getGenotypes().clone();
 			for (int k = 0; k < replacement.size(); k++) {

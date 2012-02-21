@@ -57,15 +57,8 @@ public class GPBooleanERC extends GPMutableNode {
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("BooleanERC<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "BooleanERC<" + eval(context).toString() + ">");
 	}
 
 

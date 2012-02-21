@@ -37,15 +37,8 @@ public class GPGreaterThan extends GPNode {
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("GREATER<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "GREATER<" + eval(context).toString() + ">");
 	}
 
 

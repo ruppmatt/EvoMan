@@ -20,10 +20,6 @@ public class GPConditional extends GPNode {
 	 * 
 	 */
 	private static final long	serialVersionUID	= 1L;
-	protected Boolean			_cexpr;
-	protected Double			_v1;
-	protected Double			_v2;
-	protected Double			_value;
 
 
 
@@ -35,25 +31,18 @@ public class GPConditional extends GPNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		_cexpr = (Boolean) _children[0].eval(context);
-		_v1 = (Double) _children[1].eval(context);
-		_v2 = (Double) _children[2].eval(context);
-		_value = (_cexpr) ? _v1 : _v2;
-		return _value;
+		boolean cexpr = (Boolean) _children[0].eval(context);
+		if (cexpr == true)
+			return _children[1].eval(context);
+		else
+			return _children[2].eval(context);
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("?:<" + _cexpr + "," + _v1 + "," + _v2 + "=" + _value + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "?:<" + eval(context).toString() + ">");
 	}
 
 

@@ -16,7 +16,6 @@ import evoman.ec.gp.*;
 public class GPDivide extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected Double			_value;
 
 
 
@@ -31,25 +30,17 @@ public class GPDivide extends GPNode {
 		Double v = (Double) _children[0].eval(context);
 		Double div = (Double) _children[1].eval(context);
 		if (div == 0.0) {
-			_value = Double.NaN;
+			return Double.NaN;
 		} else {
-			_value = v / div;
+			return v / div;
 		}
-		return _value;
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("/<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "/<" + eval(context).toString() + ">");
 	}
 
 

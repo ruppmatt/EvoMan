@@ -15,7 +15,6 @@ import evoman.ec.gp.*;
 public class GPMax extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected Double			_value;
 
 
 
@@ -29,22 +28,14 @@ public class GPMax extends GPNode {
 	public Object eval(Object context) throws BadNodeValue {
 		Double _v1 = (Double) _children[0].eval(context);
 		Double _v2 = (Double) _children[1].eval(context);
-		_value = (_v1 > _v2) ? _v1 : _v2;
-		return _value;
+		return (_v1 > _v2) ? _v1 : _v2;
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("MAX<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "MAX<" + eval(context).toString() + ">");
 	}
 
 

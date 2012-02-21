@@ -17,9 +17,7 @@ import evoman.evo.structs.*;
  */
 public class Population implements EMState, Cloneable, Printable {
 
-	protected ArrayList<Genotype>	_genotypes		= new ArrayList<Genotype>();
-	protected Notifier				_local_notifier	= null;
-	protected RandomGenerator		_local_random	= null;
+	protected ArrayList<Genotype>	_genotypes	= new ArrayList<Genotype>();
 	protected EMState				_state;
 
 
@@ -133,7 +131,7 @@ public class Population implements EMState, Cloneable, Printable {
 	 * Clone this population.
 	 */
 	@Override
-	public Population clone() {
+	public Object clone() {
 		Population cl = new Population(_state);
 		for (Genotype g : _genotypes)
 			cl._genotypes.add((Genotype) g.clone());
@@ -163,37 +161,21 @@ public class Population implements EMState, Cloneable, Printable {
 
 	@Override
 	public RandomGenerator getRandom() {
-		if (_state != null) {
-			return _state.getRandom();
-		} else {
-			if (_local_random == null) {
-				_local_random = new RandomGenerator();
-			}
-			return _local_random;
-		}
+		return _state.getRandom();
 	}
 
 
 
 	@Override
 	public EMThreader getThreader() {
-		if (_state != null)
-			return _state.getThreader();
-		else
-			return null;
+		return _state.getThreader();
 	}
 
 
 
 	@Override
 	public Notifier getNotifier() {
-		if (_state != null) {
-			return _state.getNotifier();
-		} else {
-			if (_local_notifier == null)
-				_local_notifier = new Notifier();
-			return _local_notifier;
-		}
+		return _state.getNotifier();
 	}
 
 }

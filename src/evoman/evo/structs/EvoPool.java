@@ -64,6 +64,10 @@ public class EvoPool extends EMConfigurableHNode {
 
 
 
+	/**
+	 * The leaves must be initialized first so higher-order variation managers
+	 * can use genotypes from lower-order pools.
+	 */
 	@Override
 	public void init() {
 		super.init();
@@ -77,12 +81,10 @@ public class EvoPool extends EMConfigurableHNode {
 	 * 
 	 * @param ep
 	 */
-	public void moveTo(EvoPool ep) {
-		super.moveTo(ep);
-		ep.addEvoPool(this);
-	}
-
-
+	// public void moveTo(EvoPool ep) {
+	// super.moveTo(ep);
+	// ep.addEvoPool(this);
+	// }
 
 	/**
 	 * Add a child EvoPool to this object

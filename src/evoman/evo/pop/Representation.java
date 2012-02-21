@@ -16,7 +16,7 @@ public interface Representation {
 
 
 
-	public String lastEval();
+	public String toString(Object context);
 
 
 

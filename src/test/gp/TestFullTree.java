@@ -10,7 +10,6 @@ import evoman.ec.gp.*;
 import evoman.ec.gp.init.*;
 import evoman.ec.gp.nonterminals.*;
 import evoman.ec.gp.terminals.*;
-import evoman.evo.*;
 import evoman.evo.structs.*;
 
 
@@ -41,10 +40,9 @@ public class TestFullTree {
 		tree_config.set("max_depth", 10);
 		GPTree tree_one = new GPTree(root, tree_config);
 		tree_one.init();
-		assertEquals(tree_one.eval(null), 4.0);
-		assertEquals(tree_one.toString(), "((1.0,1.0)+,(1.0,1.0)+)+");
-		assertEquals(tree_one.lastEval(), "((1.0,1.0)+<2.0>,(1.0,1.0)+<2.0>)+<4.0>");
-		assertEquals(tree_one.getRoot().last(), 4.0);
+		assertEquals(4.0, tree_one.eval(null));
+		assertEquals("((1.0,1.0)+,(1.0,1.0)+)+", tree_one.toString());
+		assertEquals("((1.0,1.0)+<2.0>,(1.0,1.0)+<2.0>)+<4.0>", tree_one.toString(null));
 
 		init_conf.set("depth", 4);
 		GPNodeConfig erc = new GPNodeConfig(GPDoubleERC.class);
@@ -66,7 +64,6 @@ public class TestFullTree {
 		tree.init();
 		tree.eval(null);
 		tree.toString();
-		tree.lastEval();
-		tree.last();
+		tree.toString(null);
 	}
 }

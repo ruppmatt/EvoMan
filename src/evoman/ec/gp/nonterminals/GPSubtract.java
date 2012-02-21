@@ -16,7 +16,6 @@ import evoman.ec.gp.*;
 public class GPSubtract extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected Double			_value;
 
 
 
@@ -35,22 +34,14 @@ public class GPSubtract extends GPNode {
 		} catch (Exception e) {
 			throw new BadNodeValue(e.getMessage(), this);
 		}
-		_value = v;
-		return _value;
+		return v;
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("-<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "-<" + eval(context).toString() + ">");
 	}
 
 

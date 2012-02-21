@@ -86,12 +86,6 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 
-	public Object last() {
-		return _root.last();
-	}
-
-
-
 	@Override
 	public String toString() {
 		return _root.toString();
@@ -100,8 +94,17 @@ public class GPTree implements Representation, EMState, Serializable {
 
 
 	@Override
-	public String lastEval() {
-		return _root.lastEval();
+	public String toString(Object context) {
+		try {
+			return _root.toString(context);
+		} catch (BadNodeValue bv) {
+			getNotifier().fatal("GPTree contains a node with a bad value."
+					+ getNotifier().endl
+					+ "Node subtree: " + bv.getNode().toString()
+					+ getNotifier().endl
+					+ "Message: " + bv.getMessage());
+			return null;
+		}
 	}
 
 

@@ -56,7 +56,7 @@ public abstract class VariationManager implements EMState, Serializable {
 
 	public Population evolve(Population p) {
 		if (_evopipeline == null) {
-			return p.clone();
+			return (Population) p.clone();
 		} else {
 			return _evopipeline.process(p);
 		}

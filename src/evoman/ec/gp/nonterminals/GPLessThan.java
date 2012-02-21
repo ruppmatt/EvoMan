@@ -16,7 +16,6 @@ import evoman.ec.gp.*;
 public class GPLessThan extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected Double			_value;
 
 
 
@@ -30,22 +29,14 @@ public class GPLessThan extends GPNode {
 	public Object eval(Object context) throws BadNodeValue {
 		Double lhs = (Double) _children[0].eval(context);
 		Double rhs = (Double) _children[1].eval(context);
-		_value = (lhs < rhs) ? lhs : rhs;
-		return _value;
+		return (lhs < rhs) ? lhs : rhs;
 	}
 
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("LESS<" + _value.toString() + ">");
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "LESS<" + eval(context).toString() + ">");
 	}
 
 

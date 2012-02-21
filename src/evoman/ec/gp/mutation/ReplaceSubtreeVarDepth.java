@@ -53,7 +53,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		if (drainPipes()) {
 			if (_received.size() == 1) {
 				Population received = (Population) _received.values().toArray()[0];
-				Population newpop = received.clone();
+				Population newpop = (Population) received.clone();
 				return doMutation(newpop);
 			} else {
 				throw new BadConfiguration(getConfig().getName() + " expected 1 population, got " + _received.size());

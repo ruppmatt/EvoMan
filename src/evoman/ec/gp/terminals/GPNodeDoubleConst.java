@@ -20,7 +20,6 @@ import evoman.ec.gp.*;
 public class GPNodeDoubleConst extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected Double			_value;
 
 
 
@@ -34,35 +33,27 @@ public class GPNodeDoubleConst extends GPNode {
 
 	public GPNodeDoubleConst(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		_value = conf.D("value");
 	}
 
 
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-		return _value;
+		return getConfig().D("value");
 	}
 
 
 
 	@Override
-	public Object last() {
-		return _value;
-	}
-
-
-
-	@Override
-	public String lastEval() {
-		return super.lastEval(_value.toString());
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, eval(context).toString());
 	}
 
 
 
 	@Override
 	public String toString() {
-		return super.toString(_value.toString());
+		return super.toString(getConfig().D("value").toString());
 	}
 
 
@@ -70,7 +61,6 @@ public class GPNodeDoubleConst extends GPNode {
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
 		GPNodeDoubleConst n = new GPNodeDoubleConst(t, _conf, parent, (GPNodePos) _pos.clone());
-		n._value = _value;
 		doClone(t, n);
 		return n;
 	}

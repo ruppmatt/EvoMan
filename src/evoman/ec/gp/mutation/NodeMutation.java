@@ -37,7 +37,7 @@ public class NodeMutation extends EvolutionOperator {
 				throw new BadConfiguration(getConfig().getName() + " expected 1 input population, received "
 						+ _received.size());
 			} else {
-				Population p = ((Population) _received.values().toArray()[0]).clone();
+				Population p = (Population) ((Population) _received.values().toArray()[0]).clone();
 				Population retval = doMutation(p);
 				if (retval == null) {
 					throw new BadConfiguration(getConfig().getName() + ": unable to perform mutations");

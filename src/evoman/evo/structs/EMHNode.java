@@ -55,6 +55,9 @@ public class EMHNode extends HNode implements EMState {
 
 
 
+	/**
+	 * Initialize the terminal nodes first
+	 */
 	@Override
 	public void init() {
 		for (HNode child : getChildren()) {

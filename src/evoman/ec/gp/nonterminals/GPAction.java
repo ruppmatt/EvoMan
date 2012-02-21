@@ -185,25 +185,15 @@ public class GPAction extends GPNode {
 
 
 	@Override
-	public String lastEval() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
-	public Object last() {
-		// TODO Auto-generated method stub
-		return null;
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "ACTION<" + _method.toString() + "=" + eval(context).toString() + ">");
 	}
 
 
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return super.toString("ACTION<" + _method.toString() + ">");
 	}
 
 }

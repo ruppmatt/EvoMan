@@ -15,13 +15,11 @@ import evoman.ec.gp.*;
 public class GPAdd extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;
-	Double						_last;
 
 
 
 	public GPAdd(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		_last = Double.NaN;
 	}
 
 
@@ -32,15 +30,7 @@ public class GPAdd extends GPNode {
 		for (GPNode c : _children) {
 			retval += (Double) c.eval(context);
 		}
-		_last = retval;
 		return retval;
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _last;
 	}
 
 
@@ -53,8 +43,8 @@ public class GPAdd extends GPNode {
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval("+<" + _last.toString() + ">");
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, "+<" + eval(context).toString() + ">");
 	}
 
 

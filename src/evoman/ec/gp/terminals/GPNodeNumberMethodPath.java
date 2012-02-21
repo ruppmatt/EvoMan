@@ -29,10 +29,7 @@ import evoman.ec.gp.*;
 public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	private static final long	serialVersionUID	= 1L;
-	protected MethodDictionary	_dict;
 	protected String			_path;
-	protected Double			_value;
-	protected Integer			_max_path;
 
 
 
@@ -51,10 +48,10 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		_dict = (MethodDictionary) conf.get("dict");
-		_max_path = conf.I("max_path");
+		MethodDictionary dict = (MethodDictionary) getConfig().get("dict");
+		Integer max_path = conf.I("max_path");
 		try {
-			_path = _dict.getRandomPath(t.getRandom(), _max_path);
+			_path = dict.getRandomPath(t.getRandom(), max_path);
 		} catch (BadConfiguration e) {
 			_path = null;
 		}
@@ -65,23 +62,15 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	@Override
 	public Object eval(Object context) throws BadNodeValue {
-
+		MethodDictionary dict = (MethodDictionary) getConfig().get("dict");
 		Number retrieved;
 		try {
-			retrieved = (Number) _dict.evaluate(_path, context);
+			retrieved = (Number) dict.evaluate(_path, context);
 		} catch (UnresolvableException e) {
 			throw new BadNodeValue("Unable to resolve path + " + _path + " for entity of class "
 					+ context.getClass().getName() + "  Resolution returns: " + e.getMessage(), this);
 		}
-		_value = retrieved.doubleValue();
-		return _value;
-	}
-
-
-
-	@Override
-	public Object last() {
-		return _value;
+		return retrieved;
 	}
 
 
@@ -94,8 +83,8 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 	@Override
-	public String lastEval() {
-		return super.lastEval(_path + "<" + _value.toString() + ">");
+	public String toString(Object context) throws BadNodeValue {
+		return super.toString(context, _path + "<" + eval(context).toString() + ">");
 	}
 
 
@@ -103,7 +92,9 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 	@Override
 	public void mutate() {
 		try {
-			_path = _dict.getRandomPath(_tree.getRandom(), _max_path);
+			MethodDictionary dict = (MethodDictionary) getConfig().get("dict");
+			int max_path = getConfig().I("max_path");
+			_path = dict.getRandomPath(_tree.getRandom(), max_path);
 		} catch (BadConfiguration e) {
 			_path = null;
 		}
@@ -114,9 +105,7 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 	@Override
 	public GPNode clone(GPTree t, GPNode parent) {
 		GPNodeNumberMethodPath n = new GPNodeNumberMethodPath(t, _conf, parent, (GPNodePos) _pos.clone());
-		n._dict = _dict;
 		n._path = _path;
-		n._value = _value;
 		doClone(t, n);
 		return n;
 	}
