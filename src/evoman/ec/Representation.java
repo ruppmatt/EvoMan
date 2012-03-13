@@ -1,4 +1,4 @@
-package evoman.evo.pop;
+package evoman.ec;
 
 
 import java.io.*;
@@ -7,7 +7,7 @@ import java.io.*;
 
 public interface Representation {
 
-	public Object eval(Object o);
+	public Object eval(Object o) throws BadEvaluation;
 
 
 
@@ -16,7 +16,7 @@ public interface Representation {
 
 
 
-	public String toString(Object context);
+	public String toString(Object context) throws BadEvaluation;
 
 
 

@@ -1,5 +1,7 @@
 package evoman.ec.gp;
 
+import evoman.evo.structs.*;
+
 
 /**
  * A mutable node provides a mutation method. Keep in mind that constraint
@@ -24,6 +26,6 @@ public abstract class GPMutableNode extends GPNode {
 	/**
 	 * Mutate the node
 	 */
-	public abstract void mutate();
+	public abstract void mutate(EMState state);
 
 }

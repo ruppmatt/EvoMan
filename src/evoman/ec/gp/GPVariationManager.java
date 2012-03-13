@@ -113,15 +113,20 @@ public class GPVariationManager extends VariationManager {
 		if (_evopipeline != null) {
 			_evopipeline.init();
 		}
+	}
+
+
+
+	public void createPopulation() throws BadConfiguration {
 		Population p = new Population();
 		int size = getPopSize();
 		for (int k = 0; k < size; k++) {
-			GPTree t = new GPTree(_ep, _tree_config);
-			t.init();
+			GPTree t = new GPTree(this, _tree_config, _tree_init);
 			Genotype g = makeGenotype(t);
 			p.addGenotype(g);
 		}
 		_ep.setPopulation(p);
+
 	}
 
 

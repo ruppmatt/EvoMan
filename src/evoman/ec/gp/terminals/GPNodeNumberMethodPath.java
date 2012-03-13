@@ -5,6 +5,7 @@ import evoict.*;
 import evoict.reflection.*;
 import evoman.config.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -51,10 +52,16 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
+	}
+
+
+
+	@Override
+	public void init(EMState state) {
 		MethodDictionary dict = (MethodDictionary) getConfig().get("dict");
-		Integer max_path = conf.I("max_path");
+		Integer max_path = getConfig().I("max_path");
 		try {
-			_path = dict.getRandomPath(t.getRandom(), max_path);
+			_path = dict.getRandomPath(state.getRandom(), max_path);
 		} catch (BadConfiguration e) {
 			_path = null;
 		}
@@ -92,11 +99,11 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 	@Override
-	public void mutate() {
+	public void mutate(EMState state) {
 		try {
 			MethodDictionary dict = (MethodDictionary) getConfig().get("dict");
 			int max_path = getConfig().I("max_path");
-			_path = dict.getRandomPath(_tree.getRandom(), max_path);
+			_path = dict.getRandomPath(state.getRandom(), max_path);
 		} catch (BadConfiguration e) {
 			_path = null;
 		}

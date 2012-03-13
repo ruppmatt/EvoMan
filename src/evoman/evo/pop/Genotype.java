@@ -2,6 +2,7 @@ package evoman.evo.pop;
 
 
 import evoict.*;
+import evoman.ec.*;
 
 
 

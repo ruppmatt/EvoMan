@@ -1,7 +1,9 @@
 package evoman.ec.gp.nonterminals;
 
 
+import evoict.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -20,6 +22,13 @@ public class GPMax extends GPNode {
 
 	public GPMax(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
+	}
+
+
+
+	@Override
+	public void init(EMState state) throws BadConfiguration {
+		return;
 	}
 
 

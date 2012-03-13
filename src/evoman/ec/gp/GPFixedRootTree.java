@@ -43,21 +43,20 @@ public class GPFixedRootTree extends GPTree {
 		}
 	}
 
-	protected GPNodeConfig	_root_conf;
 
 
-
-	public GPFixedRootTree(EMState state, GPTreeConfig conf, GPNodeConfig root_conf, GPTreeInitializer init) {
-		super(state, conf, init);
-		_root_conf = root_conf;
+	public GPFixedRootTree(EMState state, GPTreeConfig conf, GPTreeInitializer init) throws BadConfiguration {
+		super(conf);
+		init(state, init);
 	}
 
 
 
 	@Override
-	public void init(GPTreeInitializer init) {
-		_root = buildNode(null, _root_conf, new GPNodePos());
-		_root.init(init);
+	public void init(EMState state, GPTreeInitializer init) throws BadConfiguration {
+		GPNodeConfig root_conf = (GPNodeConfig) getConfig().get("root_config");
+		_root = buildNode(null, root_conf, new GPNodePos());
+		_root.init(state, init);
 	}
 
 

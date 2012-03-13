@@ -3,8 +3,10 @@ package evoman.ec.gp;
 
 import java.io.*;
 
+import evoict.*;
 import evoman.ec.gp.init.*;
 import evoman.evo.*;
+import evoman.evo.structs.*;
 
 
 
@@ -61,6 +63,10 @@ public abstract class GPNode implements Constants, Serializable {
 		_conf = conf;
 		_parent = parent;
 	}
+
+
+
+	public abstract void init(EMState state) throws BadConfiguration;
 
 
 
@@ -169,16 +175,17 @@ public abstract class GPNode implements Constants, Serializable {
 	 * Initialize the node's children
 	 * 
 	 * @return
+	 * @throws BadConfiguration
 	 */
-	public void init(GPTreeInitializer init) {
+	public void init(EMState state, GPTreeInitializer init) throws BadConfiguration {
 		byte count = 0;
 		int num_children = _conf.getConstraints().numChildren();
 		_children = new GPNode[num_children];
 		for (int k = 0; k < num_children; k++) {
 			Class<?> cl = _conf.getConstraints().getChildTypes()[k];
-			GPNode child_node = _tree.createNode(this, cl, _pos.newPos(count), init);
+			GPNode child_node = _tree.createNode(state, this, cl, _pos.newPos(count), init);
 			_children[k] = child_node;
-			child_node.init(init);
+			child_node.init(state, init);
 			count += 1;
 		}
 	}

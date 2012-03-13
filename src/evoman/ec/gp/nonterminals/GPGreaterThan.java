@@ -1,7 +1,9 @@
 package evoman.ec.gp.nonterminals;
 
 
+import evoict.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -22,6 +24,13 @@ public class GPGreaterThan extends GPNode {
 
 	public GPGreaterThan(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
+	}
+
+
+
+	@Override
+	public void init(EMState state) throws BadConfiguration {
+		return;
 	}
 
 

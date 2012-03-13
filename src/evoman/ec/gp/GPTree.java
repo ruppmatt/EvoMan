@@ -6,10 +6,9 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import evoict.*;
-import evoict.io.*;
+import evoman.ec.*;
 import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
-import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 
 
@@ -38,7 +37,7 @@ import evoman.evo.structs.*;
  * 
  */
 
-public class GPTree implements Representation, EMState, Serializable {
+public class GPTree implements Representation, Serializable {
 
 	/**
 	 * Valdate the Tree configuration
@@ -69,7 +68,6 @@ public class GPTree implements Representation, EMState, Serializable {
 	private static final long	serialVersionUID	= 1L;
 	protected GPNode			_root				= null;
 	protected GPTreeConfig		_config;
-	protected EMState			_state;
 
 
 
@@ -81,8 +79,7 @@ public class GPTree implements Representation, EMState, Serializable {
 	 * @param conf
 	 *            Configuration of the tree
 	 */
-	protected GPTree(EMState state, GPTreeConfig conf) {
-		_state = state;
+	protected GPTree(GPTreeConfig conf) {
 		_config = conf;
 	}
 
@@ -97,11 +94,25 @@ public class GPTree implements Representation, EMState, Serializable {
 	 *            Configuration of the tree
 	 * @param init
 	 *            Tree initializer
+	 * @throws BadConfiguration
 	 */
-	public GPTree(EMState state, GPTreeConfig conf, GPTreeInitializer init) {
-		_state = state;
+	public GPTree(EMState state, GPTreeConfig conf, GPTreeInitializer init) throws BadConfiguration {
 		_config = conf;
-		init(init);
+		init(state, init);
+	}
+
+
+
+	/**
+	 * Build the tree using a particular tree initializer.
+	 * 
+	 * @param init
+	 *            Tree initializer
+	 * @throws BadConfiguration
+	 */
+	public void init(EMState state, GPTreeInitializer init) throws BadConfiguration {
+		_root = createNode(state, null, (Class<?>) getConfig().get("return_type"), new GPNodePos(), init);
+		_root.init(state, init);
 	}
 
 
@@ -143,17 +154,16 @@ public class GPTree implements Representation, EMState, Serializable {
 	 * Evaluate the tree
 	 */
 	@Override
-	public Object eval(Object o) {
+	public Object eval(Object o) throws BadEvaluation {
 		try {
 			return _root.eval(o);
 		} catch (BadNodeValue bv) {
-			getNotifier().fatal("GPTree contains a node with a bad value."
-					+ getNotifier().endl
-					+ "Node subtree: " + bv.getNode().toString()
-					+ getNotifier().endl
-					+ "Message: " + bv.getMessage());
+			String msg = "GPTree contains a node with a bad value.\n"
+					+ "Node subtree: " + bv.getNode().toString() + "\n"
+					+ "Message: " + bv.getMessage();
+			throw new BadEvaluation(msg);
+
 		}
-		return null;
 	}
 
 
@@ -172,16 +182,14 @@ public class GPTree implements Representation, EMState, Serializable {
 	 * Write the tree as a string with evaluation information.
 	 */
 	@Override
-	public String toString(Object context) {
+	public String toString(Object context) throws BadEvaluation {
 		try {
 			return _root.toString(context);
 		} catch (BadNodeValue bv) {
-			getNotifier().fatal("GPTree contains a node with a bad value."
-					+ getNotifier().endl
-					+ "Node subtree: " + bv.getNode().toString()
-					+ getNotifier().endl
-					+ "Message: " + bv.getMessage());
-			return null;
+			String msg = "GPTree contains a node with a bad value.\n"
+					+ "Node subtree: " + bv.getNode().toString() + "\n"
+					+ "Message: " + bv.getMessage();
+			throw new BadEvaluation(msg);
 		}
 	}
 
@@ -192,6 +200,8 @@ public class GPTree implements Representation, EMState, Serializable {
 	 * tree's initializer to determine whether or not the node to be created is
 	 * a terminal.
 	 * 
+	 * @param state
+	 *            The state object that contains getRandom()
 	 * @param parent
 	 *            The parent of the new node to create
 	 * @param ret_type
@@ -203,19 +213,20 @@ public class GPTree implements Representation, EMState, Serializable {
 	 *            terminal
 	 * @return
 	 */
-	public GPNode createNode(GPNode parent, Class<?> ret_type, GPNodePos pos, GPTreeInitializer init) {
-		boolean terminal = init.createTerminal(this, parent, ret_type, _state);
+	public GPNode createNode(EMState state, GPNode parent, Class<?> ret_type, GPNodePos pos, GPTreeInitializer init)
+			throws BadConfiguration {
+		boolean terminal = init.createTerminal(this, parent, ret_type, state);
 		GPNodeConfig cl_con = null;
 
 		if (terminal == true) {
 			cl_con = getConfig().getNodeDirectory().randomTerminal(ret_type);
 			if (cl_con == null) {
-				getNotifier().fatal("No terminal nodes found with type: " + ret_type.getName());
+				throw new BadConfiguration("No terminal nodes found with type: " + ret_type.getName());
 			}
 		} else {
 			cl_con = getConfig().getNodeDirectory().randomFunction(ret_type);
 			if (cl_con == null) {
-				getNotifier().fatal("No function nodes for return type found: " + ret_type.getName());
+				throw new BadConfiguration("No function nodes for return type found: " + ret_type.getName());
 			}
 		}
 		return buildNode(parent, cl_con, pos);
@@ -235,7 +246,7 @@ public class GPTree implements Representation, EMState, Serializable {
 	 * @return
 	 *         The new node
 	 */
-	protected GPNode buildNode(GPNode parent, GPNodeConfig conf, GPNodePos pos) {
+	protected GPNode buildNode(GPNode parent, GPNodeConfig conf, GPNodePos pos) throws BadConfiguration {
 		try {
 			Constructor<? extends GPNode> construct =
 					conf.getNodeClass().getConstructor(GPTree.class, GPNodeConfig.class, GPNode.class, GPNodePos.class);
@@ -243,11 +254,8 @@ public class GPTree implements Representation, EMState, Serializable {
 			return new_node;
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			e.getCause().printStackTrace();
-			getNotifier().fatal("Unable to instantiate GPNode:" + conf.getNodeClass());
+			throw new BadConfiguration("Unable to instantiate GPNode:" + conf.getNodeClass());
 		}
-		return null; // Should never be reached
 	}
 
 
@@ -257,10 +265,7 @@ public class GPTree implements Representation, EMState, Serializable {
 	 */
 	@Override
 	public void serializeRepresentation(ObjectOutputStream out) throws IOException {
-		EMState temp = _state;
-		_state = null;
 		out.defaultWriteObject();
-		_state = temp;
 	}
 
 
@@ -291,7 +296,7 @@ public class GPTree implements Representation, EMState, Serializable {
 	 */
 	@Override
 	public Object clone() {
-		GPTree newtree = new GPTree(_state, _config);
+		GPTree newtree = new GPTree(_config);
 		newtree._root = _root.clone(newtree, null);
 		return newtree;
 	}
@@ -397,68 +402,6 @@ public class GPTree implements Representation, EMState, Serializable {
 	 */
 	public void dfs(FindNode fn) {
 		dfs(fn, _root);
-	}
-
-
-
-	@Override
-	public EMState getESParent() {
-		return _state;
-	}
-
-
-
-	/**
-	 * Build the tree using a particular tree initializer.
-	 * 
-	 * @param init
-	 *            Tree initializer
-	 */
-	public void init(GPTreeInitializer init) {
-		_root = createNode(null, (Class<?>) getConfig().get("return_type"), new GPNodePos(), init);
-		_root.init(init);
-	}
-
-
-
-	/**
-	 * The EMState initializer doesn't do anything.
-	 */
-	@Override
-	public void init() {
-	}
-
-
-
-	/**
-	 * The EMState finisher doesn't do anything
-	 */
-	@Override
-	public void finish() {
-	}
-
-
-
-	@Override
-	/**
-	 * Get Random uses the initialzing EvoPool (or VM's) random number generator.
-	 */
-	public RandomGenerator getRandom() {
-		return _state.getRandom();
-	}
-
-
-
-	@Override
-	public EMThreader getThreader() {
-		return _state.getThreader();
-	}
-
-
-
-	@Override
-	public Notifier getNotifier() {
-		return _state.getNotifier();
 	}
 
 }

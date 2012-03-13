@@ -4,6 +4,7 @@ package evoman.ec.gp.terminals;
 import evoict.*;
 import evoman.config.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -37,6 +38,13 @@ public class GPNodeDoubleConst extends GPNode {
 
 	public GPNodeDoubleConst(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
+	}
+
+
+
+	// Nothing to initialize.
+	@Override
+	public void init(EMState state) throws BadConfiguration {
 	}
 
 

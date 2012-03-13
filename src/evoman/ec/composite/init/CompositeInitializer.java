@@ -2,6 +2,7 @@ package evoman.ec.composite.init;
 
 
 import evoict.*;
+import evoman.ec.*;
 import evoman.ec.composite.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;

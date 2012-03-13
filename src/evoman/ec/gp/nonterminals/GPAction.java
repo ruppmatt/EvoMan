@@ -8,6 +8,7 @@ import evoict.*;
 import evoict.reflection.*;
 import evoman.config.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -97,6 +98,13 @@ public class GPAction extends GPNode {
 	public GPAction(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
 		_method = (Method) conf.get("_method");
+	}
+
+
+
+	@Override
+	public void init(EMState state) throws BadConfiguration {
+		return;
 	}
 
 

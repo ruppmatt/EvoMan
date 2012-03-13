@@ -4,6 +4,7 @@ package evoman.ec.gp.terminals;
 import evoict.*;
 import evoman.config.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -41,9 +42,15 @@ public class GPDoubleERC extends GPMutableNode {
 
 	public GPDoubleERC(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		Double min = conf.D("min");
-		Double max = conf.D("max");
-		_value = new Double(min + (max - min) * _tree.getRandom().nextDouble());
+	}
+
+
+
+	@Override
+	public void init(EMState state) throws BadConfiguration {
+		Double min = getConfig().D("min");
+		Double max = getConfig().D("max");
+		_value = new Double(min + (max - min) * state.getRandom().nextDouble());
 	}
 
 
@@ -72,10 +79,10 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 	@Override
-	public void mutate() {
+	public void mutate(EMState state) {
 		Double min = getConfig().D("min");
 		Double max = getConfig().D("max");
-		_value = new Double(min + (max - min) * _tree.getRandom().nextDouble());
+		_value = new Double(min + (max - min) * state.getRandom().nextDouble());
 	}
 
 

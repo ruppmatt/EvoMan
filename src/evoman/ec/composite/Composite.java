@@ -5,6 +5,7 @@ import java.io.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.ec.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 

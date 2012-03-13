@@ -89,7 +89,7 @@ public class NodeMutation extends EvolutionOperator {
 				if (!t.canAlter(n))
 					continue;
 				if (_pipeline.getRandom().nextDouble() <= prob) {
-					((GPMutableNode) n).mutate();
+					((GPMutableNode) n).mutate(_pipeline);
 				}
 			}
 			// if (GPTreeUtil.maxDepth(t.getRoot()) >

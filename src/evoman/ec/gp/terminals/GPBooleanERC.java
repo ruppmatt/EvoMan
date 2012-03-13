@@ -3,6 +3,7 @@ package evoman.ec.gp.terminals;
 
 import evoman.config.*;
 import evoman.ec.gp.*;
+import evoman.evo.structs.*;
 
 
 
@@ -30,14 +31,21 @@ public class GPBooleanERC extends GPMutableNode {
 
 	public GPBooleanERC(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		super(t, conf, parent, pos);
-		_value = (_tree.getRandom().nextBoolean());
+
 	}
 
 
 
 	@Override
-	public void mutate() {
-		_value = (_tree.getRandom().nextBoolean());
+	public void init(EMState state) {
+		_value = (state.getRandom().nextBoolean());
+	}
+
+
+
+	@Override
+	public void mutate(EMState state) {
+		_value = (state.getRandom().nextBoolean());
 	}
 
 

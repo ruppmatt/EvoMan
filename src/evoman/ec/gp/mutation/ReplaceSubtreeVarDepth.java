@@ -204,7 +204,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		}
 
 		// Create the root of the new tree.
-		GPNode root = t.createNode(selection.getParent(),
+		GPNode root = t.createNode(_pipeline, selection.getParent(),
 				selection.getConfig().getConstraints().getReturnType(),
 				(GPNodePos) selection.getPosition().clone(), init);
 		if (root == null) {
@@ -218,7 +218,8 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 				GPNode cur = populate.pop();
 				Class<?>[] child_types = cur.getConfig().getConstraints().getChildTypes();
 				for (int k = 0; k < cur.getConfig().getConstraints().numChildren(); k++) {
-					GPNode child = t.createNode(cur, child_types[k], cur.getPosition().newPos((byte) k), init);
+					GPNode child = t.createNode(_pipeline, cur, child_types[k], cur.getPosition().newPos((byte) k),
+							init);
 					cur.getChildren()[k] = child;
 					if (child == null) {
 						throw new BadConfiguration("Problem instantiating non-root element in subtree.");
