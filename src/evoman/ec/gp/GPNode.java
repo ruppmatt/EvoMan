@@ -184,6 +184,7 @@ public abstract class GPNode implements Constants, Serializable {
 		for (int k = 0; k < num_children; k++) {
 			Class<?> cl = _conf.getConstraints().getChildTypes()[k];
 			GPNode child_node = _tree.createNode(state, this, cl, _pos.newPos(count), init);
+			child_node.init(state);
 			_children[k] = child_node;
 			child_node.init(state, init);
 			count += 1;
