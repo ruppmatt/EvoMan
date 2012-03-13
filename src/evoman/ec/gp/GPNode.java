@@ -3,6 +3,7 @@ package evoman.ec.gp;
 
 import java.io.*;
 
+import evoman.ec.gp.init.*;
 import evoman.evo.*;
 
 
@@ -59,7 +60,6 @@ public abstract class GPNode implements Constants, Serializable {
 		_pos = pos;
 		_conf = conf;
 		_parent = parent;
-		init();
 	}
 
 
@@ -170,14 +170,15 @@ public abstract class GPNode implements Constants, Serializable {
 	 * 
 	 * @return
 	 */
-	public void init() {
+	public void init(GPTreeInitializer init) {
 		byte count = 0;
 		int num_children = _conf.getConstraints().numChildren();
 		_children = new GPNode[num_children];
 		for (int k = 0; k < num_children; k++) {
 			Class<?> cl = _conf.getConstraints().getChildTypes()[k];
-			GPNode child_node = _tree.createNode(this, cl, _pos.newPos(count), _tree.getConfig().getInitializer());
+			GPNode child_node = _tree.createNode(this, cl, _pos.newPos(count), init);
 			_children[k] = child_node;
+			child_node.init(init);
 			count += 1;
 		}
 	}

@@ -2,6 +2,8 @@ package evoman.ec.gp;
 
 
 import evoict.*;
+import evoman.config.*;
+import evoman.ec.gp.init.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
@@ -17,47 +19,93 @@ import evoman.evo.vm.*;
  * 
  */
 
+@ConfigRegister(name = "GPVariationManager")
 public class GPVariationManager extends VariationManager {
 
 	private static final long	serialVersionUID	= 1L;
 
 
 
-	public static void validate(VariationManagerConfig conf) throws BadConfiguration {
-		if (!conf.validate("pop_size", Integer.class) || conf.I("pop_size") < 1) {
-			throw new BadConfiguration("pop_size is either inset or less than 1.");
+	/**
+	 * Validate the GPVariationManager's configuration
+	 */
+	@Override
+	public void validate() throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
+		if (getConfig().validate("pop_size", Integer.class) || getConfig().I("pop_size") < 1) {
+			bc.append("pop_size is either inset or less than 1.");
 		}
+		if (_tree_config == null) {
+			bc.append("Missing tree configuration.");
+		}
+		if (_tree_init == null) {
+			bc.append("Missing tree initializer.");
+		}
+		bc.validate();
 	}
 
-	protected GPTreeConfig	_tree_config	= null;
+	protected GPTreeConfig		_tree_config	= null;
+	protected GPTreeInitializer	_tree_init		= null;
 
 
 
-	public GPVariationManager(EvoPool parent, VariationManagerConfig conf) {
-		super(parent, conf);
+	/**
+	 * Construct a new GPVariation manager attached to EvoPool parent
+	 * 
+	 * @param parent
+	 */
+	@ConfigConstructor(args = { ConfigArgs.PARENT })
+	public GPVariationManager(EvoPool parent) {
+		super(parent);
 	}
 
 
 
+	/**
+	 * Set the tree configruation.
+	 * 
+	 * @param config
+	 */
+	@ConfigRequire()
 	public void setTreeConfig(GPTreeConfig config) {
 		_tree_config = config;
 	}
 
 
 
+	/**
+	 * Set the tree initializer.
+	 * 
+	 * @param init
+	 */
+	@ConfigRequire()
+	public void setTreeInitializer(GPTreeInitializer init) {
+		_tree_init = init;
+	}
+
+
+
+	/**
+	 * Accessor to get the population size;
+	 */
 	@Override
 	public int getPopSize() {
-		return _config.I("pop_size");
+		return getConfig().I("pop_size");
 	}
 
 
 
 	@Override
+	/**
+	 * Initialize the variation manager.  
+	 * Begin by validating the configuration of the variation manager and the configuration of the GPTree(s).  
+	 * If successfully validated, initialize (and validate) the evopipeline.
+	 * 
+	 * If everything checks out, construct a population of GPTrees.
+	 */
 	public void init() {
 		try {
-			GPVariationManager.validate(_config);
-			if (_tree_config == null)
-				throw new BadConfiguration("Missing tree configuration.");
+			validate();
 			GPTree.validate(_tree_config);
 		} catch (BadConfiguration bc) {
 			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": " + bc.getMessage());
@@ -65,7 +113,7 @@ public class GPVariationManager extends VariationManager {
 		if (_evopipeline != null) {
 			_evopipeline.init();
 		}
-		Population p = new Population(_ep);
+		Population p = new Population();
 		int size = getPopSize();
 		for (int k = 0; k < size; k++) {
 			GPTree t = new GPTree(_ep, _tree_config);

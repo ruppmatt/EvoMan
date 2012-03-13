@@ -5,12 +5,10 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import evoict.*;
-import evoman.evo.*;
-import evoman.interpreter.*;
+import evoman.config.*;
 
 
 
-@ConfigDescriptor(name = "EvolutionOp")
 public class EvolutionOpConfig extends KeyValueStore implements Identifiable {
 
 	private static final long						serialVersionUID	= 1L;
@@ -21,14 +19,13 @@ public class EvolutionOpConfig extends KeyValueStore implements Identifiable {
 
 
 
-	@ConfigRequired(names = { "@class" })
 	public EvolutionOpConfig(Class<? extends EvolutionOperator> cl) {
 		this(null, cl);
 	}
 
 
 
-	@ConfigRequired(names = { "@name", "@class" })
+	@ConfigConstructor(args = { ConfigArgs.NAME, ConfigArgs.PROXY })
 	public EvolutionOpConfig(String name, Class<? extends EvolutionOperator> cl) {
 		_name = name;
 		_constr = EvolutionOpConstraints.scan(cl);

@@ -2,6 +2,7 @@ package evoman.ec.gp.terminals;
 
 
 import evoict.*;
+import evoman.config.*;
 import evoman.ec.gp.*;
 
 
@@ -16,7 +17,10 @@ import evoman.ec.gp.*;
  * @author ruppmatt
  * 
  */
+
 @GPNodeDescriptor(name = "GPNodeDoubleConst", return_type = Double.class, child_types = {})
+@ConfigRegister(name = "DoubleConstant")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 public class GPNodeDoubleConst extends GPNode {
 
 	private static final long	serialVersionUID	= 1L;

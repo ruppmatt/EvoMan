@@ -2,6 +2,7 @@ package evoman.ec.gp.mutation;
 
 
 import evoict.*;
+import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
@@ -9,6 +10,24 @@ import evoman.evo.pop.*;
 
 
 
+/**
+ * Node mutation takes a single population and, with probability "prob" select a
+ * genotype to receive a node mutation. Node mutations occur only in
+ * GPutableNodes and do not change the return type of the node or any child
+ * types.
+ * 
+ * 
+ * Paramters
+ * 
+ * prob
+ * The probabilty of selecting a tree for a node mutation.
+ * 
+ * @author ruppmatt
+ * 
+ */
+
+@ConfigRegister(name = "NodeMutation")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 @EvolutionDescriptor(name = "GPNodeMutation", min_in = 1, max_in = 1, reptype = GPTree.class)
 public class NodeMutation extends EvolutionOperator {
 

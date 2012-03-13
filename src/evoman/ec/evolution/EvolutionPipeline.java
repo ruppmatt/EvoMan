@@ -339,4 +339,10 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	public Notifier getNotifier() {
 		return _vm.getNotifier();
 	}
+
+
+
+	public VariationManager getVM() {
+		return _vm;
+	}
 }

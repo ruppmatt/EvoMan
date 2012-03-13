@@ -4,7 +4,6 @@ package evoman.evo.pop;
 import java.util.*;
 
 import evoict.*;
-import evoict.io.*;
 import evoman.evo.structs.*;
 
 
@@ -15,10 +14,9 @@ import evoman.evo.structs.*;
  * 
  *         A population is a collection of Genotypes
  */
-public class Population implements EMState, Cloneable, Printable {
+public class Population implements Cloneable, Printable {
 
 	protected ArrayList<Genotype>	_genotypes	= new ArrayList<Genotype>();
-	protected EMState				_state;
 
 
 
@@ -28,8 +26,7 @@ public class Population implements EMState, Cloneable, Printable {
 	 * @param name
 	 * @param ep
 	 */
-	public Population(EMState state) {
-		_state = state;
+	public Population() {
 	}
 
 
@@ -66,8 +63,8 @@ public class Population implements EMState, Cloneable, Printable {
 
 
 
-	public boolean placeGenotype(Genotype g, Genotype... parents) {
-		int ndx = getRandom().nextInt(size());
+	public boolean placeGenotype(Genotype g, EMState state, Genotype... parents) {
+		int ndx = state.getRandom().nextInt(size());
 		_genotypes.set(ndx, g);
 		return true;
 	}
@@ -86,6 +83,13 @@ public class Population implements EMState, Cloneable, Printable {
 		} else {
 			return _genotypes.get(ndx);
 		}
+	}
+
+
+
+	public Genotype getRandomGenotype(EMState state) {
+		int ndx = (_genotypes.size() > 0) ? state.getRandom().nextInt(_genotypes.size()) : -1;
+		return (ndx == -1) ? null : _genotypes.get(ndx);
 	}
 
 
@@ -121,7 +125,6 @@ public class Population implements EMState, Cloneable, Printable {
 	 * @param ep
 	 */
 	public void moveTo(EvoPool ep) {
-		_state = ep;
 		ep.setPopulation(this);
 	}
 
@@ -132,50 +135,10 @@ public class Population implements EMState, Cloneable, Printable {
 	 */
 	@Override
 	public Object clone() {
-		Population cl = new Population(_state);
+		Population cl = new Population();
 		for (Genotype g : _genotypes)
 			cl._genotypes.add((Genotype) g.clone());
 		return cl;
-	}
-
-
-
-	@Override
-	public EMState getESParent() {
-		return _state;
-	}
-
-
-
-	@Override
-	public void init() {
-	}
-
-
-
-	@Override
-	public void finish() {
-	}
-
-
-
-	@Override
-	public RandomGenerator getRandom() {
-		return _state.getRandom();
-	}
-
-
-
-	@Override
-	public EMThreader getThreader() {
-		return _state.getThreader();
-	}
-
-
-
-	@Override
-	public Notifier getNotifier() {
-		return _state.getNotifier();
 	}
 
 }

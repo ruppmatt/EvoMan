@@ -1,6 +1,7 @@
 package evoman.ec.gp.nonterminals;
 
 
+import evoman.config.*;
 import evoman.ec.gp.*;
 
 
@@ -11,6 +12,8 @@ import evoman.ec.gp.*;
  * @author ruppmatt
  * 
  */
+@ConfigRegister(name = "Add")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 @GPNodeDescriptor(name = "Add", return_type = Double.class, child_types = { Double.class, Double.class })
 public class GPAdd extends GPNode {
 

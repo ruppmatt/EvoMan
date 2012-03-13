@@ -2,6 +2,7 @@ package evoman.ec.gp;
 
 
 import evoict.*;
+import evoman.config.*;
 
 
 
@@ -13,6 +14,7 @@ import evoict.*;
  * @author ruppmatt
  * 
  */
+@ConfigRegister(name = "GPNodeConfig")
 public class GPNodeConfig extends KeyValueStore {
 
 	private static final long			serialVersionUID	= 1L;

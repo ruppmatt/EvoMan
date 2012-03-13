@@ -14,25 +14,25 @@ import evoman.evo.structs.*;
  * 
  * 
  * Required configuration:
- * "depth"
+ * "max_depth"
  * The depth of the (sub)tree.
  * 
  * @author ruppmatt
  * 
  */
+
 @GPInitDescriptor(name = "FullTree")
 public class GPFullTree extends GPTreeInitializer {
 
 	private static final long	serialVersionUID	= 1L;
-
-	protected int				_max_depth;
-
+	protected KeyValueStore		_config;
 
 
-	public static void validate(GPInitConfig conf) throws BadConfiguration {
+
+	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
-		if (conf.validate("depth", Integer.class)) {
-			if (conf.I("depth") < 1) {
+		if (_kv.validate("max_depth", Integer.class)) {
+			if (_kv.I("max_depth") < 1) {
 				bc.append("Tree depth cannot be less than 1.");
 			}
 		}
@@ -41,17 +41,17 @@ public class GPFullTree extends GPTreeInitializer {
 
 
 
-	public GPFullTree(EMState state, GPInitConfig conf) {
-		super(state, conf);
-		_max_depth = _conf.I("depth");
+	public GPFullTree(EMState state) {
+		super();
 	}
 
 
 
 	@Override
-	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl) {
+	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl, EMState state) {
+		int local_max_depth = I("max_depth");
 		int node_depth = (parent == null) ? 1 : parent.getDepth() + 1;
-		int max = (_max_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : _max_depth;
+		int max = (local_max_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : local_max_depth;
 		if (node_depth == max) {
 			return true;
 		} else if (node_depth < max) {
@@ -61,4 +61,5 @@ public class GPFullTree extends GPTreeInitializer {
 			return true;
 		}
 	}
+
 }

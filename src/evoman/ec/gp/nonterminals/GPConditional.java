@@ -1,6 +1,7 @@
 package evoman.ec.gp.nonterminals;
 
 
+import evoman.config.*;
 import evoman.ec.gp.*;
 
 
@@ -12,6 +13,8 @@ import evoman.ec.gp.*;
  * @author ruppmatt
  * 
  */
+@ConfigRegister(name = "Conditional")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 @GPNodeDescriptor(name = "Conditional", return_type = Double.class, child_types = { Boolean.class, Double.class,
 		Double.class })
 public class GPConditional extends GPNode {

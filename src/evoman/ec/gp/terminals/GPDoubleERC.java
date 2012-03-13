@@ -2,6 +2,7 @@ package evoman.ec.gp.terminals;
 
 
 import evoict.*;
+import evoman.config.*;
 import evoman.ec.gp.*;
 
 
@@ -21,6 +22,8 @@ import evoman.ec.gp.*;
  * 
  */
 @GPNodeDescriptor(name = "ERC", return_type = Double.class, child_types = {})
+@ConfigRegister(name = "DoubleERC")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 public class GPDoubleERC extends GPMutableNode {
 
 	private static final long	serialVersionUID	= 1L;

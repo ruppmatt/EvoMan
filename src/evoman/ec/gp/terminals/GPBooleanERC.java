@@ -1,6 +1,7 @@
 package evoman.ec.gp.terminals;
 
 
+import evoman.config.*;
 import evoman.ec.gp.*;
 
 
@@ -15,6 +16,8 @@ import evoman.ec.gp.*;
  * 
  */
 @GPNodeDescriptor(name = "GPBooleanERC", return_type = Boolean.class, child_types = {})
+@ConfigRegister(name = "BooleanERC")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 public class GPBooleanERC extends GPMutableNode {
 
 	/**

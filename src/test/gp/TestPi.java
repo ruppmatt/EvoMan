@@ -7,6 +7,7 @@ import org.junit.*;
 
 import evoict.*;
 import evoman.ec.evolution.*;
+import evoman.ec.evolution.operators.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.init.*;
 import evoman.ec.gp.mutation.*;

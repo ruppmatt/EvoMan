@@ -6,6 +6,7 @@ import java.util.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.config.*;
 import evoman.evo.structs.*;
 
 
@@ -18,7 +19,7 @@ import evoman.evo.structs.*;
  * @author ruppmatt
  * 
  */
-
+@ConfigRegister(name = "AvailableNodes")
 public class GPNodeDirectory implements EMState {
 
 	// A link to the parent EMState object
@@ -41,6 +42,7 @@ public class GPNodeDirectory implements EMState {
 	 *            EMState parent required for notifier and random number
 	 *            generation.
 	 */
+	@ConfigConstructor(args = { ConfigArgs.PARENT })
 	public GPNodeDirectory(EMState parent) {
 		_parent = parent;
 	}
@@ -56,6 +58,7 @@ public class GPNodeDirectory implements EMState {
 	 * @throws BadConfiguration
 	 *             If there is something wrong with the configuration
 	 */
+	@ConfigOptional()
 	public void addNodeConfig(GPNodeConfig conf) throws BadConfiguration {
 
 		// Check the contents of the configuration

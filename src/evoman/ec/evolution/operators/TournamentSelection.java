@@ -1,14 +1,39 @@
-package evoman.ec.evolution;
+package evoman.ec.evolution.operators;
 
 
 import java.util.*;
 
 import evoict.*;
+import evoman.config.*;
+import evoman.ec.evolution.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
 
 
 
+/**
+ * 
+ * Tournament selection takes more than one population and selects the most fit
+ * individuals by competing tour_size genotypes against one another. Of the
+ * tour_size genotypes, the most fit is selected to be included in the next
+ * population. This process is repeated pop_size times to produce a single
+ * output population. Genotypes are selected for competition at random, with
+ * repalcement.
+ * 
+ * Parameters
+ * 
+ * pop_size
+ * size of the final population
+ * 
+ * tour_size
+ * size of the tournament
+ * 
+ * @author ruppmatt
+ * 
+ */
+
+@ConfigProxy(proxy_for = EvolutionOpConfig.class)
+@ConfigRegister(name = "TournamentSelection")
 @EvolutionDescriptor(name = "TournamentSelection", selection = true)
 public class TournamentSelection extends EvolutionOperator {
 
@@ -57,7 +82,7 @@ public class TournamentSelection extends EvolutionOperator {
 			for (Population p : _received.values()) {
 				all.addAll(p.getGenotypes());
 			}
-			Population selected = new Population(_pipeline._vm);
+			Population selected = new Population();
 			int new_size = (pop_size != Constants.ASINPUT) ? pop_size : num_genotypes;
 			for (int i = 0; i < new_size; i++) {
 				Genotype winner = all.get(_pipeline.getRandom().nextInt(num_genotypes));

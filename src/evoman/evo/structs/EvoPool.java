@@ -4,7 +4,7 @@ package evoman.evo.structs;
 
 import java.util.*;
 
-import evoict.graphs.*;
+import evoman.config.*;
 import evoman.evo.pop.*;
 import evoman.evo.sm.*;
 import evoman.evo.vm.*;
@@ -24,8 +24,7 @@ public class EvoPool extends EMConfigurableHNode {
 	protected VariationManager					_vm					= null;
 	protected Population						_pop				= null;
 	LinkedHashMap<String, EvoPool>				_ep					= new LinkedHashMap<String, EvoPool>();
-	LinkedHashMap<String, SimulationManager>	_sm					= new LinkedHashMap<String, SimulationManager>();
-	RepresentationPrinter						_printer			= null;
+	LinkedHashMap<String, SimulationManager>	_sm					= null;
 
 
 
@@ -34,20 +33,9 @@ public class EvoPool extends EMConfigurableHNode {
 	 * 
 	 * @param name
 	 */
+
 	public EvoPool(String name) {
 		this(name, null);
-	}
-
-
-
-	/**
-	 * Construct an EvoPool with a particular parent
-	 * 
-	 * @param name
-	 * @param parent
-	 */
-	public EvoPool(String name, HNode parent) {
-		super(name, parent);
 	}
 
 
@@ -58,6 +46,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * @param name
 	 * @param parent
 	 */
+	@ConfigConstructor(args = { ConfigArgs.NAME, ConfigArgs.PARENT })
 	public EvoPool(String name, EvoPool parent) {
 		super(name, parent);
 	}
@@ -71,26 +60,18 @@ public class EvoPool extends EMConfigurableHNode {
 	@Override
 	public void init() {
 		super.init();
-		_vm.init();
+		if (_vm != null)
+			_vm.init();
 	}
 
 
-
-	/**
-	 * Move this EvoPool to another parent
-	 * 
-	 * @param ep
-	 */
-	// public void moveTo(EvoPool ep) {
-	// super.moveTo(ep);
-	// ep.addEvoPool(this);
-	// }
 
 	/**
 	 * Add a child EvoPool to this object
 	 * 
 	 * @param ep
 	 */
+	@ConfigOptional()
 	public void addEvoPool(EvoPool ep) {
 		_ep.put(ep.getName(), ep);
 		addChild(ep);
@@ -116,6 +97,7 @@ public class EvoPool extends EMConfigurableHNode {
 	 * 
 	 * @param vm
 	 */
+	@ConfigOptional()
 	public void setVM(VariationManager vm) {
 		_vm = vm;
 	}
@@ -161,14 +143,4 @@ public class EvoPool extends EMConfigurableHNode {
 			_pop = null;
 	}
 
-
-
-	/**
-	 * Get the EvoType printer for this EvoPool
-	 * 
-	 * @return
-	 */
-	public RepresentationPrinter getETPrinter() {
-		return _printer;
-	}
 }

@@ -5,6 +5,7 @@ import java.io.*;
 
 import evoict.*;
 import evoict.io.*;
+import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
@@ -18,26 +19,40 @@ import evoman.evo.structs.*;
  *         A variation manager provides mutations and fitness filters to create
  *         new populations.
  */
-public abstract class VariationManager implements EMState, Serializable {
+public abstract class VariationManager implements EMState, Serializable, Settable, Validatable {
 
-	private static final long				serialVersionUID	= 1L;
-	protected EvoPool						_ep					= null;
-	protected EvolutionPipeline				_evopipeline		= null;
-	protected int							_total_genotypes	= 0;
-	protected final VariationManagerConfig	_config;
+	private static final long	serialVersionUID	= 1L;
+	protected EvoPool			_ep					= null;
+	protected EvolutionPipeline	_evopipeline		= null;
+	protected int				_total_genotypes	= 0;
+	protected KeyValueStore		_conf				= new KeyValueStore();
 
 
 
-	public VariationManager(EvoPool parent, VariationManagerConfig conf) {
+	public VariationManager(EvoPool parent) {
 		_ep = parent;
-		_config = conf;
 		_ep.setVM(this);
 	}
 
 
 
-	public VariationManagerConfig getConfig() {
-		return _config;
+	@ConfigOptional()
+	public void setEvoPipeline(EvolutionPipeline pipeline) {
+		_evopipeline = pipeline;
+	}
+
+
+
+	@Override
+	@ConfigOptional()
+	public void set(String key, Object value) {
+		_conf.set(key, value);
+	}
+
+
+
+	public KeyValueStore getConfig() {
+		return _conf;
 	}
 
 
@@ -65,18 +80,6 @@ public abstract class VariationManager implements EMState, Serializable {
 
 
 	public abstract int getPopSize();
-
-
-
-	public void addEP(EvolutionPipeline ep) {
-		_evopipeline = ep;
-	}
-
-
-
-	public void removeEP() {
-		_evopipeline = null;
-	}
 
 
 

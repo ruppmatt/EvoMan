@@ -4,6 +4,7 @@ package evoman.ec.gp.mutation;
 import java.util.*;
 
 import evoict.*;
+import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
@@ -11,6 +12,34 @@ import evoman.evo.pop.*;
 
 
 
+/**
+ * Cross over take a single population and, with probability "prob" selects a
+ * genotype for cross over. A cross-over point is then selected in the base
+ * gentype for replacement, with "prob_leaf" probability of it being a leaf
+ * node. Next, a cross-over candidate genotype is selected (or "max_tries" are
+ * attempted to find a candidate) with a comptable subtree/node for the
+ * replacement. If a candidate is successfully identified, a new tree is created
+ * from the cross of the original genotype and the cross-over candidate. This
+ * genotype is then randomly placed in the population.
+ * 
+ * 
+ * Parameters
+ * 
+ * prob
+ * probability of selecting a genotype for crossover base
+ * 
+ * max_tries
+ * the number of tries for identifying successful candidates before abandoning
+ * 
+ * prob_leaf
+ * the probability that a leaf is selected for the crossover point.
+ * 
+ * 
+ * @author ruppmatt
+ * 
+ */
+@ConfigRegister(name = "GPCrossOver")
+@ConfigProxy(proxy_for = EvolutionOpConfig.class)
 @EvolutionDescriptor(name = "GPCrossOver", min_in = 1, max_in = 1, reptype = GPTree.class)
 public class CrossOver extends EvolutionOperator {
 
@@ -92,7 +121,7 @@ public class CrossOver extends EvolutionOperator {
 				// System.err.println("Tree height error in CrossOver.");
 				// }
 				Genotype new_gen = _pipeline.makeGenotype(base_clone);
-				p.placeGenotype(new_gen);
+				p.placeGenotype(new_gen, _pipeline);
 				break;
 			}
 		}

@@ -1,13 +1,41 @@
-package evoman.ec.evolution;
+package evoman.ec.evolution.operators;
 
 
 import java.util.*;
 
 import evoict.*;
+import evoman.config.*;
+import evoman.ec.evolution.*;
 import evoman.evo.pop.*;
 
 
 
+/**
+ * Takes in two populations a "background" and a "replacement". The "background"
+ * population gets overwritten by the replacement. Replacement is abandoned
+ * after "num_attempts" have elapsed without finding a candidate to replace.
+ * Replacement genotypes are guaranteed to be in the final population unless no
+ * repalcement can be found (e.g. they will not overwrite each other).
+ * 
+ * 
+ * Parameters
+ * 
+ * background
+ * Name of background-producing evolution operator
+ * 
+ * replacement
+ * name of replacement-producing evolution operator
+ * 
+ * 
+ * num_attempts
+ * number of attempts at finding a candidate genotype for replacement
+ * 
+ * @author ruppmatt
+ * 
+ */
+
+@ConfigProxy(proxy_for = EvolutionOpConfig.class)
+@ConfigRegister(name = "Replace")
 @EvolutionDescriptor(name = "Replace", max_in = 2, min_in = 2)
 public class ReplaceOperator extends EvolutionOperator {
 
@@ -23,8 +51,8 @@ public class ReplaceOperator extends EvolutionOperator {
 		if (!conf.validate("replacement", String.class)) {
 			bc.append("ReplaceOperator: Replacement population not named.");
 		}
-		if (!conf.validate("attempts", Integer.class) || conf.I("attempts") < 0) {
-			bc.append("ReplacementOperator: maximum replacement attempts not set or less than 0.");
+		if (!conf.validate("num_attempts", Integer.class) && conf.I("num_attempts") < 0) {
+			bc.append("ReplaceOperator: num_attempts is not set or less than zero.");
 		}
 		bc.validate();
 	}
@@ -64,12 +92,17 @@ public class ReplaceOperator extends EvolutionOperator {
 			Population new_pop = (Population) background.clone();
 			@SuppressWarnings("unchecked")
 			ArrayList<Genotype> old_gens = (ArrayList<Genotype>) new_pop.getGenotypes().clone();
+			int num_attempts = getConfig().I("num_attempts");
 			for (int k = 0; k < replacement.size(); k++) {
 				int ndx = _pipeline.getRandom().nextInt(old_gens.size());
 				Genotype to_replace = old_gens.get(ndx);
 				old_gens.remove(ndx);
-				new_pop.replaceGenotype(to_replace, (Genotype) replacement.getGenotype(k).clone());
-
+				boolean replaced = false;
+				int tries = 0;
+				do {
+					replaced = new_pop.replaceGenotype(to_replace, (Genotype) replacement.getGenotype(k).clone());
+					tries++;
+				} while (replaced == false && tries < num_attempts);
 			}
 			return new_pop;
 

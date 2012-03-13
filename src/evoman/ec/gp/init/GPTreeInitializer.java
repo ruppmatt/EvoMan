@@ -1,12 +1,10 @@
 package evoman.ec.gp.init;
 
 
-import java.io.*;
-
 import evoict.*;
-import evoict.io.*;
 import evoman.ec.gp.*;
 import evoman.evo.structs.*;
+import evoman.evo.vm.*;
 
 
 
@@ -16,11 +14,10 @@ import evoman.evo.structs.*;
  * @author ruppmatt
  * 
  */
-public abstract class GPTreeInitializer implements EMState, Serializable {
+public abstract class GPTreeInitializer extends RepresentationInitializer {
 
 	private static final long	serialVersionUID	= 1L;
-	EMState						_state;
-	GPInitConfig				_conf;
+	KeyValueStore				_kv;
 
 
 
@@ -32,9 +29,8 @@ public abstract class GPTreeInitializer implements EMState, Serializable {
 	 * @param conf
 	 *            Initializer configuration
 	 */
-	public GPTreeInitializer(EMState state, GPInitConfig conf) {
-		_state = state;
-		_conf = conf;
+	public GPTreeInitializer() {
+		_kv = new KeyValueStore();
 	}
 
 
@@ -51,51 +47,6 @@ public abstract class GPTreeInitializer implements EMState, Serializable {
 	 *            Expected return type of child
 	 * @return
 	 */
-	public abstract boolean createTerminal(GPTree t, GPNode parent, Class<?> cl);
+	public abstract boolean createTerminal(GPTree t, GPNode parent, Class<?> cl, EMState state);
 
-
-
-	public GPInitConfig getConfig() {
-		return _conf;
-	}
-
-
-
-	@Override
-	public EMState getESParent() {
-		return _state;
-	}
-
-
-
-	@Override
-	public void init() {
-	}
-
-
-
-	@Override
-	public void finish() {
-	}
-
-
-
-	@Override
-	public RandomGenerator getRandom() {
-		return _state.getRandom();
-	}
-
-
-
-	@Override
-	public EMThreader getThreader() {
-		return _state.getThreader();
-	}
-
-
-
-	@Override
-	public Notifier getNotifier() {
-		return _state.getNotifier();
-	}
 }

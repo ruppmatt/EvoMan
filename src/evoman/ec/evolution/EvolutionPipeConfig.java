@@ -2,11 +2,11 @@ package evoman.ec.evolution;
 
 
 import evoict.*;
-import evoman.interpreter.*;
+import evoman.config.*;
 
 
 
-@ConfigDescriptor(name = "EvolutionPipe")
+@ConfigRegister(name = "EvolutionPipe")
 public class EvolutionPipeConfig extends KeyValueStore {
 
 	private static final long	serialVersionUID	= 1L;
@@ -15,7 +15,6 @@ public class EvolutionPipeConfig extends KeyValueStore {
 
 
 
-	@ConfigRequired(names = { "from", "to" })
 	protected EvolutionPipeConfig(EvolutionOpConfig from, EvolutionOpConfig to) {
 		_from = from;
 		_to = to;

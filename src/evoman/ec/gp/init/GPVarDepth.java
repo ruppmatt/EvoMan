@@ -1,6 +1,7 @@
 package evoman.ec.gp.init;
 
 
+import evoict.*;
 import evoman.ec.gp.*;
 import evoman.evo.structs.*;
 
@@ -21,49 +22,47 @@ import evoman.evo.structs.*;
  * @author ruppmatt
  * 
  */
+
+@GPInitDescriptor(name = "VariableDepthTree")
 public class GPVarDepth extends GPTreeInitializer {
 
 	private static final long	serialVersionUID	= 1L;
 
 
 
-	public static boolean validate(GPInitConfig conf, String msg) {
-		if (!conf.validate("max_depth", Integer.class) || !conf.validate("min_depth", Integer.class)) {
-			msg = "max_depth and/or min_depth not specified.";
-			return false;
+	public void validate() throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
+		if (!_kv.validate("max_depth", Integer.class) || !_kv.validate("min_depth", Integer.class)) {
+			bc.append("GPVarDepth: max_depth and/or min_depth not specified.");
 		}
-		if (conf.I("max_depth") < 1 || conf.I("min_depth") > conf.I("max_depth")) {
-			msg = "max_depth and/or min_depth incorrectly specified.";
-			return false;
+		if (_kv.I("max_depth") < 1 || _kv.I("min_depth") > _kv.I("max_depth")) {
+			bc.append("max_depth and/or min_depth incorrectly specified.");
 		}
-		return true;
+		bc.validate();
 	}
 
-	protected final int	_max_depth;
-	protected final int	_min_depth;
 
 
-
-	public GPVarDepth(EMState state, GPInitConfig conf) {
-		super(state, conf);
-		_max_depth = conf.I("max_depth");
-		_min_depth = conf.I("min_depth");
+	public GPVarDepth() {
+		super();
 	}
 
 
 
 	@Override
-	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl) {
+	public boolean createTerminal(GPTree t, GPNode parent, Class<?> cl, EMState state) {
 		int cur_depth = (parent != null) ? parent.getDepth() + 1 : 1;
-		int max = (_max_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : _max_depth;
-		int min = (_min_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : _min_depth;
+		int max_depth = I("max_depth");
+		int min_depth = I("min_depth");
+		int max = (max_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : max_depth;
+		int min = (min_depth > t.getConfig().getMaxDepth()) ? t.getConfig().getMaxDepth() : min_depth;
 		if (cur_depth == max) {
 			return true;
 		} else if (cur_depth < min) {
 			return false;
 		} else {
 			int delta = max - cur_depth;
-			return (_state.getRandom().nextInt(delta) == 0);
+			return (state.getRandom().nextInt(delta) == 0);
 		}
 	}
 }

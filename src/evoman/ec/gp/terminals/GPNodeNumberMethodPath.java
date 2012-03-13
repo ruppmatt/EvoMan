@@ -3,6 +3,7 @@ package evoman.ec.gp.terminals;
 
 import evoict.*;
 import evoict.reflection.*;
+import evoman.config.*;
 import evoman.ec.gp.*;
 
 
@@ -25,6 +26,8 @@ import evoman.ec.gp.*;
  * @author ruppmatt
  * 
  */
+@ConfigRegister(name = "NumericalMethod")
+@ConfigProxy(proxy_for = GPNodeConfig.class)
 @GPNodeDescriptor(name = "MethodPathToNumber", return_type = Double.class, child_types = {})
 public class GPNodeNumberMethodPath extends GPMutableNode {
 
@@ -55,7 +58,6 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 		} catch (BadConfiguration e) {
 			_path = null;
 		}
-		init();
 	}
 
 

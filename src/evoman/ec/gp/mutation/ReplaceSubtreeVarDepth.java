@@ -4,6 +4,7 @@ package evoman.ec.gp.mutation;
 import java.util.*;
 
 import evoict.*;
+import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
@@ -12,6 +13,33 @@ import evoman.evo.pop.*;
 
 
 
+/**
+ * 
+ * Replace Subtree Variable Depth creates a new subtree (of variable depth) at a
+ * node. It is like cross-over but the replaced subtree is created from scratch
+ * rather than being received from another genotype.
+ * 
+ * 
+ * max_depth
+ * maximum (by ratio) size of the new subtree relative to the old
+ * 
+ * min_depth
+ * minimum (by ratio) size of new tree relative to old subtree
+ * 
+ * prob
+ * probability of selecting a tree for the replacement
+ * 
+ * max_tries
+ * maximum attempts at either finding a candidate for subtree replacement within
+ * a selected tree
+ * 
+ * 
+ * @author ruppmatt
+ * 
+ */
+
+@ConfigProxy(proxy_for = EvolutionOpConfig.class)
+@ConfigRegister(name = "GPReplaceSubtree")
 @EvolutionDescriptor(name = "ReplaceSubtreeVarDepth", min_in = 1, max_in = 1, reptype = GPTree.class)
 public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
@@ -128,7 +156,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 			// Construct a new genotype for the replacement tree and place it in
 			// the population
 			Genotype new_gen = _pipeline.makeGenotype(t);
-			pop.placeGenotype(new_gen, parent);
+			pop.placeGenotype(new_gen, _pipeline, parent);
 		}
 
 		return pop;
@@ -166,15 +194,14 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		}
 
 		// Set up a new tree initializer
-		GPInitConfig conf = new GPInitConfig();
-		conf.set("min_depth", min_avg_depth);
-		conf.set("max_depth", max_avg_depth);
-		String msg = null;
-		if (!GPVarDepth.validate(conf, msg)) {
-			_pipeline.getNotifier().warn(msg);
-			return null;
+		GPVarDepth init = new GPVarDepth();
+		init.set("min_depth", min_avg_depth);
+		init.set("max_depth", max_avg_depth);
+		try {
+			init.validate();
+		} catch (BadConfiguration bc) {
+			throw bc;
 		}
-		GPVarDepth init = new GPVarDepth(_pipeline.getESParent(), conf);
 
 		// Create the root of the new tree.
 		GPNode root = t.createNode(selection.getParent(),

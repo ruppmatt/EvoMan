@@ -2,6 +2,7 @@ package evoman.ec.gp;
 
 
 import evoict.*;
+import evoman.ec.gp.init.*;
 import evoman.evo.structs.*;
 
 
@@ -46,17 +47,17 @@ public class GPFixedRootTree extends GPTree {
 
 
 
-	public GPFixedRootTree(EMState state, GPTreeConfig conf, GPNodeConfig root_conf) {
-		super(state, conf);
+	public GPFixedRootTree(EMState state, GPTreeConfig conf, GPNodeConfig root_conf, GPTreeInitializer init) {
+		super(state, conf, init);
 		_root_conf = root_conf;
 	}
 
 
 
 	@Override
-	public void init() {
+	public void init(GPTreeInitializer init) {
 		_root = buildNode(null, _root_conf, new GPNodePos());
-		_root.init();
+		_root.init(init);
 	}
 
 

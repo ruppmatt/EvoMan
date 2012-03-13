@@ -2,30 +2,49 @@ package evoman.ec.gp;
 
 
 import evoict.*;
-import evoman.ec.gp.init.*;
+import evoman.config.*;
 import evoman.evo.structs.*;
 
 
 
 /**
- * A GPTreeConfig contains global configuration information about a GPTree.
+ * A GPTreeConfig contains global configuration information about a GPTree such
+ * as maximum allowed depth and return type.
+ * 
+ * Settings
+ * 
+ * max_depth
+ * maximum depth allowed by the tree. All operators must obey this limit.
+ * 
+ * return_type
+ * the return type (class) of the tree.
  * 
  * @author ruppmatt
  * 
  */
+@ConfigRegister(name = "GPTree")
 public class GPTreeConfig extends KeyValueStore {
+
+	public static void validate(GPTreeConfig conf) throws BadConfiguration {
+		BadConfiguration bc = new BadConfiguration();
+		if (!conf.validate("max_depth", Integer.class) || conf.I("max_depth") < 1) {
+			bc.append("GPTreeConfig: max_depth is not set or less than 1,");
+		}
+		if (!conf.validate("return_type", Class.class)) {
+			bc.append("GPTreeConfig: return_type is not set.");
+		}
+		bc.validate();
+	}
 
 	private static final long	serialVersionUID	= 1L;
 	protected GPNodeDirectory	_node_dir;
-	protected GPTreeInitializer	_init				= null;
-	protected KeyValueStore		_kv					= new KeyValueStore();
 	protected EMState			_state;
 
 
 
-	public GPTreeConfig(GPNodeDirectory dir, GPTreeInitializer init) {
+	@ConfigConstructor()
+	public GPTreeConfig(GPNodeDirectory dir) {
 		_node_dir = dir;
-		_init = init;
 	}
 
 
@@ -36,14 +55,8 @@ public class GPTreeConfig extends KeyValueStore {
 
 
 
-	public GPTreeInitializer getInitializer() {
-		return _init;
-	}
-
-
-
 	public Class<?> getReturnType() {
-		return (Class<?>) _kv.get("return_type");
+		return (Class<?>) get("return_type");
 	}
 
 
