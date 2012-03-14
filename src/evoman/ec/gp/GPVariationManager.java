@@ -1,6 +1,8 @@
 package evoman.ec.gp;
 
 
+import java.lang.reflect.*;
+
 import evoict.*;
 import evoman.config.*;
 import evoman.ec.gp.init.*;
@@ -133,13 +135,18 @@ public class GPVariationManager extends VariationManager {
 	public void createPopulation() throws BadConfiguration {
 		Population p = new Population();
 		int size = getPopSize();
-		for (int k = 0; k < size; k++) {
-			GPTree t = new GPTree(this, _tree_config, _tree_init);
-			Genotype g = makeGenotype(t);
-			p.addGenotype(g);
+		try {
+			Constructor<? extends GPTree> constr = _tree_config.treeType().getConstructor(EMState.class,
+					GPTreeConfig.class, GPTreeInitializer.class);
+			for (int k = 0; k < size; k++) {
+				GPTree t = constr.newInstance(this, _tree_config, _tree_init);
+				Genotype g = makeGenotype(t);
+				p.addGenotype(g);
+			}
+			_ep.setPopulation(p);
+		} catch (Exception e) {
+			throw new BadConfiguration("Problem with GPTree reflective construction." + e.getMessage());
 		}
-		_ep.setPopulation(p);
-
 	}
 
 

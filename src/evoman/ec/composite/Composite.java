@@ -4,9 +4,7 @@ package evoman.ec.composite;
 import java.io.*;
 
 import evoict.*;
-import evoict.io.*;
 import evoman.ec.*;
-import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 
 
@@ -21,7 +19,7 @@ import evoman.evo.structs.*;
  * 
  */
 
-public abstract class Composite implements Representation, EMState, Serializable {
+public abstract class Composite implements Cloneable, Representation, Serializable {
 
 	/**
 	 * 
@@ -34,12 +32,9 @@ public abstract class Composite implements Representation, EMState, Serializable
 
 	protected CompositeConfig	_conf;
 
-	protected EMState			_state;
 
 
-
-	protected Composite(EMState state, CompositeConfig conf) {
-		_state = state;
+	protected Composite(CompositeConfig conf) {
 		_conf = conf;
 	}
 
@@ -75,69 +70,5 @@ public abstract class Composite implements Representation, EMState, Serializable
 
 	@Override
 	public abstract Object clone();
-
-
-
-	@Override
-	public Object eval(Object o) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
-	public String toString(Object context) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
-
-	@Override
-	public void serializeRepresentation(ObjectOutputStream out) throws IOException {
-		// TODO Auto-generated method stub
-
-	}
-
-
-
-	@Override
-	public EMState getESParent() {
-		return _state;
-	}
-
-
-
-	@Override
-	public void init() {
-	}
-
-
-
-	@Override
-	public void finish() {
-	}
-
-
-
-	@Override
-	public RandomGenerator getRandom() {
-		return _state.getRandom();
-	}
-
-
-
-	@Override
-	public EMThreader getThreader() {
-		return _state.getThreader();
-	}
-
-
-
-	@Override
-	public Notifier getNotifier() {
-		return _state.getNotifier();
-	}
 
 }

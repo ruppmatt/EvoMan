@@ -1,10 +1,11 @@
 package evoman.ec.composite;
 
 
+import java.io.*;
+
 import evoict.*;
 import evoman.ec.*;
 import evoman.ec.composite.init.*;
-import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 
 
@@ -39,33 +40,29 @@ public class AutoFixedComposite extends Composite {
 	/**
 	 * Construct and initialize (build) FixedComposite reprsentation
 	 * 
-	 * @param state
-	 *            EMState for random numbers, notification
 	 * @param config
 	 *            Configuration to use in representation
 	 * @param init
 	 *            Initializer to build representation
 	 */
-	public AutoFixedComposite(EMState state, CompositeConfig config, CompositeInitializer init) {
-		super(state, config);
-		build(init);
-
+	public AutoFixedComposite(EMState state, CompositeConfig config, CompositeInitializer init) throws BadConfiguration {
+		super(config);
+		init(state, init);
 	}
 
 
 
-	protected void build(CompositeInitializer init) {
+	protected void init(EMState state, CompositeInitializer init) throws BadConfiguration {
 		int n = getConfig().numSources();
 		_components = new Representation[getConfig().numSources()];
 		for (int k = 0; k < n; k++) {
 			EvoPool source = getConfig().getSources()[k];
 			try {
-				_components[k] = init.retrieve(this, source, k, _state);
+				_components[k] = init.retrieve(this, source, k, state);
 				_sources[k] = source;
 			} catch (BadConfiguration bc) {
-				getNotifier().fatal(
-						"Unable to construct an AutoFixedComposite due to initialization failure.  Reason: "
-								+ bc.getMessage());
+				bc.prepend("AutoFixedComposite: Unable to construct an AutoFixedComposite due to initialization failure.");
+				throw bc;
 			}
 		}
 	}
@@ -80,15 +77,15 @@ public class AutoFixedComposite extends Composite {
 	 * @param config
 	 *            Configuration of Composite
 	 */
-	protected AutoFixedComposite(EMState state, CompositeConfig config) {
-		super(state, config);
+	protected AutoFixedComposite(CompositeConfig config) {
+		super(config);
 	}
 
 
 
 	@Override
 	public Object clone() {
-		AutoFixedComposite new_clone = new AutoFixedComposite(_state, _conf);
+		AutoFixedComposite new_clone = new AutoFixedComposite(_conf);
 		new_clone._components = _components.clone();
 		return new_clone;
 	}
@@ -106,6 +103,29 @@ public class AutoFixedComposite extends Composite {
 		} else {
 			throw new BadConfiguration("AutoFixedComposite: Requested index out of bounds.");
 		}
+	}
+
+
+
+	@Override
+	public Object eval(Object o) throws BadEvaluation {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public String toString(Object context) throws BadEvaluation {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public void serializeRepresentation(ObjectOutputStream out) throws IOException {
+		// TODO Auto-generated method stub
 	}
 
 }

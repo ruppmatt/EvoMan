@@ -1,10 +1,13 @@
 package evoman.ec.composite;
 
 
+import java.lang.reflect.*;
+
 import evoict.*;
 import evoict.graphs.*;
 import evoman.config.*;
 import evoman.ec.composite.init.*;
+import evoman.evo.pop.*;
 import evoman.evo.structs.*;
 import evoman.evo.vm.*;
 
@@ -98,7 +101,20 @@ public class CompositeVariationManager extends VariationManager {
 
 
 	protected void createPopulation() throws BadConfiguration {
-
+		Population p = new Population();
+		int size = getPopSize();
+		try {
+			Constructor<? extends Composite> constr = _comp_config.compositeType().getConstructor(EMState.class,
+					CompositeConfig.class, CompositeInitializer.class);
+			for (int k = 0; k < size; k++) {
+				Composite c = constr.newInstance(this, _comp_config, _comp_init);
+				Genotype g = makeGenotype(c);
+				p.addGenotype(g);
+			}
+			_ep.setPopulation(p);
+		} catch (Exception e) {
+			throw new BadConfiguration("Problem with Composite reflective construction." + e.getMessage());
+		}
 	}
 
 

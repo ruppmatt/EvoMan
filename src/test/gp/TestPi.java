@@ -116,7 +116,7 @@ public class TestPi {
 			ep.createPipe(subtreerep, merge);
 			ep.createPipe(pointmut, merge);
 			ep.createPipe(elitism, replace);
-			ep.createPipe(merge, replace);
+			ep.createPipe("Merge", "Replace");
 		} catch (BadConfiguration e) {
 			fail(e.getMessage());
 		}
