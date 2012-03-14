@@ -53,15 +53,17 @@ public class GPTree implements Representation, Serializable {
 		}
 		if (conf._node_dir == null) {
 			bad.append("GPTree: no node directory specified in configuration");
+		} else {
+			try {
+				conf._node_dir.validate();
+			} catch (BadConfiguration bc) {
+				bad.append(bc.getMessage());
+			}
 		}
 		if (!conf.validate("return_type", Class.class)) {
 			bad.append("GPTree: no return_type specified");
 		}
-		try {
-			conf._node_dir.validate();
-		} catch (BadConfiguration bc) {
-			bad.append(bc.getMessage());
-		}
+
 		bad.validate();
 	}
 
@@ -111,8 +113,9 @@ public class GPTree implements Representation, Serializable {
 	 * @throws BadConfiguration
 	 */
 	public void init(EMState state, GPTreeInitializer init) throws BadConfiguration {
-		_root = createNode(state, null, (Class<?>) getConfig().get("return_type"), new GPNodePos(), init);
-		_root.init(state, init);
+		_root = createNode(state, this, null, (Class<?>) getConfig().get("return_type"), new GPNodePos(), init);
+		_root.init(state);
+		_root.buildDescendents(state, this, init);
 	}
 
 
@@ -213,23 +216,24 @@ public class GPTree implements Representation, Serializable {
 	 *            terminal
 	 * @return
 	 */
-	public GPNode createNode(EMState state, GPNode parent, Class<?> ret_type, GPNodePos pos, GPTreeInitializer init)
+	public static GPNode createNode(EMState state, GPTree t, GPNode parent, Class<?> ret_type, GPNodePos pos,
+			GPTreeInitializer init)
 			throws BadConfiguration {
-		boolean terminal = init.createTerminal(this, parent, ret_type, state);
+		boolean terminal = init.createTerminal(t, parent, ret_type, state);
 		GPNodeConfig cl_con = null;
 
 		if (terminal == true) {
-			cl_con = getConfig().getNodeDirectory().randomTerminal(ret_type);
+			cl_con = t.getConfig().getNodeDirectory().randomTerminal(state, ret_type);
 			if (cl_con == null) {
 				throw new BadConfiguration("No terminal nodes found with type: " + ret_type.getName());
 			}
 		} else {
-			cl_con = getConfig().getNodeDirectory().randomFunction(ret_type);
+			cl_con = t.getConfig().getNodeDirectory().randomFunction(state, ret_type);
 			if (cl_con == null) {
 				throw new BadConfiguration("No function nodes for return type found: " + ret_type.getName());
 			}
 		}
-		return buildNode(parent, cl_con, pos);
+		return buildNode(t, parent, cl_con, pos);
 	}
 
 
@@ -246,11 +250,12 @@ public class GPTree implements Representation, Serializable {
 	 * @return
 	 *         The new node
 	 */
-	protected GPNode buildNode(GPNode parent, GPNodeConfig conf, GPNodePos pos) throws BadConfiguration {
+	protected static GPNode buildNode(GPTree t, GPNode parent, GPNodeConfig conf, GPNodePos pos)
+			throws BadConfiguration {
 		try {
 			Constructor<? extends GPNode> construct =
-					conf.getNodeClass().getConstructor(GPTree.class, GPNodeConfig.class, GPNode.class, GPNodePos.class);
-			GPNode new_node = construct.newInstance(this, conf, parent, pos);
+					conf.getNodeClass().getConstructor(GPNodeConfig.class, GPNode.class, GPNodePos.class);
+			GPNode new_node = construct.newInstance(conf, parent, pos);
 			return new_node;
 
 		} catch (Exception e) {
@@ -297,7 +302,7 @@ public class GPTree implements Representation, Serializable {
 	@Override
 	public Object clone() {
 		GPTree newtree = new GPTree(_config);
-		newtree._root = _root.clone(newtree, null);
+		newtree._root = _root.clone(null);
 		return newtree;
 	}
 
@@ -340,12 +345,12 @@ public class GPTree implements Representation, Serializable {
 	 * @param start
 	 *            Start node
 	 */
-	public void bfs(FindNode fn, GPNode start) {
+	public static void bfs(FindNode fn, GPTree tree, GPNode start) {
 		LinkedList<GPNode> q = new LinkedList<GPNode>();
 		q.add(start);
 		while (!q.isEmpty() && !fn.done()) {
 			GPNode n = q.poll();
-			fn.examine(n);
+			fn.examine(tree, n);
 			GPNode[] children = n.getChildren();
 			if (children != null) {
 				for (int k = 0; k < children.length; k++) {
@@ -366,7 +371,7 @@ public class GPTree implements Representation, Serializable {
 	 */
 
 	public void bfs(FindNode fn) {
-		bfs(fn, _root);
+		GPTree.bfs(fn, this, _root);
 	}
 
 
@@ -379,12 +384,12 @@ public class GPTree implements Representation, Serializable {
 	 *            criteria to match
 	 * @param start
 	 */
-	public void dfs(FindNode fn, GPNode start) {
+	public static void dfs(FindNode fn, GPTree tree, GPNode start) {
 		Stack<GPNode> q = new Stack<GPNode>();
 		q.add(start);
 		while (!q.isEmpty() && !fn.done()) {
 			GPNode n = q.pop();
-			fn.examine(n);
+			fn.examine(tree, n);
 			for (GPNode child : n.getChildren()) {
 				q.add(child);
 			}
@@ -401,7 +406,7 @@ public class GPTree implements Representation, Serializable {
 	 *            FindNode object to match
 	 */
 	public void dfs(FindNode fn) {
-		dfs(fn, _root);
+		GPTree.dfs(fn, this, _root);
 	}
 
 }

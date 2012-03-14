@@ -1,10 +1,9 @@
 package evoman.ec.gp.init;
 
 
-import evoict.*;
+import evoman.ec.*;
 import evoman.ec.gp.*;
 import evoman.evo.structs.*;
-import evoman.evo.vm.*;
 
 
 
@@ -17,7 +16,6 @@ import evoman.evo.vm.*;
 public abstract class GPTreeInitializer extends RepresentationInitializer {
 
 	private static final long	serialVersionUID	= 1L;
-	KeyValueStore				_kv;
 
 
 
@@ -30,7 +28,7 @@ public abstract class GPTreeInitializer extends RepresentationInitializer {
 	 *            Initializer configuration
 	 */
 	public GPTreeInitializer() {
-		_kv = new KeyValueStore();
+		super();
 	}
 
 

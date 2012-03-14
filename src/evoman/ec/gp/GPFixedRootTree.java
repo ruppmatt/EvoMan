@@ -55,8 +55,8 @@ public class GPFixedRootTree extends GPTree {
 	@Override
 	public void init(EMState state, GPTreeInitializer init) throws BadConfiguration {
 		GPNodeConfig root_conf = (GPNodeConfig) getConfig().get("root_config");
-		_root = buildNode(null, root_conf, new GPNodePos());
-		_root.init(state, init);
+		_root = GPTree.buildNode(this, null, root_conf, new GPNodePos());
+		_root.buildDescendents(state, this, init);
 	}
 
 

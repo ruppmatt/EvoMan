@@ -6,10 +6,7 @@ import java.util.*;
 
 import evoict.*;
 import evoict.graphs.*;
-import evoict.io.*;
-import evoman.ec.*;
 import evoman.evo.pop.*;
-import evoman.evo.structs.*;
 import evoman.evo.vm.*;
 
 
@@ -35,10 +32,9 @@ import evoman.evo.vm.*;
  * 
  */
 
-public class EvolutionPipeline extends Pipeline implements EMState {
+public class EvolutionPipeline extends Pipeline {
 
 	private static final long													serialVersionUID	= 1L;
-	protected VariationManager													_vm;
 
 	// Configuration objects (user configurable)
 	protected HashSet<EvolutionOpConfig>										_conf				= new HashSet<EvolutionOpConfig>();
@@ -57,7 +53,6 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 	public EvolutionPipeline(VariationManager parent) {
 		_pipeline = new Pipeline();
-		_vm = parent;
 		_pipes.put(null, new ArrayList<EvolutionPipeConfig>());
 	}
 
@@ -167,7 +162,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 	 *            Receiving population from the VariationManager
 	 */
 	@SuppressWarnings("unchecked")
-	public Population process(Population p) {
+	public Population process(VariationManager vm, Population p) throws BadConfiguration {
 
 		// Begin by registering all start operators with a pipe that contains
 		// the initial population
@@ -179,7 +174,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 			start_conf.registerPipe(new_pipe);
 			start_pipes.put(start_conf, new_pipe);
 			EvolutionPipe pipe = new EvolutionPipe(new_pipe);
-			pipe.send(_vm.getPoolPopulation());
+			pipe.send(p);
 			_conf_pipes.put(new_pipe, pipe);
 		}
 
@@ -196,7 +191,7 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 						.getConstructor(EvolutionPipeline.class, EvolutionOpConfig.class);
 				EvolutionOperator op = constr_op.newInstance(this, conf);
 				try {
-					Population produced = op.produce();
+					Population produced = op.produce(vm);
 					// System.err.println("Success: " + conf.getName());
 					if (conf == terminal) {
 						result = produced;
@@ -209,16 +204,19 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 							pipe.send(produced);
 						}
 					} else {
-						getNotifier().warn("Evolution operator results ignored: " + conf.getName());
+						vm.getNotifier().warn("Evolution operator results ignored: " + conf.getName());
 					}
 				} catch (BadConfiguration bc) {
-					getNotifier().fatal("Unable to produce population. " + bc.getMessage());
+					throw new BadConfiguration("Unable to produce population for operator named " + conf.getName()
+							+ "\n" +
+							bc.getMessage());
 				}
 
 			} catch (Exception e) {
+				System.err.println(e.toString());
 				e.printStackTrace();
-				getNotifier().fatal("Unable to create and/or execute evolution operator: " + conf.getName());
-				System.exit(1);
+				throw new BadConfiguration("Unable to create and/or execute evolution operator: " + conf.getName()
+						+ "\n" + e.getMessage());
 			}
 		}
 
@@ -264,12 +262,6 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 
 
 
-	public Genotype makeGenotype(Representation r) {
-		return _vm.makeGenotype(r);
-	}
-
-
-
 	@Override
 	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
@@ -296,54 +288,4 @@ public class EvolutionPipeline extends Pipeline implements EMState {
 		}
 	}
 
-
-
-	@Override
-	public EMState getESParent() {
-		return _vm;
-	}
-
-
-
-	@Override
-	public void init() {
-		try {
-			validate();
-		} catch (BadConfiguration bc) {
-			getNotifier().fatal("Pipeline is not configured correctly." + getNotifier().endl + bc.getMessage());
-		}
-	}
-
-
-
-	@Override
-	public void finish() {
-	}
-
-
-
-	@Override
-	public RandomGenerator getRandom() {
-		return _vm.getRandom();
-	}
-
-
-
-	@Override
-	public EMThreader getThreader() {
-		return _vm.getThreader();
-	}
-
-
-
-	@Override
-	public Notifier getNotifier() {
-		return _vm.getNotifier();
-	}
-
-
-
-	public VariationManager getVM() {
-		return _vm;
-	}
 }

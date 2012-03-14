@@ -1,8 +1,6 @@
 package evoman.ec.gp.mutation;
 
 
-import java.util.*;
-
 import evoict.*;
 import evoman.config.*;
 import evoman.ec.evolution.*;
@@ -10,6 +8,8 @@ import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
 import evoman.ec.gp.init.*;
 import evoman.evo.pop.*;
+import evoman.evo.structs.*;
+import evoman.evo.vm.*;
 
 
 
@@ -77,12 +77,12 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			if (_received.size() == 1) {
 				Population received = (Population) _received.values().toArray()[0];
 				Population newpop = (Population) received.clone();
-				return doMutation(newpop);
+				return doMutation(newpop, vm);
 			} else {
 				throw new BadConfiguration(getConfig().getName() + " expected 1 population, got " + _received.size());
 			}
@@ -100,12 +100,12 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 	 * @return a mutated population
 	 * @throws BadConfiguration
 	 */
-	protected Population doMutation(Population pop) throws BadConfiguration {
+	protected Population doMutation(Population pop, VariationManager vm) throws BadConfiguration {
 
 		// Find the number of trees to have sub-tree replacements
 		double p = getConfig().D("prob");
 		int popsize = pop.size();
-		int n = _pipeline.getRandom().getBinomial(popsize, p);
+		int n = vm.getRandom().getBinomial(popsize, p);
 
 		/*
 		 * Find n GP trees that need to have a subtree replaced. Once a random
@@ -113,14 +113,14 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		 * serve as the replacement. This selected node needs to be alterable.
 		 */
 		for (int k = 0; k < n; k++) {
-			int gen_ndx = _pipeline.getRandom().nextInt(popsize);
+			int gen_ndx = vm.getRandom().nextInt(popsize);
 			Genotype parent = pop.getGenotype(gen_ndx);
 			GPTree t = (GPTree) parent.rep().clone();
 			GPNode selection = null;
 			int tries = 0;
 			int max_tries = getConfig().I("max_tries");
 			do {
-				int node_ndx = _pipeline.getRandom().nextInt(t.getSize());
+				int node_ndx = vm.getRandom().nextInt(t.getSize());
 				FindByIndex finder = new FindByIndex(node_ndx);
 				t.bfs(finder);
 				selection = finder.collect().get(0);
@@ -134,29 +134,35 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 			}
 
 			// Construct a new subtree to replace the current one
-			GPNode replacement = makeSubtree(t, selection);
-			if (replacement == null) {
-				throw new BadConfiguration("Unable to generate replacement subtree in " + getConfig().getName());
-			}
+			try {
+				GPNode replacement = makeSubtree(t, selection, vm);
 
-			// Try to reRoot the tree if necessary or swap the selection with
-			// the new replacement subtree
-			if (selection == t.getRoot()) {
-				t.reRoot(replacement);
-			} else {
-				if (!selection.getParent().swap(selection, replacement)) {
-					throw new BadConfiguration("Unable to replace subtree in " + getConfig().getName());
+				// Try to reRoot the tree if necessary or swap the selection
+				// with
+				// the new replacement subtree
+				if (selection == t.getRoot()) {
+					t.reRoot(replacement);
+				} else {
+					if (!selection.getParent().swap(selection, replacement)) {
+						throw new BadConfiguration("Unable to replace subtree in " + getConfig().getName());
+					}
 				}
+
+				// if (GPTreeUtil.maxDepth(t.getRoot()) >
+				// t.getConfig().getMaxDepth()) {
+				// System.err.println("Tree height error in RepalceSubtreeVarDepth.");
+				// }
+				// Construct a new genotype for the replacement tree and place
+				// it in
+				// the population
+				Genotype new_gen = vm.makeGenotype(t);
+				pop.placeGenotype(new_gen, vm, parent);
+
+			} catch (BadConfiguration bc) {
+				bc.prepend("Unable to generate replacement subtree in " + getConfig().getName());
+				throw bc;
 			}
 
-			// if (GPTreeUtil.maxDepth(t.getRoot()) >
-			// t.getConfig().getMaxDepth()) {
-			// System.err.println("Tree height error in RepalceSubtreeVarDepth.");
-			// }
-			// Construct a new genotype for the replacement tree and place it in
-			// the population
-			Genotype new_gen = _pipeline.makeGenotype(t);
-			pop.placeGenotype(new_gen, _pipeline, parent);
 		}
 
 		return pop;
@@ -175,7 +181,7 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 	 *         The root of the new subtree
 	 * @throws BadConfiguration
 	 */
-	protected GPNode makeSubtree(GPTree t, GPNode selection) throws BadConfiguration {
+	protected GPNode makeSubtree(GPTree t, GPNode selection, EMState state) throws BadConfiguration {
 
 		// Find the allowed depths
 		// Min and max depth are based on multiples of the average depth of the
@@ -204,30 +210,16 @@ public class ReplaceSubtreeVarDepth extends EvolutionOperator {
 		}
 
 		// Create the root of the new tree.
-		GPNode root = t.createNode(_pipeline, selection.getParent(),
-				selection.getConfig().getConstraints().getReturnType(),
-				(GPNodePos) selection.getPosition().clone(), init);
-		if (root == null) {
-			throw new BadConfiguration("Cannot create root of replacement subtree.");
-		} else {
-
-			// Go ahead and create the new subtree
-			Stack<GPNode> populate = new Stack<GPNode>();
-			populate.push(root);
-			while (!populate.isEmpty()) {
-				GPNode cur = populate.pop();
-				Class<?>[] child_types = cur.getConfig().getConstraints().getChildTypes();
-				for (int k = 0; k < cur.getConfig().getConstraints().numChildren(); k++) {
-					GPNode child = t.createNode(_pipeline, cur, child_types[k], cur.getPosition().newPos((byte) k),
-							init);
-					cur.getChildren()[k] = child;
-					if (child == null) {
-						throw new BadConfiguration("Problem instantiating non-root element in subtree.");
-					}
-					populate.push(child);
-				}
-			}
-			return root;
+		try {
+			GPTreeConfig subtree_config = (GPTreeConfig) t.getConfig().clone();
+			subtree_config.set("return_type", selection.getConfig().getConstraints().getReturnType());
+			subtree_config.set("max_depth", 1 + t.getConfig().getMaxDepth() - selection.getPosition().getDepth());
+			GPTree subtree = new GPTree(state, subtree_config, init);
+			return subtree.getRoot();
+		} catch (BadConfiguration bc) {
+			bc.prepend("ReplaceSubtreeVarDepth: Cannot create root of replacement subtree.");
+			throw bc;
 		}
+
 	}
 }

@@ -32,7 +32,7 @@ public class FindReturnType implements FindNode {
 
 
 	@Override
-	public void examine(GPNode n) {
+	public void examine(GPTree t, GPNode n) {
 		if (n.getConfig().getConstraints().getReturnType() == _cl)
 			_rettype.add(n);
 	}

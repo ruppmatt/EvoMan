@@ -40,8 +40,8 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 
-	public GPDoubleERC(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPDoubleERC(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 
@@ -88,10 +88,10 @@ public class GPDoubleERC extends GPMutableNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPDoubleERC n = new GPDoubleERC(t, _conf, parent, (GPNodePos) _pos.clone());
+	public GPNode clone(GPNode parent) {
+		GPDoubleERC n = new GPDoubleERC(_conf, parent, (GPNodePos) _pos.clone());
 		n._value = _value;
-		doClone(t, n);
+		doClone(n);
 		return n;
 	}
 }

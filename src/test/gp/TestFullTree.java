@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import evoict.*;
+import evoman.ec.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.init.*;
 import evoman.ec.gp.nonterminals.*;
@@ -20,11 +21,10 @@ public class TestFullTree {
 	public void test() {
 		EMHNode root = new EMHNode("root");
 
-		GPInitConfig init_conf = new GPInitConfig();
-		init_conf.set("depth", 3);
-		GPFullTree init = new GPFullTree(root, init_conf);
+		GPTreeInitializer init = new GPFullTree();
+		init.set("max_depth", 3);
 
-		GPNodeDirectory nodes = new GPNodeDirectory(root);
+		GPNodeDirectory nodes = new GPNodeDirectory();
 
 		GPNodeConfig constOne = new GPNodeConfig(GPNodeDoubleConst.class);
 		constOne.set("value", 1.0);
@@ -35,17 +35,29 @@ public class TestFullTree {
 			fail("Node configurations should not throw errrors.");
 		}
 
-		GPTreeConfig tree_config = new GPTreeConfig(nodes, init);
+		GPTreeConfig tree_config = new GPTreeConfig(GPTree.class);
 		tree_config.set("return_type", Double.class);
-		tree_config.set("max_depth", 10);
-		GPTree tree_one = new GPTree(root, tree_config);
-		tree_one.init();
-		assertEquals(4.0, tree_one.eval(null));
-		assertEquals("((1.0,1.0)+,(1.0,1.0)+)+", tree_one.toString());
-		assertEquals("((1.0,1.0)+<2.0>,(1.0,1.0)+<2.0>)+<4.0>", tree_one.toString(null));
+		tree_config.set("max_depth", 3);
+		tree_config.setNodeDirectory(nodes);
 
-		init_conf.set("depth", 4);
+		GPTree tree_one;
+		try {
+			tree_one = new GPTree(root, tree_config, init);
+			try {
+				assertEquals(4.0, tree_one.eval(null));
+				assertEquals("((1.0,1.0)+,(1.0,1.0)+)+", tree_one.toString());
+				assertEquals("((1.0,1.0)+<2.0>,(1.0,1.0)+<2.0>)+<4.0>", tree_one.toString(null));
+			} catch (BadEvaluation be) {
+				fail("Unable to evluate tree.");
+			}
+		} catch (BadConfiguration e1) {
+			e1.printStackTrace();
+			fail("Unable to construct tree.");
+		}
+
+		init.set("depth", 4);
 		GPNodeConfig erc = new GPNodeConfig(GPDoubleERC.class);
+
 		try {
 			nodes.addNodeConfig(erc);
 			fail("ERC should throw a bad configuration at this point.");
@@ -60,10 +72,21 @@ public class TestFullTree {
 			fail("Erc should not throw a bad configuration at this point");
 		}
 
-		GPTree tree = new GPTree(root, tree_config);
-		tree.init();
-		tree.eval(null);
-		tree.toString();
-		tree.toString(null);
+		GPTree tree;
+		try {
+			tree = new GPTree(root, tree_config, init);
+			try {
+				tree.eval(null);
+				tree.toString();
+				tree.toString(null);
+			} catch (BadEvaluation be) {
+				fail("Unable to evaluate tree.");
+				be.printStackTrace();
+			}
+		} catch (BadConfiguration e) {
+			fail("Unable to construct tree.");
+			e.printStackTrace();
+		}
+
 	}
 }

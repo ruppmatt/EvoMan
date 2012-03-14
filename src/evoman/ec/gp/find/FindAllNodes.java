@@ -21,7 +21,7 @@ public class FindAllNodes implements FindNode {
 
 
 	@Override
-	public void examine(GPNode n) {
+	public void examine(GPTree t, GPNode n) {
 		nodes.add(n);
 	}
 

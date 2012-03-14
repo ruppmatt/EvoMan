@@ -4,7 +4,6 @@ package evoman.ec.gp;
 import evoict.*;
 import evoman.config.*;
 import evoman.ec.*;
-import evoman.evo.structs.*;
 
 
 
@@ -42,7 +41,6 @@ public class GPTreeConfig extends RepresentationConfig {
 
 	private static final long				serialVersionUID	= 1L;
 	protected GPNodeDirectory				_node_dir;
-	protected EMState						_state;
 	protected final Class<? extends GPTree>	_tree_type;
 
 
@@ -82,6 +80,17 @@ public class GPTreeConfig extends RepresentationConfig {
 
 	public int getMaxDepth() {
 		return I("max_depth");
+	}
+
+
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Object clone() {
+		GPTreeConfig clone = new GPTreeConfig(_tree_type);
+		clone._kv = (KeyValueStore) _kv.clone();
+		clone._node_dir = (GPNodeDirectory) _node_dir.clone();
+		return clone;
 	}
 
 }

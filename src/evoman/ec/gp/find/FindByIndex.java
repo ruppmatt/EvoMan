@@ -35,7 +35,7 @@ public class FindByIndex implements FindNode {
 
 
 	@Override
-	public void examine(GPNode n) {
+	public void examine(GPTree t, GPNode n) {
 		if (ndx == found)
 			result = n;
 		ndx++;

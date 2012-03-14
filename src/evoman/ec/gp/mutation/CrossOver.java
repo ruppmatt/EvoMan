@@ -9,6 +9,8 @@ import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
 import evoman.evo.pop.*;
+import evoman.evo.structs.*;
+import evoman.evo.vm.*;
 
 
 
@@ -73,14 +75,14 @@ public class CrossOver extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			if (_received.size() != 1) {
 				throw new BadConfiguration(getConfig().getName() + ": expected 1 input population, received "
 						+ _received.size());
 			}
 			Population p = (Population) ((Population) _received.values().toArray()[0]).clone();
-			return doMutation(p);
+			return doMutation(p, vm);
 		} else {
 			throw new BadConfiguration(getConfig().getName() + ": no populations received.");
 		}
@@ -88,29 +90,29 @@ public class CrossOver extends EvolutionOperator {
 
 
 
-	protected Population doMutation(Population p) {
+	protected Population doMutation(Population p, VariationManager vm) {
 		int psize = p.size();
 		double prob = getConfig().D("prob");
 		int max_tries = getConfig().I("max_tries");
-		int num_xover = _pipeline.getRandom().getBinomial(psize, prob);
+		int num_xover = vm.getRandom().getBinomial(psize, prob);
 
 		for (int k = 0; k < num_xover; k++) {
 			int tries = 0;
 			while (tries < max_tries) {
 				tries++;
-				GPTree base_original = findRandomTree(p);
+				GPTree base_original = findRandomTree(p, vm);
 				GPTree base_clone = (GPTree) base_original.clone();
-				GPNode replaced = findNodeToBeReplace(base_clone);
+				GPNode replaced = findNodeToBeReplace(base_clone, vm);
 				if (replaced == null) {
 					continue;
 				}
 
-				GPTree subtree_original = findRandomTree(p);
-				GPNode inserted_original = findNodeToInsert(subtree_original, replaced);
+				GPTree subtree_original = findRandomTree(p, vm);
+				GPNode inserted_original = findNodeToInsert(subtree_original, base_original, replaced, vm);
 				if (inserted_original == null) {
 					continue;
 				}
-				GPNode inserted_clone = inserted_original.clone(base_clone, replaced.getParent());
+				GPNode inserted_clone = inserted_original.clone(replaced.getParent());
 				if (replaced.getParent() == null) {
 					base_clone.reRoot(inserted_clone);
 				} else {
@@ -120,8 +122,8 @@ public class CrossOver extends EvolutionOperator {
 				// base_clone.getConfig().getMaxDepth()) {
 				// System.err.println("Tree height error in CrossOver.");
 				// }
-				Genotype new_gen = _pipeline.makeGenotype(base_clone);
-				p.placeGenotype(new_gen, _pipeline);
+				Genotype new_gen = vm.makeGenotype(base_clone);
+				p.placeGenotype(new_gen, vm);
 				break;
 			}
 		}
@@ -130,21 +132,21 @@ public class CrossOver extends EvolutionOperator {
 
 
 
-	protected GPTree findRandomTree(Population p) {
-		int ndx = _pipeline.getRandom().nextInt(p.size());
+	protected GPTree findRandomTree(Population p, EMState state) {
+		int ndx = state.getRandom().nextInt(p.size());
 		Genotype g = p.getGenotype(ndx);
 		return (GPTree) g.rep();
 	}
 
 
 
-	protected GPNode findNodeToBeReplace(GPTree t) {
+	protected GPNode findNodeToBeReplace(GPTree t, EMState state) {
 		int max_tries = getConfig().I("max_tries");
 		double prob_leaf = getConfig().D("prob_leaf");
 		ArrayList<GPNode> candidates = new ArrayList<GPNode>();
 		int tries = 0;
 		do {
-			if (prob_leaf <= _pipeline.getRandom().nextDouble()) {
+			if (prob_leaf <= state.getRandom().nextDouble()) {
 				FindLeaves f = new FindLeaves();
 				t.bfs(f);
 				candidates = f.collect();
@@ -164,7 +166,7 @@ public class CrossOver extends EvolutionOperator {
 		int num_targets = candidates.size();
 		tries = 0;
 		do {
-			int ndx = _pipeline.getRandom().nextInt(num_targets);
+			int ndx = state.getRandom().nextInt(num_targets);
 			target = candidates.get(ndx);
 			tries++;
 		} while (!t.canAlter(target) && tries < max_tries);
@@ -178,24 +180,24 @@ public class CrossOver extends EvolutionOperator {
 
 
 
-	protected GPNode findNodeToInsert(GPTree t, GPNode to_replace) {
+	protected GPNode findNodeToInsert(GPTree source, GPTree dest, GPNode to_replace, EMState state) {
 		Class<?> ret_type = to_replace.getConfig().getConstraints().getReturnType();
 		FindReturnType find = new FindReturnType(ret_type);
-		t.bfs(find);
+		source.bfs(find);
 
 		ArrayList<GPNode> candidates = find.collect();
 		ArrayList<GPNode> good_size = new ArrayList<GPNode>();
 		int replacement_depth = to_replace.getDepth();
 		for (GPNode n : candidates) {
 			int max_depth = GPTreeUtil.maxSubtreeDepth(n);
-			if (max_depth + replacement_depth <= to_replace.getTree().getConfig().getMaxDepth()) {
+			if (max_depth + replacement_depth <= dest.getConfig().getMaxDepth()) {
 				good_size.add(n);
 			}
 		}
 		if (good_size.isEmpty()) {
 			return null;
 		} else {
-			int use_ndx = _pipeline.getRandom().nextInt(good_size.size());
+			int use_ndx = state.getRandom().nextInt(good_size.size());
 			return good_size.get(use_ndx);
 		}
 	}

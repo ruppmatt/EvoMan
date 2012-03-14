@@ -7,6 +7,7 @@ import evoict.*;
 import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 
 
 
@@ -47,7 +48,7 @@ public class ElitistSelection extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			if (_received.size() != 1) {
 				throw new BadConfiguration(getConfig().getName() + ": expected 1 population, received "

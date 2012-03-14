@@ -8,6 +8,7 @@ import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 
 
 
@@ -71,7 +72,7 @@ public class TournamentSelection extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			int num_genotypes = 0;
 
@@ -85,9 +86,9 @@ public class TournamentSelection extends EvolutionOperator {
 			Population selected = new Population();
 			int new_size = (pop_size != Constants.ASINPUT) ? pop_size : num_genotypes;
 			for (int i = 0; i < new_size; i++) {
-				Genotype winner = all.get(_pipeline.getRandom().nextInt(num_genotypes));
+				Genotype winner = all.get(vm.getRandom().nextInt(num_genotypes));
 				for (int k = 1; k < tour_size; k++) {
-					Genotype competitor = all.get(_pipeline.getRandom().nextInt(num_genotypes));
+					Genotype competitor = all.get(vm.getRandom().nextInt(num_genotypes));
 					winner = (winner.getFitness() < competitor.getFitness()) ? competitor : winner;
 				}
 				selected.addGenotype((Genotype) winner.clone());

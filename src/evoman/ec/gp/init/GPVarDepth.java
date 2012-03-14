@@ -30,14 +30,21 @@ public class GPVarDepth extends GPTreeInitializer {
 
 
 
+	@Override
 	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
-		if (!_kv.validate("max_depth", Integer.class) || !_kv.validate("min_depth", Integer.class)) {
-			bc.append("GPVarDepth: max_depth and/or min_depth not specified.");
+		if (!_kv.validate("max_depth", Integer.class)) {
+			bc.append(_kv.validate("max_depth", Integer.class).toString());
+		} else if (_kv.I("max_depth") < 1) {
+			bc.append("max_depth incorrectly specified.");
 		}
-		if (_kv.I("max_depth") < 1 || _kv.I("min_depth") > _kv.I("max_depth")) {
-			bc.append("max_depth and/or min_depth incorrectly specified.");
+
+		if (!_kv.validate("min_depth", Integer.class)) {
+			bc.append("GPVarDepth:  min_depth not specified.");
+		} else if (_kv.I("min_depth") > _kv.I("max_depth")) {
+			bc.append("GPVarDepth: min_depth > max_depth");
 		}
+
 		bc.validate();
 	}
 

@@ -20,7 +20,7 @@ public class FindInternalNodes implements FindNode {
 
 
 	@Override
-	public void examine(GPNode n) {
+	public void examine(GPTree t, GPNode n) {
 		if (n.getConfig().getConstraints().numChildren() > 0) {
 			_internal.add(n);
 		}

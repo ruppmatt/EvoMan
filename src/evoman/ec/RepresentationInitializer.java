@@ -1,4 +1,4 @@
-package evoman.evo.vm;
+package evoman.ec;
 
 
 import java.io.*;
@@ -50,28 +50,35 @@ public abstract class RepresentationInitializer implements Serializable, Configu
 
 	@Override
 	public Boolean isSet(String name) {
-		return isSet(name);
+		return _kv.isSet(name);
 	}
 
 
 
 	@Override
 	public Integer I(String name) {
-		return I(name);
+		return _kv.I(name);
 	}
 
 
 
 	@Override
 	public Double D(String name) {
-		return D(name);
+		return _kv.D(name);
 	}
 
 
 
 	@Override
 	public String S(String name) {
-		return S(name);
+		return _kv.S(name);
+	}
+
+
+
+	@Override
+	public Boolean validate(String name, Class<?> cl) {
+		return _kv.validate(name, cl);
 	}
 
 }

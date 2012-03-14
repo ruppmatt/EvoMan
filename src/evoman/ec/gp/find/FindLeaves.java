@@ -21,7 +21,7 @@ public class FindLeaves implements FindNode {
 
 
 	@Override
-	public void examine(GPNode n) {
+	public void examine(GPTree t, GPNode n) {
 		if (n.numChildren() == 0) {
 			leaves.add(n);
 		}

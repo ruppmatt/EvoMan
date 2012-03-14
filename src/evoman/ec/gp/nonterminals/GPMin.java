@@ -23,8 +23,8 @@ public class GPMin extends GPNode {
 
 
 
-	public GPMin(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPMin(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 
@@ -60,9 +60,9 @@ public class GPMin extends GPNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPMin n = new GPMin(t, _conf, parent, (GPNodePos) _pos.clone());
-		doClone(t, n);
+	public GPNode clone(GPNode parent) {
+		GPMin n = new GPMin(_conf, parent, (GPNodePos) _pos.clone());
+		doClone(n);
 		return n;
 	}
 }

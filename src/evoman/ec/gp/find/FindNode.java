@@ -26,7 +26,7 @@ public interface FindNode {
 	 * 
 	 * @param n
 	 */
-	public void examine(GPNode n);
+	public void examine(GPTree t, GPNode n);
 
 
 
@@ -40,7 +40,7 @@ public interface FindNode {
 
 
 	/**
-	 * Tests whther the FindNode object is finished with its task
+	 * Tests whether the FindNode object is finished with its task
 	 * 
 	 * @return
 	 *         True if there is nothing left to find

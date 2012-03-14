@@ -95,8 +95,8 @@ public class GPAction extends GPNode {
 
 
 
-	public GPAction(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPAction(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 		_method = (Method) conf.get("_method");
 	}
 
@@ -110,10 +110,10 @@ public class GPAction extends GPNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPAction n = new GPAction(t, _conf, parent, (GPNodePos) _pos.clone());
+	public GPNode clone(GPNode parent) {
+		GPAction n = new GPAction(_conf, parent, (GPNodePos) _pos.clone());
 		n._method = _method;
-		doClone(t, n);
+		doClone(n);
 		return n;
 	}
 

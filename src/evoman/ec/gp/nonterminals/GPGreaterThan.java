@@ -22,8 +22,8 @@ public class GPGreaterThan extends GPNode {
 
 
 
-	public GPGreaterThan(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPGreaterThan(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 
@@ -60,9 +60,9 @@ public class GPGreaterThan extends GPNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPGreaterThan n = new GPGreaterThan(t, _conf, parent, (GPNodePos) _pos.clone());
-		doClone(t, n);
+	public GPNode clone(GPNode parent) {
+		GPGreaterThan n = new GPGreaterThan(_conf, parent, (GPNodePos) _pos.clone());
+		doClone(n);
 		return n;
 	}
 

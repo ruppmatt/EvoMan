@@ -22,13 +22,7 @@ import evoman.evo.structs.*;
 public abstract class GPNode implements Constants, Serializable {
 
 	private static final long	serialVersionUID	= 1L;
-	protected GPTree			_tree;						// Link
-															// to
-															// the
-															// GPTree
-															// (and
-															// EMState
-															// information)
+
 	protected GPNode[]			_children;					// List
 															// of
 															// children
@@ -52,21 +46,49 @@ public abstract class GPNode implements Constants, Serializable {
 	/**
 	 * Construct a new GPNode using a particular configuration
 	 * 
-	 * @param t
 	 * @param conf
 	 * @param parent
 	 * @param pos
 	 */
-	public GPNode(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		_tree = t;
+	public GPNode(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
 		_pos = pos;
 		_conf = conf;
 		_parent = parent;
+		int num_children = _conf.getConstraints().numChildren();
+		_children = new GPNode[num_children];
 	}
 
 
 
+	/**
+	 * Initialize the node itself (e.g. set the state of the node)
+	 * 
+	 * @param state
+	 *            State information needed for initialization
+	 * @throws BadConfiguration
+	 */
 	public abstract void init(EMState state) throws BadConfiguration;
+
+
+
+	/**
+	 * Create and initialize the node's descendents.
+	 * 
+	 * @return
+	 * @throws BadConfiguration
+	 */
+	public void buildDescendents(EMState state, GPTree t, GPTreeInitializer init) throws BadConfiguration {
+		byte count = 0;
+		int num_children = _conf.getConstraints().numChildren();
+		for (int k = 0; k < num_children; k++) {
+			Class<?> cl = _conf.getConstraints().getChildTypes()[k];
+			GPNode child_node = GPTree.createNode(state, t, this, cl, _pos.newPos(count), init);
+			child_node.init(state);
+			_children[k] = child_node;
+			child_node.buildDescendents(state, t, init);
+			count += 1;
+		}
+	}
 
 
 
@@ -79,7 +101,7 @@ public abstract class GPNode implements Constants, Serializable {
 	 *            Parent node (must be in receiving tree)
 	 * @return
 	 */
-	public abstract GPNode clone(GPTree t, GPNode parent);
+	public abstract GPNode clone(GPNode parent);
 
 
 
@@ -91,12 +113,11 @@ public abstract class GPNode implements Constants, Serializable {
 	 * @param clone
 	 *            Node node new clone of this node
 	 */
-	protected void doClone(GPTree t, GPNode clone) {
-		// System.err.println("\t\tCloning " + clone.getClass());
+	protected void doClone(GPNode clone) {
 		int num_children = numChildren();
 		clone._children = (num_children > 0) ? new GPNode[num_children] : null;
 		for (int k = 0; k < num_children; k++) {
-			clone._children[k] = _children[k].clone(t, clone);
+			clone._children[k] = _children[k].clone(clone);
 		}
 	}
 
@@ -171,28 +192,6 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 
-	/**
-	 * Initialize the node's children
-	 * 
-	 * @return
-	 * @throws BadConfiguration
-	 */
-	public void init(EMState state, GPTreeInitializer init) throws BadConfiguration {
-		byte count = 0;
-		int num_children = _conf.getConstraints().numChildren();
-		_children = new GPNode[num_children];
-		for (int k = 0; k < num_children; k++) {
-			Class<?> cl = _conf.getConstraints().getChildTypes()[k];
-			GPNode child_node = _tree.createNode(state, this, cl, _pos.newPos(count), init);
-			child_node.init(state);
-			_children[k] = child_node;
-			child_node.init(state, init);
-			count += 1;
-		}
-	}
-
-
-
 	public abstract String toString(Object context) throws BadNodeValue;
 
 
@@ -235,17 +234,6 @@ public abstract class GPNode implements Constants, Serializable {
 
 
 	/**
-	 * Get the tree this node belongs to.
-	 * 
-	 * @return
-	 */
-	public GPTree getTree() {
-		return _tree;
-	}
-
-
-
-	/**
 	 * Swap a child with another node
 	 * 
 	 * @param child
@@ -269,6 +257,7 @@ public abstract class GPNode implements Constants, Serializable {
 	 * Rebase the node and all descendants with a new position specified by the
 	 * parent
 	 * 
+	 * @param tree
 	 * @param parent
 	 * @param pos
 	 */

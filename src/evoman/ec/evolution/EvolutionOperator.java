@@ -6,6 +6,7 @@ import java.util.*;
 
 import evoict.*;
 import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 
 
 
@@ -58,7 +59,7 @@ public abstract class EvolutionOperator implements Serializable {
 	 * In other words, clone() the populations and genotypes if you wish to
 	 * modify either in produce().
 	 */
-	abstract public Population produce() throws BadConfiguration;
+	abstract public Population produce(VariationManager vm) throws BadConfiguration;
 
 
 

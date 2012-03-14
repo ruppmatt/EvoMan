@@ -58,23 +58,37 @@ public abstract class VariationManager implements EMState, Serializable, Settabl
 
 
 
-	public void evolve() {
+	public void evolve() throws BadConfiguration {
 		if (_evopipeline == null) {
 			return;
 		} else {
-			Population result = _evopipeline.process(getPoolPopulation());
-			result.reset();
-			_ep.setPopulation(result);
+			Population result;
+			try {
+				result = _evopipeline.process(this, getPoolPopulation());
+				result.reset();
+				_ep.setPopulation(result);
+			} catch (BadConfiguration e) {
+				throw new BadConfiguration(
+						"Variation manager for EvoPool " + _ep.getName() + ": evolution pipleine is invalid.\n"
+								+ e.getMessage());
+			}
+
 		}
 	}
 
 
 
-	public Population evolve(Population p) {
+	public Population evolve(Population p) throws BadConfiguration {
 		if (_evopipeline == null) {
 			return (Population) p.clone();
 		} else {
-			return _evopipeline.process(p);
+			try {
+				return _evopipeline.process(this, p);
+			} catch (BadConfiguration e) {
+				throw new BadConfiguration(
+						"Variation manager for EvoPool " + _ep.getName() + ": evolution pipleine is invalid.\n"
+								+ e.getMessage());
+			}
 		}
 	}
 
@@ -94,6 +108,21 @@ public abstract class VariationManager implements EMState, Serializable, Settabl
 
 	public Population getPoolPopulation() {
 		return _ep.getPopulation();
+	}
+
+
+
+	@Override
+	public void init() {
+		if (_evopipeline != null) {
+			try {
+				_evopipeline.validate();
+			} catch (BadConfiguration e) {
+				getNotifier().fatal(
+						"Variation manager for EvoPool " + _ep.getName() + ": evolution pipleine is invalid.\n"
+								+ e.getMessage());
+			}
+		}
 	}
 
 

@@ -24,8 +24,8 @@ public class GPSubtract extends GPNode {
 
 
 
-	public GPSubtract(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPSubtract(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 
@@ -66,9 +66,9 @@ public class GPSubtract extends GPNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPSubtract n = new GPSubtract(t, _conf, parent, (GPNodePos) _pos.clone());
-		doClone(t, n);
+	public GPNode clone(GPNode parent) {
+		GPSubtract n = new GPSubtract(_conf, parent, (GPNodePos) _pos.clone());
+		doClone(n);
 		return n;
 	}
 

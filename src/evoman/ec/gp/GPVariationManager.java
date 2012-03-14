@@ -32,7 +32,7 @@ public class GPVariationManager extends VariationManager {
 	@Override
 	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
-		if (getConfig().validate("pop_size", Integer.class) || getConfig().I("pop_size") < 1) {
+		if (!getConfig().validate("pop_size", Integer.class) || getConfig().I("pop_size") < 1) {
 			bc.append("pop_size is either inset or less than 1.");
 		}
 		if (_tree_config == null) {
@@ -104,14 +104,27 @@ public class GPVariationManager extends VariationManager {
 	 * If everything checks out, construct a population of GPTrees.
 	 */
 	public void init() {
+		super.init();
+		if (_tree_config == null) {
+			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": no tree configration set.");
+		}
+		if (_tree_init == null) {
+			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": no tree initializer set.");
+		}
+
 		try {
 			validate();
 			GPTree.validate(_tree_config);
 		} catch (BadConfiguration bc) {
 			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": " + bc.getMessage());
 		}
-		if (_evopipeline != null) {
-			_evopipeline.init();
+
+		try {
+			createPopulation();
+		} catch (BadConfiguration bc) {
+			getNotifier().fatal(
+					"GPVariation manager for EvoPool " + _ep.getName() + ": unable to construct population.\n"
+							+ bc.getMessage());
 		}
 	}
 

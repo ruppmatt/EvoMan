@@ -5,7 +5,6 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import evoict.*;
-import evoict.io.*;
 import evoman.config.*;
 import evoman.evo.structs.*;
 
@@ -20,10 +19,7 @@ import evoman.evo.structs.*;
  * 
  */
 @ConfigRegister(name = "AvailableNodes")
-public class GPNodeDirectory implements EMState {
-
-	// A link to the parent EMState object
-	EMState										_parent;
+public class GPNodeDirectory implements Cloneable {
 
 	// A list of all configuration objects
 	ArrayList<GPNodeConfig>						_all		= new ArrayList<GPNodeConfig>();
@@ -38,13 +34,23 @@ public class GPNodeDirectory implements EMState {
 	/**
 	 * Create a new GPNode directory. An EMState parent is required.
 	 * 
-	 * @param parent
-	 *            EMState parent required for notifier and random number
-	 *            generation.
 	 */
-	@ConfigConstructor(args = { ConfigArgs.PARENT })
-	public GPNodeDirectory(EMState parent) {
-		_parent = parent;
+	public GPNodeDirectory() {
+	}
+
+
+
+	/**
+	 * Clone the directory.
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object clone() {
+		GPNodeDirectory clone = new GPNodeDirectory();
+		clone._all = (ArrayList<GPNodeConfig>) _all.clone();
+		clone._functions = (HashMap<Class<?>, ArrayList<GPNodeConfig>>) _functions.clone();
+		clone._terminals = (HashMap<Class<?>, ArrayList<GPNodeConfig>>) _terminals.clone();
+		return clone;
 	}
 
 
@@ -107,11 +113,11 @@ public class GPNodeDirectory implements EMState {
 	 * 
 	 * @return
 	 */
-	public GPNodeConfig random() {
+	public GPNodeConfig random(EMState state) {
 		if (_all.size() == 0) {
 			return null;
 		} else {
-			return random(_all);
+			return random(state, _all);
 		}
 	}
 
@@ -124,9 +130,9 @@ public class GPNodeDirectory implements EMState {
 	 *            List of configurations to select randomly from
 	 * @return
 	 */
-	public GPNodeConfig random(ArrayList<GPNodeConfig> avail) {
+	public GPNodeConfig random(EMState state, ArrayList<GPNodeConfig> avail) {
 		int num = avail.size();
-		int ndx = getRandom().nextInt(num);
+		int ndx = state.getRandom().nextInt(num);
 		return avail.get(ndx);
 	}
 
@@ -139,11 +145,11 @@ public class GPNodeDirectory implements EMState {
 	 *            The required return type of the terminal
 	 * @return
 	 */
-	public GPNodeConfig randomTerminal(Class<?> return_type) {
+	public GPNodeConfig randomTerminal(EMState state, Class<?> return_type) {
 		if (!_terminals.containsKey(return_type)) {
 			return null;
 		} else {
-			return random(_terminals.get(return_type));
+			return random(state, _terminals.get(return_type));
 		}
 	}
 
@@ -156,11 +162,11 @@ public class GPNodeDirectory implements EMState {
 	 *            The required return type of the function (internal) node
 	 * @return
 	 */
-	public GPNodeConfig randomFunction(Class<?> return_type) {
+	public GPNodeConfig randomFunction(EMState state, Class<?> return_type) {
 		if (!_functions.containsKey(return_type)) {
 			return null;
 		} else {
-			return random(_functions.get(return_type));
+			return random(state, _functions.get(return_type));
 		}
 	}
 
@@ -218,43 +224,4 @@ public class GPNodeDirectory implements EMState {
 		bc.validate();
 	}
 
-
-
-	@Override
-	public EMState getESParent() {
-		return _parent;
-	}
-
-
-
-	@Override
-	public void init() {
-	}
-
-
-
-	@Override
-	public void finish() {
-	}
-
-
-
-	@Override
-	public RandomGenerator getRandom() {
-		return _parent.getRandom();
-	}
-
-
-
-	@Override
-	public EMThreader getThreader() {
-		return _parent.getThreader();
-	}
-
-
-
-	@Override
-	public Notifier getNotifier() {
-		return _parent.getNotifier();
-	}
 }

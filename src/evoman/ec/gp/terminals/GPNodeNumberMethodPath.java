@@ -50,8 +50,8 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 
-	public GPNodeNumberMethodPath(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPNodeNumberMethodPath(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 
@@ -112,10 +112,10 @@ public class GPNodeNumberMethodPath extends GPMutableNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPNodeNumberMethodPath n = new GPNodeNumberMethodPath(t, _conf, parent, (GPNodePos) _pos.clone());
+	public GPNode clone(GPNode parent) {
+		GPNodeNumberMethodPath n = new GPNodeNumberMethodPath(_conf, parent, (GPNodePos) _pos.clone());
 		n._path = _path;
-		doClone(t, n);
+		doClone(n);
 		return n;
 	}
 

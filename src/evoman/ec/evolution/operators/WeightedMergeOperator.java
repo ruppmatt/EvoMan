@@ -6,6 +6,7 @@ import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.evo.*;
 import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 
 
 
@@ -48,7 +49,7 @@ public class WeightedMergeOperator extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			WeightedIndex<Genotype> genotypes = new WeightedIndex<Genotype>();
 			for (EvolutionPipeConfig pc : _received.keySet()) {
@@ -58,14 +59,14 @@ public class WeightedMergeOperator extends EvolutionOperator {
 					genotypes.add(g, weight);
 				}
 			}
-			int pop_size = (getConfig().I("pop_size") == Constants.ASINPUT) ? _pipeline.getVM().getPopSize()
+			int pop_size = (getConfig().I("pop_size") == Constants.ASINPUT) ? vm.getPopSize()
 					: getConfig()
 							.I("pop_size");
 			double total_weight = genotypes.totalWeight();
 
 			Population new_pop = new Population();
 			for (int k = 0; k < pop_size; k++) {
-				double w = total_weight * _pipeline.getRandom().nextDouble();
+				double w = total_weight * vm.getRandom().nextDouble();
 				Genotype inc = genotypes.get(w);
 				new_pop.addGenotype((Genotype) inc.clone());
 			}

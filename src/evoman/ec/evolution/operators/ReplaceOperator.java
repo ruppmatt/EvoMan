@@ -7,6 +7,7 @@ import evoict.*;
 import evoman.config.*;
 import evoman.ec.evolution.*;
 import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 
 
 
@@ -51,7 +52,7 @@ public class ReplaceOperator extends EvolutionOperator {
 		if (!conf.validate("replacement", String.class)) {
 			bc.append("ReplaceOperator: Replacement population not named.");
 		}
-		if (!conf.validate("num_attempts", Integer.class) && conf.I("num_attempts") < 0) {
+		if (!conf.validate("num_attempts", Integer.class) || conf.I("num_attempts") < 0) {
 			bc.append("ReplaceOperator: num_attempts is not set or less than zero.");
 		}
 		bc.validate();
@@ -66,7 +67,7 @@ public class ReplaceOperator extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			if (_received.size() != 2)
 				throw new BadConfiguration(getConfig().getName() + ": expected 2 input populations, received "
@@ -94,7 +95,7 @@ public class ReplaceOperator extends EvolutionOperator {
 			ArrayList<Genotype> old_gens = (ArrayList<Genotype>) new_pop.getGenotypes().clone();
 			int num_attempts = getConfig().I("num_attempts");
 			for (int k = 0; k < replacement.size(); k++) {
-				int ndx = _pipeline.getRandom().nextInt(old_gens.size());
+				int ndx = vm.getRandom().nextInt(old_gens.size());
 				Genotype to_replace = old_gens.get(ndx);
 				old_gens.remove(ndx);
 				boolean replaced = false;

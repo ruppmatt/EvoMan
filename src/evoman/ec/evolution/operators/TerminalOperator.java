@@ -4,6 +4,7 @@ package evoman.ec.evolution.operators;
 import evoict.*;
 import evoman.ec.evolution.*;
 import evoman.evo.pop.*;
+import evoman.evo.vm.*;
 
 
 
@@ -31,17 +32,12 @@ public class TerminalOperator extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			Population received = (Population) _received.values().toArray()[0];
-			if (received.size() != _pipeline.getVM().getPopSize()) {
-				throw new BadConfiguration(
-						"Final population of pipeline does not equal constraint set by variation manager.");
-			}
 			return received;
 		} else {
-			_pipeline.getNotifier().fatal("Unable to assign terminal population.");
-			return null;
+			throw new BadConfiguration("Unable to assign terminal population.");
 		}
 	}
 

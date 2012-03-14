@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import org.junit.*;
 
 import evoict.*;
+import evoman.ec.*;
 import evoman.ec.evolution.*;
 import evoman.ec.evolution.operators.*;
 import evoman.ec.gp.*;
@@ -15,7 +16,6 @@ import evoman.ec.gp.nonterminals.*;
 import evoman.ec.gp.terminals.*;
 import evoman.evo.pop.*;
 import evoman.evo.structs.*;
-import evoman.evo.vm.*;
 
 
 
@@ -24,27 +24,21 @@ public class TestPi {
 	@Test
 	public void test() {
 
+		// Configuration-time
+		// =====================================================================
 		EvoPool root = new EvoPool("root", null);
 
-		VariationManagerConfig vm_conf = new VariationManagerConfig();
+		GPVariationManager vm = new GPVariationManager(root);
+		vm.set("pop_size", 1000);
 
-		try {
-			GPVariationManager.validate(vm_conf);
-			fail("Variation managers shouldn't be valid");
-		} catch (BadConfiguration bc) {
-		}
+		GPFullTree init = new GPFullTree();
+		init.set("max_depth", 5);
 
-		vm_conf.set("pop_size", 1000);
+		GPTreeConfig tree_conf = new GPTreeConfig(GPTree.class);
+		tree_conf.set("max_depth", 10);
+		tree_conf.set("return_type", Double.class);
 
-		try {
-			GPVariationManager.validate(vm_conf);
-		} catch (BadConfiguration bc) {
-			fail("Variation manager should be valid.");
-		}
-
-		GPVariationManager vm = new GPVariationManager(root, vm_conf);
-
-		GPNodeDirectory dir = new GPNodeDirectory(root);
+		GPNodeDirectory dir = new GPNodeDirectory();
 		GPNodeConfig gp_add = new GPNodeConfig(GPAdd.class);
 		GPNodeConfig gp_sub = new GPNodeConfig(GPSubtract.class);
 		GPNodeConfig gp_mult = new GPNodeConfig(GPMultiply.class);
@@ -58,6 +52,8 @@ public class TestPi {
 		gp_erc.set("max", 100.0);
 		gp_erc.set("min", -100.0);
 		GPNodeConfig gp_berc = new GPNodeConfig(GPBooleanERC.class);
+		// GPNodeConfig gp_const = new GPNodeConfig(GPNodeDoubleConst.class);
+		// gp_const.set("value", Math.PI);
 
 		try {
 			dir.addNodeConfig(gp_add);
@@ -71,18 +67,11 @@ public class TestPi {
 			dir.addNodeConfig(gp_cnd);
 			dir.addNodeConfig(gp_erc);
 			dir.addNodeConfig(gp_berc);
+			// dir.addNodeConfig(gp_const);
 		} catch (BadConfiguration bc) {
 			System.err.println(bc.getMessage());
 		}
-
-		GPInitConfig tree_init_conf = new GPInitConfig();
-		tree_init_conf.set("depth", 5);
-		GPFullTree init = new GPFullTree(root, tree_init_conf);
-
-		GPTreeConfig tree_conf = new GPTreeConfig(dir, init);
-		tree_conf.set("max_depth", 5);
-		tree_conf.set("return_type", Double.class);
-		vm.setTreeConfig(tree_conf);
+		tree_conf.setNodeDirectory(dir);
 
 		EvolutionPipeline ep = new EvolutionPipeline(vm);
 
@@ -103,7 +92,7 @@ public class TestPi {
 		EvolutionOpConfig subtreerep = new
 				EvolutionOpConfig("SubtreeReplace", ReplaceSubtreeVarDepth.class);
 		subtreerep.set("prob", 0.20);
-		subtreerep.set("max_depth", 1.25);
+		subtreerep.set("max_depth", 2.25);
 		subtreerep.set("min_depth", 0.75);
 		subtreerep.set("max_tries", 10);
 		EvolutionOpConfig merge = new EvolutionOpConfig("Merge",
@@ -112,7 +101,7 @@ public class TestPi {
 				ReplaceOperator.class);
 		replace.set("background", "Merge");
 		replace.set("replacement", "Elitism");
-		replace.set("attempts", 1000);
+		replace.set("num_attempts", 1000);
 		try {
 			ep.addOperator(elitism);
 			ep.addOperator(tour_sel);
@@ -132,26 +121,48 @@ public class TestPi {
 			fail(e.getMessage());
 		}
 
-		root.getVM().addEP(ep);
+		vm.setTreeInitializer(init);
+		vm.setTreeConfig(tree_conf);
+		vm.setEvoPipeline(ep);
+
+		root.setVM(vm);
+
+		// Ready for
+		// run-time=============================================================
 		root.init();
 
 		double first_best_pi = Double.MAX_VALUE;
 		double last_best = Double.MIN_VALUE;
 		double last_best_pi = Double.MAX_VALUE;
 		for (int gen = 0; gen < 100; gen++) {
-			// System.err.println("~~~~~" + gen);
+			System.err.println("~~~~~" + gen);
 			double best_pi = Double.MAX_VALUE;
 			double best_w = Double.MIN_VALUE;
 			for (Genotype g : root.getPopulation().getGenotypes()) {
-				double v = (Double) g.rep().eval(null);
-				double w = Math.pow(Math.abs(v - Math.PI), -2);
-				g.setFitness(w);
-				best_pi = (Math.abs(Math.PI - v) < Math.abs(Math.PI - best_pi)) ? v : best_pi;
-				best_w = (w > best_w) ? w : best_w;
+				double v;
+				try {
+					// System.err.println(g.rep().toString(null));
+					Object retval = g.rep().eval(null);
+					v = (Double) retval;
+					double w = Math.pow(Math.abs(v - Math.PI), -2);
+					g.setFitness(w);
+					best_pi = (Math.abs(Math.PI - v) < Math.abs(Math.PI - best_pi)) ? v : best_pi;
+					best_w = (w > best_w) ? w : best_w;
+				} catch (BadEvaluation e) {
+					System.err.println("Bad evaluation: " + e.getMessage());
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+					fail("Problem.");
+				}
 			}
-			root.getVM().evolve();
-			// System.err.println(last_best + "<=" + best_w);
-			// System.err.println(last_best_pi + " " + best_pi);
+			try {
+				root.getVM().evolve();
+			} catch (BadConfiguration e) {
+				e.getMessage();
+				e.printStackTrace();
+				fail("Unable to execute evolution pipeline.");
+			}
 			assertTrue(last_best <= best_w); // Should never get worse because
 												// of elitism
 			last_best = best_w;
@@ -162,6 +173,8 @@ public class TestPi {
 		}
 
 		int count = 0;
+		GPTree deepest = null;
+		int max_found = 0;
 		for (Genotype g : root.getPopulation().getGenotypes()) {
 			try {
 				g.rep().eval(null);
@@ -170,16 +183,19 @@ public class TestPi {
 			}
 			GPNode r = ((GPTree) g.rep()).getRoot();
 			int max_depth = GPTreeUtil.maxDepth(r);
+			max_found = (max_depth > max_found) ? max_depth : max_found;
+			deepest = (GPTree) ((deepest == null || max_depth > max_found) ? g.rep() : deepest);
 			if (max_depth > tree_conf.getMaxDepth()) {
 				// System.err.println(max_depth + " should be <= " +
 				// tree_conf.getMaxDepth());
 				fail();
 			}
 		}
+		System.err.println(deepest.toString() + " " + max_found);
 
 		assertEquals(count, 0);
 		assertTrue((Math.abs(last_best_pi - Math.PI) < 0.1));
 		assertTrue((Math.abs(first_best_pi - Math.PI) >= Math.abs(last_best_pi - Math.PI)));
-		// System.err.println(first_best_pi + " " + last_best_pi);
+		System.err.println(first_best_pi + " " + last_best_pi);
 	}
 }

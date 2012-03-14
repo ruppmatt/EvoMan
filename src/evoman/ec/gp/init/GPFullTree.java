@@ -29,6 +29,7 @@ public class GPFullTree extends GPTreeInitializer {
 
 
 
+	@Override
 	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
 		if (_kv.validate("max_depth", Integer.class)) {
@@ -41,7 +42,7 @@ public class GPFullTree extends GPTreeInitializer {
 
 
 
-	public GPFullTree(EMState state) {
+	public GPFullTree() {
 		super();
 	}
 

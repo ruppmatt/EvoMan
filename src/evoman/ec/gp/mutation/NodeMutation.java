@@ -7,6 +7,8 @@ import evoman.ec.evolution.*;
 import evoman.ec.gp.*;
 import evoman.ec.gp.find.*;
 import evoman.evo.pop.*;
+import evoman.evo.structs.*;
+import evoman.evo.vm.*;
 
 
 
@@ -50,14 +52,14 @@ public class NodeMutation extends EvolutionOperator {
 
 
 	@Override
-	public Population produce() throws BadConfiguration {
+	public Population produce(VariationManager vm) throws BadConfiguration {
 		if (drainPipes()) {
 			if (_received.size() != 1) {
 				throw new BadConfiguration(getConfig().getName() + " expected 1 input population, received "
 						+ _received.size());
 			} else {
 				Population p = (Population) ((Population) _received.values().toArray()[0]).clone();
-				Population retval = doMutation(p);
+				Population retval = doMutation(p, vm);
 				if (retval == null) {
 					throw new BadConfiguration(getConfig().getName() + ": unable to perform mutations");
 				} else {
@@ -71,7 +73,7 @@ public class NodeMutation extends EvolutionOperator {
 
 
 
-	protected Population doMutation(Population p) {
+	protected Population doMutation(Population p, EMState state) {
 		Double prob = getConfig().D("prob"); // The probability of mutation
 
 		/**
@@ -88,8 +90,8 @@ public class NodeMutation extends EvolutionOperator {
 			for (GPNode n : finder.collect()) {
 				if (!t.canAlter(n))
 					continue;
-				if (_pipeline.getRandom().nextDouble() <= prob) {
-					((GPMutableNode) n).mutate(_pipeline);
+				if (state.getRandom().nextDouble() <= prob) {
+					((GPMutableNode) n).mutate(state);
 				}
 			}
 			// if (GPTreeUtil.maxDepth(t.getRoot()) >

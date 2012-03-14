@@ -29,8 +29,8 @@ public class GPBooleanERC extends GPMutableNode {
 
 
 
-	public GPBooleanERC(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPBooleanERC(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 
 	}
 
@@ -51,10 +51,10 @@ public class GPBooleanERC extends GPMutableNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPBooleanERC n = new GPBooleanERC(t, _conf, parent, (GPNodePos) _pos.clone());
+	public GPNode clone(GPNode parent) {
+		GPBooleanERC n = new GPBooleanERC(_conf, parent, (GPNodePos) _pos.clone());
 		n._value = _value;
-		doClone(t, n);
+		doClone(n);
 		return n;
 	}
 

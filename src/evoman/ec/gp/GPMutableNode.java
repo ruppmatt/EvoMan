@@ -1,6 +1,8 @@
 package evoman.ec.gp;
 
+
 import evoman.evo.structs.*;
+
 
 
 /**
@@ -17,8 +19,8 @@ public abstract class GPMutableNode extends GPNode {
 
 
 
-	public GPMutableNode(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPMutableNode(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 

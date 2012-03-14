@@ -20,8 +20,8 @@ public class FindMutables implements FindNode {
 
 
 	@Override
-	public void examine(GPNode n) {
-		if (n instanceof GPMutableNode && n.getTree().canAlter(n)) {
+	public void examine(GPTree t, GPNode n) {
+		if (n instanceof GPMutableNode && t.canAlter(n)) {
 			mutables.add(n);
 		}
 	}

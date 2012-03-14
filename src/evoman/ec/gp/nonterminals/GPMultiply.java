@@ -23,8 +23,8 @@ public class GPMultiply extends GPNode {
 
 
 
-	public GPMultiply(GPTree t, GPNodeConfig conf, GPNode parent, GPNodePos pos) {
-		super(t, conf, parent, pos);
+	public GPMultiply(GPNodeConfig conf, GPNode parent, GPNodePos pos) {
+		super(conf, parent, pos);
 	}
 
 
@@ -60,9 +60,9 @@ public class GPMultiply extends GPNode {
 
 
 	@Override
-	public GPNode clone(GPTree t, GPNode parent) {
-		GPMultiply n = new GPMultiply(t, _conf, parent, (GPNodePos) _pos.clone());
-		doClone(t, n);
+	public GPNode clone(GPNode parent) {
+		GPMultiply n = new GPMultiply(_conf, parent, (GPNodePos) _pos.clone());
+		doClone(n);
 		return n;
 	}
 }
