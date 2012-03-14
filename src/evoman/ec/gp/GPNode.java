@@ -34,7 +34,7 @@ public abstract class GPNode implements Constants, Serializable {
 															// node
 															// in
 															// the
-															// treez
+															// tree
 	protected GPNode			_parent;					// Link
 															// to
 															// the
