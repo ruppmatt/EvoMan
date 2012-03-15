@@ -40,6 +40,53 @@ public class GPNodeDirectory implements Cloneable {
 
 
 
+	public void init() throws BadConfiguration {
+		for (GPNodeConfig config : _all) {
+			if (config == null) {
+				throw new BadConfiguration("Cannot add GPNode with null configuration.");
+			} else if (config.getConstraints() == null) {
+				throw new BadConfiguration(
+						"Cannot add GPNode with no constraints (is there a missing GPNodeDescriptor?)");
+			} else if (config.getNodeClass() == null) {
+				throw new BadConfiguration("Cannot add GPNode with null class");
+			}
+
+			// Try to validate the configuration
+			try {
+				validateNodeConfig(config);
+			} catch (BadConfiguration e) {
+				throw e;
+			}
+
+			// Collect information about the configuration for putting it into
+			// the
+			// directory correctly
+			GPNodeConstraints cnstr = config.getConstraints();
+			Class<?> ret = cnstr.getReturnType();
+			int num_child = cnstr.numChildren();
+
+			if (num_child == 0) { // Terminal check
+				if (!_terminals.containsKey(ret)) {
+					_terminals.put(ret, new ArrayList<GPNodeConfig>());
+				}
+				_terminals.get(ret).add(config);
+			} else { // Function (internal) check
+				if (!_functions.containsKey(ret)) {
+					_functions.put(ret, new ArrayList<GPNodeConfig>());
+				}
+				_functions.get(ret).add(config);
+			}
+		}
+		try {
+			validate();
+		} catch (BadConfiguration bc) {
+			bc.prepend("GPNodeDirectory: unable to initialize; validation failed.");
+			throw bc;
+		}
+	}
+
+
+
 	/**
 	 * Clone the directory.
 	 */
@@ -56,53 +103,17 @@ public class GPNodeDirectory implements Cloneable {
 
 
 	/**
-	 * Add a new node configuration to the directory. The configuration attempt
-	 * be validated. Invalid configurations will throw a BadConfiguration.
+	 * Add a new node configuration to the directory. Configurations will need
+	 * to be initialized before use.
 	 * 
 	 * @param conf
 	 *            GPNode configuration to add
-	 * @throws BadConfiguration
-	 *             If there is something wrong with the configuration
 	 */
 	@ConfigOptional()
-	public void addNodeConfig(GPNodeConfig conf) throws BadConfiguration {
-
-		// Check the contents of the configuration
-		if (conf == null) {
-			throw new BadConfiguration("Cannot add GPNode with null configuration.");
-		} else if (conf.getConstraints() == null) {
-			throw new BadConfiguration("Cannot add GPNode with no constraints (is there a missing GPNodeDescriptor?)");
-		} else if (conf.getNodeClass() == null) {
-			throw new BadConfiguration("Cannot add GPNode with null class");
-		}
-
-		// Try to validate the configuration
-		try {
-			validateNodeConfig(conf);
-		} catch (BadConfiguration e) {
-			throw e;
-		}
-
-		// Collect information about the configuration for putting it into the
-		// directory correctly
-		GPNodeConstraints cnstr = conf.getConstraints();
-		Class<?> ret = cnstr.getReturnType();
-		int num_child = cnstr.numChildren();
+	public void addNodeConfig(GPNodeConfig conf) {
 
 		// Add to the directory
 		_all.add(conf);
-
-		if (num_child == 0) { // Terminal check
-			if (!_terminals.containsKey(ret)) {
-				_terminals.put(ret, new ArrayList<GPNodeConfig>());
-			}
-			_terminals.get(ret).add(conf);
-		} else { // Function (internal) check
-			if (!_functions.containsKey(ret)) {
-				_functions.put(ret, new ArrayList<GPNodeConfig>());
-			}
-			_functions.get(ret).add(conf);
-		}
 
 	}
 

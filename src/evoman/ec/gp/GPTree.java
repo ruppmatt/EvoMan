@@ -57,7 +57,7 @@ public class GPTree implements Representation, Serializable {
 			try {
 				conf._node_dir.validate();
 			} catch (BadConfiguration bc) {
-				bad.append(bc.getMessage());
+				bad.append("GPTree: unable to initialize node directory." + bc.getMessage());
 			}
 		}
 		if (!conf.validate("return_type", Class.class)) {

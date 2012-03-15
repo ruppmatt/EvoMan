@@ -28,12 +28,8 @@ public class TestFullTree {
 
 		GPNodeConfig constOne = new GPNodeConfig(GPNodeDoubleConst.class);
 		constOne.set("value", 1.0);
-		try {
-			nodes.addNodeConfig(constOne);
-			nodes.addNodeConfig(new GPNodeConfig(GPAdd.class));
-		} catch (BadConfiguration bc) {
-			fail("Node configurations should not throw errrors.");
-		}
+		nodes.addNodeConfig(constOne);
+		nodes.addNodeConfig(new GPNodeConfig(GPAdd.class));
 
 		GPTreeConfig tree_config = new GPTreeConfig(GPTree.class);
 		tree_config.set("return_type", Double.class);
@@ -42,6 +38,7 @@ public class TestFullTree {
 
 		GPTree tree_one;
 		try {
+			tree_config.getNodeDirectory().init();
 			tree_one = new GPTree(root, tree_config, init);
 			try {
 				assertEquals(4.0, tree_one.eval(null));
@@ -58,19 +55,11 @@ public class TestFullTree {
 		init.set("depth", 4);
 		GPNodeConfig erc = new GPNodeConfig(GPDoubleERC.class);
 
-		try {
-			nodes.addNodeConfig(erc);
-			fail("ERC should throw a bad configuration at this point.");
-		} catch (BadConfiguration e) {
+		nodes.addNodeConfig(erc);
 
-		}
 		erc.set("min", 0.0);
 		erc.set("max", 3.0);
-		try {
-			nodes.addNodeConfig(erc);
-		} catch (BadConfiguration bc) {
-			fail("Erc should not throw a bad configuration at this point");
-		}
+		nodes.addNodeConfig(erc);
 
 		GPTree tree;
 		try {

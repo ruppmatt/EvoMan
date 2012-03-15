@@ -36,6 +36,11 @@ public class GPTreeConfig extends RepresentationConfig {
 		if (validate("return_type", Class.class)) {
 			bc.append("GPTreeConfig: return_type is not set.");
 		}
+		try {
+			_node_dir.validate();
+		} catch (BadConfiguration vbc) {
+			bc.append(vbc.getMessage());
+		}
 		bc.validate();
 	}
 

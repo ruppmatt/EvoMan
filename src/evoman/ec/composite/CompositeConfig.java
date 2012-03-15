@@ -54,7 +54,7 @@ public class CompositeConfig extends RepresentationConfig {
 
 
 	public EvoPool[] getSources() {
-		return (EvoPool[]) _sources.toArray();
+		return _sources.toArray(new EvoPool[_sources.size()]);
 	}
 
 

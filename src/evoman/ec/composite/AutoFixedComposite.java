@@ -54,7 +54,8 @@ public class AutoFixedComposite extends Composite {
 
 	protected void init(EMState state, CompositeInitializer init) throws BadConfiguration {
 		int n = getConfig().numSources();
-		_components = new Representation[getConfig().numSources()];
+		_components = new Representation[n];
+		_sources = new EvoPool[n];
 		for (int k = 0; k < n; k++) {
 			EvoPool source = getConfig().getSources()[k];
 			try {
@@ -116,8 +117,22 @@ public class AutoFixedComposite extends Composite {
 
 
 	@Override
+	public String toString() {
+		StringBuffer buf = new StringBuffer();
+		buf.append("{ ");
+		for (int k = 0; k < size(); k++) {
+			buf.append(_components[k].toString());
+			if (k < size() - 1)
+				buf.append(", ");
+		}
+		buf.append(" }");
+		return buf.toString();
+	}
+
+
+
+	@Override
 	public String toString(Object context) throws BadEvaluation {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

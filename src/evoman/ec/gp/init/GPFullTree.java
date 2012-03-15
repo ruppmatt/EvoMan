@@ -36,6 +36,8 @@ public class GPFullTree extends GPTreeInitializer {
 			if (_kv.I("max_depth") < 1) {
 				bc.append("Tree depth cannot be less than 1.");
 			}
+		} else {
+			bc.append("GPFullTree: max_depth not set or incorrectly set.");
 		}
 		bc.validate();
 	}

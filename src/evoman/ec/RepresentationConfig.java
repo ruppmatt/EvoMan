@@ -1,11 +1,13 @@
 package evoman.ec;
 
 
+import java.io.*;
+
 import evoict.*;
 
 
 
-public abstract class RepresentationConfig implements Configurable, Cloneable, Validatable {
+public abstract class RepresentationConfig implements Configurable, Cloneable, Validatable, Serializable {
 
 	private static final long	serialVersionUID	= 1L;
 

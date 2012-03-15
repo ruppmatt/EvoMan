@@ -20,7 +20,7 @@ public class SimulationManager extends EMConfigurableHNode {
 
 
 	public SimulationManager(String name, EvoPool parent) {
-		super(name, parent);
+		super(name);
 		_epool = parent;
 		set("threads", 1);
 	}

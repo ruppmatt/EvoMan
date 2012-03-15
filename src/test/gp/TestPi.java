@@ -55,22 +55,19 @@ public class TestPi {
 		// GPNodeConfig gp_const = new GPNodeConfig(GPNodeDoubleConst.class);
 		// gp_const.set("value", Math.PI);
 
-		try {
-			dir.addNodeConfig(gp_add);
-			dir.addNodeConfig(gp_sub);
-			dir.addNodeConfig(gp_mult);
-			dir.addNodeConfig(gp_div);
-			dir.addNodeConfig(gp_max);
-			dir.addNodeConfig(gp_min);
-			dir.addNodeConfig(gp_grt);
-			dir.addNodeConfig(gp_lss);
-			dir.addNodeConfig(gp_cnd);
-			dir.addNodeConfig(gp_erc);
-			dir.addNodeConfig(gp_berc);
-			// dir.addNodeConfig(gp_const);
-		} catch (BadConfiguration bc) {
-			System.err.println(bc.getMessage());
-		}
+		dir.addNodeConfig(gp_add);
+		dir.addNodeConfig(gp_sub);
+		dir.addNodeConfig(gp_mult);
+		dir.addNodeConfig(gp_div);
+		dir.addNodeConfig(gp_max);
+		dir.addNodeConfig(gp_min);
+		dir.addNodeConfig(gp_grt);
+		dir.addNodeConfig(gp_lss);
+		dir.addNodeConfig(gp_cnd);
+		dir.addNodeConfig(gp_erc);
+		dir.addNodeConfig(gp_berc);
+		// dir.addNodeConfig(gp_const);
+
 		tree_conf.setNodeDirectory(dir);
 
 		EvolutionPipeline ep = new EvolutionPipeline(vm);

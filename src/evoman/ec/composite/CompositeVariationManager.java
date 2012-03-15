@@ -4,7 +4,6 @@ package evoman.ec.composite;
 import java.lang.reflect.*;
 
 import evoict.*;
-import evoict.graphs.*;
 import evoman.config.*;
 import evoman.ec.composite.init.*;
 import evoman.evo.pop.*;
@@ -84,16 +83,16 @@ public class CompositeVariationManager extends VariationManager {
 		}
 
 		// Add children evopools as sources of the composite
-		for (HNode n : _ep.getChildren()) {
+		for (EvoPool n : _ep.getChildPools()) {
 			if (n instanceof EvoPool) {
-				_comp_config.addSource((EvoPool) n);
+				_comp_config.addSource(n);
 			}
 		}
 		try {
 			createPopulation();
 		} catch (BadConfiguration bc) {
 			getNotifier()
-					.fatal("Composite manager for EvoPool " + _ep.getName() + ": cannot create population; "
+					.fatal(errorPrefix() + ": cannot create population; "
 							+ bc.getMessage());
 		}
 	}
@@ -113,7 +112,8 @@ public class CompositeVariationManager extends VariationManager {
 			}
 			_ep.setPopulation(p);
 		} catch (Exception e) {
-			throw new BadConfiguration("Problem with Composite reflective construction." + e.getMessage());
+			e.getCause().printStackTrace();
+			throw new BadConfiguration("Problem with Composite reflective construction." + e.getCause().getMessage());
 		}
 	}
 
@@ -135,7 +135,7 @@ public class CompositeVariationManager extends VariationManager {
 	@Override
 	public void validate() throws BadConfiguration {
 		BadConfiguration bc = new BadConfiguration();
-		if (getConfig().validate("pop_size", Integer.class) || getConfig().I("pop_size") < 1) {
+		if (!getConfig().validate("pop_size", Integer.class) || getConfig().I("pop_size") < 1) {
 			bc.append("pop_size is either inset or less than 1.");
 		}
 		if (_comp_config == null) {

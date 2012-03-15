@@ -108,30 +108,49 @@ public class GPVariationManager extends VariationManager {
 	public void init() {
 		super.init();
 		if (_tree_config == null) {
-			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": no tree configration set.");
+			getNotifier().fatal(errorPrefix() + ": no tree configration set.");
 		}
 		if (_tree_init == null) {
 			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": no tree initializer set.");
+		}
+
+		// The GPNode directory hasn't been fully initialized yet. It needs to
+		// be initialized before it is validated.
+		try {
+			_tree_config.getNodeDirectory().init();
+		} catch (BadConfiguration bc) {
+			getNotifier().fatal(errorPrefix() + bc.getMessage());
+		}
+
+		try {
+			_tree_init.validate();
+		} catch (BadConfiguration bc) {
+			getNotifier().fatal(errorPrefix() + bc.getMessage());
 		}
 
 		try {
 			validate();
 			GPTree.validate(_tree_config);
 		} catch (BadConfiguration bc) {
-			getNotifier().fatal("GPVariation manager for EvoPool " + _ep.getName() + ": " + bc.getMessage());
+			getNotifier().fatal(errorPrefix() + bc.getMessage());
 		}
 
 		try {
 			createPopulation();
 		} catch (BadConfiguration bc) {
 			getNotifier().fatal(
-					"GPVariation manager for EvoPool " + _ep.getName() + ": unable to construct population.\n"
+					errorPrefix() + "unable to construct population.\n"
 							+ bc.getMessage());
 		}
 	}
 
 
 
+	/**
+	 * Create an initial population for the EvoPool.
+	 * 
+	 * @throws BadConfiguration
+	 */
 	public void createPopulation() throws BadConfiguration {
 		Population p = new Population();
 		int size = getPopSize();
@@ -145,7 +164,8 @@ public class GPVariationManager extends VariationManager {
 			}
 			_ep.setPopulation(p);
 		} catch (Exception e) {
-			throw new BadConfiguration("Problem with GPTree reflective construction." + e.getMessage());
+			throw new BadConfiguration(errorPrefix() + "Problem with GPTree reflective construction.\n"
+					+ e.getCause().getMessage());
 		}
 	}
 
